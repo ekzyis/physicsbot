@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ekzyis/discordmeetsphysics/issues"
   },
-  "homepage": "https://github.com/ekzyis/discordmeetsphysics#readme"
+  "homepage": "https://github.com/ekzyis/discordmeetsphysics#readme",
+  "dependencies": {
+    "discord.js": "^11.4.2"
+  }
 }
