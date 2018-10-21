@@ -37,7 +37,7 @@ client.on("guildMemberAdd", member => {
         let greeting =
             `Willkommen <@` + member.id + `> auf ${physicsGuild.name}.\n`;
         greeting +=
-            `Es wäre cool, wenn du dir die Regeln in <#` +
+            `Es wäre cool, wenn du dir die <#` +
             rulesChannel.id +
             `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
         defaultChannel
