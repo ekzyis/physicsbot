@@ -9,43 +9,39 @@ const client = new discord.Client();
 const fs = require("fs");
 
 /**
- * @param {object} botData               Holds private data about used bot
+ * @param {Object} botData               Holds private data about used bot
  * @param {string} botData.name          Name with discriminator
  * @param {string} botData.token         Token to login as bot
  */
 const botData = JSON.parse(fs.readFileSync("../exclude/bot.json", "utf8"));
 const token = botData.token;
 /**
- * @param {Object} serverData                       Holds private data about physics server
- * @param {string} serverData.guildId               Id of server
- * @param {string} serverData.defaultChannelId      Id of channel where new members arrive
- * @param {string} serverData.rulesChannelId        Id of channel where rules are listed
+ * @param {Object} server                       Holds private data about servers
+ * @param {Object} server.physics               Holds private data about physics server
+ * @param {string} server.guildId               Id of server
+ * @param {string} server.defaultChannelId      Id of channel where new members arrive
+ * @param {string} server.rulesChannelId        Id of channel where rules are listed
  */
-const serverData = JSON.parse(
-    fs.readFileSync("../exclude/server.json", "utf8")
-);
-const serverId = serverData.guildId;
-const defaultChannelId = serverData.defaultChannelId;
-const rulesChannelId = serverData.rulesChannelId;
+const server = JSON.parse(fs.readFileSync("../exclude/server.json", "utf8"));
 
 console.log("Logging in...");
 
 client.on("guildMemberAdd", member => {
     // Check if member joined our physics guild even though this bot may never join another guild
     // NOTE this is unecessary since bot is only part of one guild but this seems good practice to me
-    if (member.guild.id === physicsGuild.id) {
+    if (member.guild.id === physics.guild.id) {
         let greeting =
-            `Willkommen <@` + member.id + `> auf ${physicsGuild.name}.\n`;
+            `Willkommen <@` + member.id + `> auf ${physics.guild.name}.\n`;
         greeting +=
             `Es wäre cool, wenn du dir die <#` +
-            rulesChannel.id +
+            physics.rulesChannel.id +
             `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
-        defaultChannel
+        physics.defaultChannel
             .send(greeting)
             .then(msg => {
                 console.log(
-                    `${defaultChannel.guild.name}@${
-                        defaultChannel.name
+                    `${physics.guild.name}@${
+                        physics.defaultChannel.name
                     }: ${msg}`
                 );
             })
@@ -53,9 +49,13 @@ client.on("guildMemberAdd", member => {
     }
 });
 
-let physicsGuild;
-let defaultChannel;
-let rulesChannel;
+/**
+ * @param {Object}                          physics                     Object for easier access to server data
+ * @param {module:discord.js.Guild}         physics.guild               Guild object of server
+ * @param {module:discord.js.TextChannel}   physics.defaultChannel      Default channel of server where new members arrive
+ * @param {module:discord.js.TextChannel}   physics.rulesChannel        Rules channel of server
+ */
+const physics = {};
 client.on("ready", () => {
     console.log(`${client.user.tag} is now logged in!`);
     client.user
@@ -63,12 +63,14 @@ client.on("ready", () => {
         .catch(reason => {
             console.error(reason);
         });
-    physicsGuild = client.guilds.get(serverId);
-    //console.log("physicsGuild:"); console.log(physicsGuild);
-    defaultChannel = physicsGuild.channels.get(defaultChannelId);
-    //console.log("defaultChannel:"); console.log(defaultChannel);
-    rulesChannel = physicsGuild.channels.get(rulesChannelId);
-    // console.log("rulesChannel:"); console.log(rulesChannel);
+    physics.guild = client.guilds.get(server.physics.guildId);
+    physics.defaultChannel = physics.guild.channels.get(
+        server.physics.defaultChannelId
+    );
+    physics.rulesChannel = physics.guild.channels.get(
+        server.physics.rulesChannelId
+    );
+    console.log(physics);
 });
 
 client.login(token).catch(reason => {
