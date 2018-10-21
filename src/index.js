@@ -13,7 +13,7 @@ const fs = require("fs");
  * @param {string} botData.name          Name with discriminator
  * @param {string} botData.token         Token to login as bot
  */
-const botData = JSON.parse(fs.readFileSync("../exclude/bot.json", "utf8"));
+const botData = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8"));
 const token = botData.token;
 /**
  * @param {Object} server                       Holds private data about servers
@@ -23,31 +23,31 @@ const token = botData.token;
  * @param {string} server.defaultChannelId      Id of channel where new members arrive
  * @param {string} server.rulesChannelId        Id of channel where rules are listed
  */
-const server = JSON.parse(fs.readFileSync("../exclude/server.json", "utf8"));
+const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
-console.log("Logging in...");
-
-client.on("guildMemberAdd", member => {
-    // Check if member joined our physics guild
-    if (member.guild.id === physics.guild.id) {
-        let greeting =
-            `Willkommen <@` + member.id + `> auf ${physics.guild.name}.\n`;
-        greeting +=
-            `Es wäre cool, wenn du dir die <#` +
-            physics.rulesChannel.id +
-            `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
-        physics.defaultChannel
-            .send(greeting)
-            .then(msg => {
-                console.log(
-                    `${physics.guild.name}@${
-                        physics.defaultChannel.name
-                    }: ${msg}`
-                );
-            })
-            .catch(reason => console.error(reason));
-    }
-});
+if (process.env.NODE_ENV === "production") {
+    client.on("guildMemberAdd", member => {
+        // Check if member joined our physics guild
+        if (member.guild.id === physics.guild.id) {
+            let greeting =
+                `Willkommen <@` + member.id + `> auf ${physics.guild.name}.\n`;
+            greeting +=
+                `Es wäre cool, wenn du dir die <#` +
+                physics.rulesChannel.id +
+                `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
+            physics.defaultChannel
+                .send(greeting)
+                .then(msg => {
+                    console.log(
+                        `${physics.guild.name}@${
+                            physics.defaultChannel.name
+                        }: ${msg}`
+                    );
+                })
+                .catch(reason => console.error(reason));
+        }
+    });
+}
 
 /**
  * @param {Object}                          physics                 Object for easier access to physics server data
@@ -65,20 +65,27 @@ client.on("ready", () => {
         .catch(reason => {
             console.error(reason);
         });
-    physics.guild = client.guilds.get(server.physics.guildId);
-    physics.defaultChannel = physics.guild.channels.get(
-        server.physics.defaultChannelId
-    );
-    physics.rulesChannel = physics.guild.channels.get(
-        server.physics.rulesChannelId
-    );
-    // console.log(physics);
-    test.guild = client.guilds.get(server.test.guildId);
-    test.defaultChannel = test.guild.channels.get(server.test.defaultChannelId);
-    test.rulesChannel = test.guild.channels.get(server.test.rulesChannelId);
-    // console.log(test);
+    if (process.env.NODE_ENV === "production") {
+        physics.guild = client.guilds.get(server.physics.guildId);
+        physics.defaultChannel = physics.guild.channels.get(
+            server.physics.defaultChannelId
+        );
+        physics.rulesChannel = physics.guild.channels.get(
+            server.physics.rulesChannelId
+        );
+        // console.log(physics);
+    }
+    if (process.env.NODE_ENV === "development") {
+        test.guild = client.guilds.get(server.test.guildId);
+        test.defaultChannel = test.guild.channels.get(
+            server.test.defaultChannelId
+        );
+        test.rulesChannel = test.guild.channels.get(server.test.rulesChannelId);
+        // console.log(test);
+    }
 });
 
+console.log("Logging in...");
 client.login(token).catch(reason => {
     console.error(reason);
 });

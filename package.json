@@ -1,22 +1,24 @@
 {
-  "name": "discordmeetsphysics",
-  "version": "1.0.0",
-  "description": "A Discord bot intended for usage with a physics discord server",
-  "main": "src/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ekzyis/discordmeetsphysics.git"
-  },
-  "author": "ekzyis",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/ekzyis/discordmeetsphysics/issues"
-  },
-  "homepage": "https://github.com/ekzyis/discordmeetsphysics#readme",
-  "dependencies": {
-    "discord.js": "^11.4.2"
-  }
+    "name": "discordmeetsphysics",
+    "version": "1.0.0",
+    "description": "A Discord bot intended for usage with a physics discord server",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "NODE_ENV=production node src/index.js",
+        "dev": "NODE_ENV=development node src/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ekzyis/discordmeetsphysics.git"
+    },
+    "author": "ekzyis",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ekzyis/discordmeetsphysics/issues"
+    },
+    "homepage": "https://github.com/ekzyis/discordmeetsphysics#readme",
+    "dependencies": {
+        "discord.js": "^11.4.2"
+    }
 }
