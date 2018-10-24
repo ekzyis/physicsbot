@@ -22,6 +22,7 @@ const token = botData.token;
  * @param {string} server.guildId               Id of server
  * @param {string} server.defaultChannelId      Id of channel where new members arrive
  * @param {string} server.rulesChannelId        Id of channel where rules are listed
+ * @param {string} server.adminId               Id of admin
  */
 const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
@@ -107,6 +108,12 @@ client.on("ready", () => {
         test.rulesChannel = test.guild.channels.get(server.test.rulesChannelId);
         // console.log(test);
     }
+    client
+        .fetchUser(server.test.adminId)
+        .then(fetchedUser => {
+            fetchedUser.send(`Logged in. Mode: ${process.env.NODE_ENV}`);
+        })
+        .catch(console.error);
 });
 
 console.log("Logging in...");
