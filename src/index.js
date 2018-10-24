@@ -48,6 +48,30 @@ if (process.env.NODE_ENV === "production") {
         }
     });
 }
+if (process.env.NODE_ENV === "development") {
+    client.on("guildMemberAdd", member => {
+        if (member.guild.id === test.guild.id) {
+            let greeting =
+                `Willkommen <@` + member.id + `> auf ${test.guild.name}.\n`;
+            greeting +=
+                `Es wäre cool, wenn du dir die <#` +
+                test.rulesChannel.id +
+                `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
+            test.defaultChannel
+                .send(greeting)
+                .then(msg =>
+                    console.log(
+                        `${test.guild.name}@${test.defaultChannel.name}: ${msg}`
+                    )
+                );
+        }
+    });
+    client.on("message", msg => {
+        if (msg.content === "!guildMemberAdd") {
+            client.emit("guildMemberAdd", test.guild.member(msg.author));
+        }
+    });
+}
 
 /**
  * @param {Object}                          physics                 Object for easier access to physics server data
