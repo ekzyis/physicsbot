@@ -59,7 +59,7 @@ let rulesChannel;
 client.on("ready", () => {
     console.log(`${client.user.tag} is now logged in!`);
     client.user
-        .setActivity("How to rule this server 101", { type: "WATCHING" })
+        .setActivity("LHC live stream", { type: "WATCHING" })
         .catch(reason => {
             console.error(reason);
         });
