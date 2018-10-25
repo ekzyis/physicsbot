@@ -17,7 +17,7 @@ const botData = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8"));
 const token = botData.token;
 /**
  * @param {Object} server                       Holds private data about servers
- * @param {Object} server.physics               Holds private data about physics server
+ * @param {Object} server.test                  Holds private data about test server
  * @param {string} server.guildId               Id of server
  * @param {string} server.defaultChannelId      Id of channel where new members arrive
  * @param {string} server.rulesChannelId        Id of channel where rules are listed
@@ -26,51 +26,38 @@ const token = botData.token;
 const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
 client.on("guildMemberAdd", member => {
-    // Check if member joined our physics guild
-    if (member.guild.id === physics.guild.id) {
+    if (member.guild.id === test.guild.id) {
         let greeting =
-            `Willkommen <@` + member.id + `> auf ${physics.guild.name}.\n`;
+            `Willkommen <@` + member.id + `> auf ${test.guild.name}.\n`;
         greeting +=
             `Es wäre cool, wenn du dir die <#` +
-            physics.rulesChannel.id +
+            test.rulesChannel.id +
             `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
-        physics.defaultChannel
+        test.defaultChannel
             .send(greeting)
-            .then(msg => {
+            .then(msg =>
                 console.log(
-                    `${physics.guild.name}@${
-                        physics.defaultChannel.name
-                    }: ${msg}`
-                );
-            })
+                    `${test.guild.name}@${test.defaultChannel.name}: ${msg}`
+                )
+            )
             .catch(reason => console.error(reason));
     }
 });
+client.on("message", msg => {
+    if (msg.content === "!guildMemberAdd") {
+        client.emit("guildMemberAdd", test.guild.member(msg.author));
+    }
+});
 
-/**
- * @param {Object}                          physics                 Object for easier access to physics server data
- * @param {module:discord.js.Guild}         obj.guild               Guild object of server
- * @param {module:discord.js.TextChannel}   obj.defaultChannel      Default channel of server where new members arrive
- * @param {module:discord.js.TextChannel}   obj.rulesChannel        Rules channel of server
- */
-const physics = {};
+const test = {};
 client.on("ready", () => {
     console.log(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
-    client.user
-        .setActivity("LHC live stream", { type: "WATCHING" })
-        .catch(reason => {
-            console.error(reason);
-        });
-    physics.guild = client.guilds.get(server.physics.guildId);
-    physics.defaultChannel = physics.guild.channels.get(
-        server.physics.defaultChannelId
-    );
-    physics.rulesChannel = physics.guild.channels.get(
-        server.physics.rulesChannelId
-    );
-    // console.log(physics);
+    test.guild = client.guilds.get(server.test.guildId);
+    test.defaultChannel = test.guild.channels.get(server.test.defaultChannelId);
+    test.rulesChannel = test.guild.channels.get(server.test.rulesChannelId);
+    // console.log(test);
 });
 
 console.log("Logging in...");
