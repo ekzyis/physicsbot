@@ -19,6 +19,7 @@
     },
     "homepage": "https://github.com/ekzyis/discordmeetsphysics#readme",
     "dependencies": {
-        "discord.js": "^11.4.2"
+        "discord.js": "^11.4.2",
+        "prettier": "^1.14.3"
     }
 }
