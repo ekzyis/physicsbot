@@ -47,7 +47,7 @@ client.on("guildMemberAdd", member => {
         };
         test.defaultChannel
             .send(`<@` + member.id + `>`, embedGreeting)
-            .then(msg => log_msg(msg))
+            .then(log_msg)
             .catch(console.error);
     }
 });
@@ -155,9 +155,7 @@ const log_msg = msg => {
 };
 
 console.log("Logging in...");
-client.login(token).catch(reason => {
-    console.error(reason);
-});
+client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {
     client.destroy().then(() => process.exit(0));

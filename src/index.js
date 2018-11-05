@@ -45,7 +45,7 @@ client.on("guildMemberAdd", member => {
         physics.defaultChannel
             .send(`<@` + member.id + `>`, embedGreeting)
             .then(log_msg)
-            .catch(reason => console.error(reason));
+            .catch(console.error);
     }
 });
 
@@ -62,9 +62,7 @@ client.on("ready", () => {
     );
     client.user
         .setActivity("LHC live stream", { type: "WATCHING" })
-        .catch(reason => {
-            console.error(reason);
-        });
+        .catch(console.error);
     physics.guild = client.guilds.get(server.physics.guildId);
     physics.defaultChannel = physics.guild.channels.get(
         server.physics.defaultChannelId
@@ -80,9 +78,7 @@ const log_msg = msg => {
 };
 
 console.log("Logging in...");
-client.login(token).catch(reason => {
-    console.error(reason);
-});
+client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {
     client.destroy().then(() => process.exit(0));
