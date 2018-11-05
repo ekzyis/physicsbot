@@ -28,18 +28,25 @@ const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
 client.on("guildMemberAdd", member => {
     if (member.guild.id === test.guild.id) {
-        let greeting =
-            `Willkommen <@` + member.id + `> auf ${test.guild.name}.\n`;
-        greeting +=
-            `Es wäre cool, wenn du dir die <#` +
-            test.rulesChannel.id +
-            `> ansiehst, bevor du dich hier umschaust :slight_smile:\n`;
-        greeting +=
-            `Außerdem verwalte ich hier auf dem Server die Rollen für die einzelnen Vorlesungen. Diese kannst du dir in <#` +
-            test.overviewChannel.id +
-            `> ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann! `;
+        let embedGreeting = {
+            embed: {
+                thumbnail: {
+                    url: member.user.avatarURL
+                },
+                title: `Willkommen ${member.user.tag} auf ${
+                    test.guild.name
+                }!\n`,
+                description:
+                    `Es wäre cool, wenn du dir die <#` +
+                    test.rulesChannel.id +
+                    `> ansiehst, bevor du dich hier umschaust :slight_smile:\n` +
+                    `Außerdem verwalte ich hier auf dem Server die Rollen für die einzelnen Vorlesungen. Diese kannst du dir in <#` +
+                    test.overviewChannel.id +
+                    `> ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann!`
+            }
+        };
         test.defaultChannel
-            .send(greeting)
+            .send(`<@` + member.id + `>`, embedGreeting)
             .then(msg => log_msg(msg))
             .catch(console.error);
     }
