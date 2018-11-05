@@ -44,13 +44,7 @@ client.on("guildMemberAdd", member => {
         };
         physics.defaultChannel
             .send(`<@` + member.id + `>`, embedGreeting)
-            .then(msg => {
-                console.log(
-                    `${physics.guild.name}@${
-                        physics.defaultChannel.name
-                    }: ${msg}`
-                );
-            })
+            .then(log_msg)
             .catch(reason => console.error(reason));
     }
 });
@@ -80,6 +74,10 @@ client.on("ready", () => {
     );
     // console.log(physics);
 });
+
+const log_msg = msg => {
+    console.log(`${msg.guild.name}@${msg.channel.name}: ${msg}`);
+};
 
 console.log("Logging in...");
 client.login(token).catch(reason => {
