@@ -28,14 +28,22 @@ const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 client.on("guildMemberAdd", member => {
     // Check if member joined our physics guild
     if (member.guild.id === physics.guild.id) {
-        let greeting =
-            `Willkommen <@` + member.id + `> auf ${physics.guild.name}.\n`;
-        greeting +=
-            `Es wäre cool, wenn du dir die <#` +
-            physics.rulesChannel.id +
-            `> ansiehst, bevor du dich hier umschaust :slight_smile:`;
+        let embedGreeting = {
+            embed: {
+                thumbnail: {
+                    url: member.user.avatarURL
+                },
+                title: `Willkommen ${member.user.tag} auf ${
+                    physics.guild.name
+                }!\n`,
+                description:
+                    `Es wäre cool, wenn du dir die <#` +
+                    physics.rulesChannel.id +
+                    `> ansiehst, bevor du dich hier umschaust :slight_smile:`
+            }
+        };
         physics.defaultChannel
-            .send(greeting)
+            .send(`<@` + member.id + `>`, embedGreeting)
             .then(msg => {
                 console.log(
                     `${physics.guild.name}@${
