@@ -73,6 +73,12 @@ client.on("ready", () => {
     // console.log(physics);
 });
 
+client.on("message", msg => {
+    if (msg.content === "!newmember" && msg.guild.id === physics.guild.id) {
+        client.emit("guildMemberAdd", physics.guild.member(msg.author));
+    }
+});
+
 const log_msg = msg => {
     console.log(`${msg.guild.name}@${msg.channel.name}: ${msg}`);
 };
