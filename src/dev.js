@@ -96,58 +96,56 @@ const init_overviewChannel = () => {
         id: undefined
     };
     // Check if there is already a roles embed in overview channel
-    find_embed(test.overviewChannel, roles.msg.title)
+    find_embed(test.overviewChannel, rolesEmbed.title)
         .then(id => {
-            log_info(`roles.msg found!`);
-            roles.msg.id = id;
+            log_info(`rolesEmbed found!`);
+            rolesEmbed.id = id;
         })
         .catch(() =>
             test.overviewChannel
                 .send(
                     new discord.RichEmbed({
-                        title: roles.msg.title,
-                        description: roles.msg.description
+                        title: rolesEmbed.title,
+                        description: rolesEmbed.description
                     })
                 )
                 .then(msg => {
-                    log_info(`new roles.msg sent!`);
-                    roles.msg.id = msg.id;
+                    log_info(`new rolesEmbed sent!`);
+                    rolesEmbed.id = msg.id;
                 })
                 .catch(console.error)
         )
         .finally(() => {
-            log_info(`roles.msg.id = ` + roles.msg.id);
+            log_info(`rolesEmbed.id = ` + rolesEmbed.id);
         });
     // Barebone lectures embed
-    let lecturesOverview = {
-        msg: {
-            title: `***Vorlesungsübersicht***`,
-            description: "",
-            id: undefined
-        }
+    let lecturesEmbed = {
+        title: `***Vorlesungsübersicht***`,
+        description: "",
+        id: undefined
     };
     // Check if there is already a lecture embed in overview channel
-    find_embed(test.overviewChannel, lecturesOverview.msg.title)
+    find_embed(test.overviewChannel, lecturesEmbed.title)
         .then(id => {
-            log_info(`lecturesOverview.msg found!`);
-            lecturesOverview.msg.id = id;
+            log_info(`lecturesEmbed found!`);
+            lecturesEmbed.id = id;
         })
         .catch(() =>
             test.overviewChannel
                 .send(
                     new discord.RichEmbed({
-                        title: lecturesOverview.msg.title,
-                        description: lecturesOverview.msg.description
+                        title: lecturesEmbed.title,
+                        description: lecturesEmbed.description
                     })
                 )
                 .then(msg => {
-                    log_info(`new lecturesOverview.msg sent!`);
-                    lecturesOverview.msg.id = msg.id;
+                    log_info(`new lecturesEmbed sent!`);
+                    lecturesEmbed.id = msg.id;
                 })
                 .catch(console.error)
         )
         .finally(() => {
-            log_info(`lecturesOverview.msg.id = ` + lecturesOverview.msg.id);
+            log_info(`lecturesEmbed.id = ` + lecturesEmbed.id);
         });
 };
 
