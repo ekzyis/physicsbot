@@ -62,7 +62,7 @@ client.on("message", msg => {
 
 const test = {};
 client.on("ready", () => {
-    console.log(
+    log_info(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
     test.guild = client.guilds.get(server.test.guildId);
@@ -171,7 +171,9 @@ async function find_embed(channel, title) {
 
 const log_msg = msg => {
     console.log(
-        `${timestamp()} +++\n${msg.guild.name}@${msg.channel.name}: ${msg}`
+        `SENDING_MSG@[${timestamp()}] +++\n${msg.guild.name}@${
+            msg.channel.name
+        }: ${msg}`
     );
 };
 
@@ -181,12 +183,19 @@ const log_info = info => {
 
 const timestamp = () => {
     let date = new Date();
-    return `${date.getHours()}:${date.getMinutes()}:${
-        date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()
-    }, ${date.getDay()}/${date.getMonth()}/${date.getFullYear()}`;
+    let format = time => {
+        return time < 10 ? `0${time}` : time;
+    };
+    let hrs = format(date.getHours());
+    let min = format(date.getMinutes());
+    let sec = format(date.getSeconds());
+    let day = format(date.getDay());
+    let mon = format(date.getMonth());
+    let year = date.getFullYear();
+    return `${hrs}:${min}:${sec} ${day}/${mon}/${year}`;
 };
 
-console.log("Logging in...");
+log_info("Logging in...");
 client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {
