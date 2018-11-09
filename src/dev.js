@@ -71,7 +71,7 @@ client.on("messageReactionAdd", (reaction, user) => {
         }!`
     );
     if (reaction.message.id === roles.embed.id) {
-        let associatedRoleId = roles.map[`${reaction.emoji.name}`];
+        let associatedRoleId = roles.map[reaction.emoji.name];
         if (associatedRoleId) {
             let roleName = test.guild.roles.get(associatedRoleId).name;
             let guildMember = test.guild.member(user);
@@ -80,6 +80,33 @@ client.on("messageReactionAdd", (reaction, user) => {
                 .then(member => {
                     log_info(
                         `Set role ${roleName} (ID: ${associatedRoleId}) to ${
+                            member.displayName
+                        }`
+                    );
+                })
+                .catch(console.error);
+        }
+    }
+});
+
+client.on("messageReactionRemove", (reaction, user) => {
+    log_info(
+        `${
+            user.tag
+        } removed reaction ${reaction.emoji.toString()} from msg with id: ${
+            reaction.message.id
+        }!`
+    );
+    if (reaction.message.id === roles.embed.id) {
+        let associatedRoleId = roles.map[reaction.emoji.name];
+        if (associatedRoleId) {
+            let roleName = test.guild.roles.get(associatedRoleId).name;
+            let guildMember = test.guild.member(user);
+            guildMember
+                .removeRole(associatedRoleId)
+                .then(member => {
+                    log_info(
+                        `Removed role ${roleName} (ID: ${associatedRoleId} from ${
                             member.displayName
                         }`
                     );
