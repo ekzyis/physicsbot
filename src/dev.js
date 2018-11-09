@@ -111,6 +111,7 @@ const init_overviewChannel = () => {
                 )
                 .then(msg => {
                     log_info(`new rolesEmbed sent!`);
+                    log_msg(msg);
                     rolesEmbed.id = msg.id;
                 })
                 .catch(console.error)
@@ -140,6 +141,7 @@ const init_overviewChannel = () => {
                 )
                 .then(msg => {
                     log_info(`new lecturesEmbed sent!`);
+                    log_msg(msg);
                     lecturesEmbed.id = msg.id;
                 })
                 .catch(console.error)
@@ -168,7 +170,9 @@ async function find_embed(channel, title) {
 }
 
 const log_msg = msg => {
-    console.log(`${msg.guild.name}@${msg.channel.name}: ${msg}`);
+    console.log(
+        `${timestamp()} +++\n${msg.guild.name}@${msg.channel.name}: ${msg}`
+    );
 };
 
 const log_info = info => {
