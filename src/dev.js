@@ -63,6 +63,7 @@ client.on("message", msg => {
 });
 
 client.on("messageReactionAdd", (reaction, user) => {
+    if (user.bot) return;
     log_info(
         `${
             user.tag
@@ -90,6 +91,7 @@ client.on("messageReactionAdd", (reaction, user) => {
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
+    if (user.bot) return;
     log_info(
         `${
             user.tag
@@ -184,6 +186,16 @@ const init_overviewChannel = () => {
         )
         .finally(() => {
             log_info(`roles.embed.id = ` + roles.embed.id);
+            // React with emotes so users can just click on them
+            test.overviewChannel
+                .fetchMessages({ limit: 5 })
+                .then(messages => {
+                    let embed = messages.get(roles.embed.id);
+                    roles.emojis.forEach(emoji => {
+                        embed.react(emoji).catch(console.error);
+                    });
+                })
+                .catch(console.error);
         });
     // Barebone lectures embed
     lecture.embed = {
