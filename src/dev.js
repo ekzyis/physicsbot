@@ -57,6 +57,7 @@ client.on("guildMemberAdd", member => {
     }
 });
 client.on("message", msg => {
+    if (!msg.guild) return;
     if (msg.content === "!newmember" && msg.guild.id === test.guild.id) {
         client.emit("guildMemberAdd", test.guild.member(msg.author));
     }
