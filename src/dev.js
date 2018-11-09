@@ -60,6 +60,11 @@ client.on("message", msg => {
     }
 });
 
+// TODO Set roles
+client.on("messageReactionAdd", (reaction, user) => {
+    log_info(`${user.tag} reacted with ${reaction.emoji.toString()}!`);
+});
+
 const test = {};
 client.on("ready", () => {
     log_info(
@@ -76,7 +81,6 @@ client.on("ready", () => {
 });
 
 // TODO Improve embed data for roles and lectures
-// TODO Listen for emojis and set roles
 const init_overviewChannel = () => {
     // Get emoji objects from guild
     let emojis = test.guild.emojis
@@ -84,10 +88,9 @@ const init_overviewChannel = () => {
         .filter(emoji => emojiData.names.includes(emoji.name));
     // Create a "emoji string" for usage in rolesEmbed
     let emojiString = "";
-    emojis.forEach((data, index) => {
-        if (index < emojis.length - 1)
-            emojiString += `<:${data.name}:${data.id}>, `;
-        else emojiString += `& <:${data.name}:${data.id}>`;
+    emojis.forEach((emoji, index) => {
+        if (index < emojis.length - 1) emojiString += `${emoji.toString()}, `;
+        else emojiString += `& ${emoji.toString()}`;
     });
     // Barebone roles embed
     let rolesEmbed = {
