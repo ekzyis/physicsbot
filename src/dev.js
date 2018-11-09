@@ -25,9 +25,11 @@ const token = botData.token;
  * @param {string} server.adminId               Id of admin
  */
 const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
-const emojiData = JSON.parse(
-    fs.readFileSync("exclude/emoji/emoji.json", "utf8")
-);
+/**
+ * @param {String} item.emojiName               Name of emoji in list `emojis`
+ * @param {String} item.roleName                Name of role associated to emoji
+ */
+const emojis = JSON.parse(fs.readFileSync("exclude/emoji/emoji.json", "utf8"));
 
 client.on("guildMemberAdd", member => {
     if (member.guild.id === test.guild.id) {
@@ -60,12 +62,36 @@ client.on("message", msg => {
     }
 });
 
-// TODO Set roles
 client.on("messageReactionAdd", (reaction, user) => {
-    log_info(`${user.tag} reacted with ${reaction.emoji.toString()}!`);
+    log_info(
+        `${
+            user.tag
+        } reacted with ${reaction.emoji.toString()} to msg with id: ${
+            reaction.message.id
+        }!`
+    );
+    if (reaction.message.id === roles.embed.id) {
+        let associatedRoleId = roles.map[`${reaction.emoji.name}`];
+        if (associatedRoleId) {
+            let roleName = test.guild.roles.get(associatedRoleId).name;
+            let guildMember = test.guild.member(user);
+            guildMember
+                .setRoles(guildMember.roles.array().concat([associatedRoleId]))
+                .then(member => {
+                    log_info(
+                        `Set role ${roleName} (ID: ${associatedRoleId}) to ${
+                            member.displayName
+                        }`
+                    );
+                })
+                .catch(console.error);
+        }
+    }
 });
 
 const test = {};
+const roles = {};
+const lecture = {};
 client.on("ready", () => {
     log_info(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
@@ -82,75 +108,85 @@ client.on("ready", () => {
 
 // TODO Improve embed data for roles and lectures
 const init_overviewChannel = () => {
-    // Get emoji objects from guild
-    let emojis = test.guild.emojis
+    // Get emoji objects from guild and map them to roles ids
+    roles.map = {};
+    let rolesCollection = test.guild.roles;
+    let emojiNames = [];
+    emojis.forEach(item => {
+        emojiNames.push(item.emojiName);
+        roles.map[item.emojiName] = rolesCollection.find(
+            role => role.name === item.roleName
+        ).id;
+    });
+    roles.emojis = test.guild.emojis
         .array()
-        .filter(emoji => emojiData.names.includes(emoji.name));
-    // Create a "emoji string" for usage in rolesEmbed
+        .filter(emoji => emojiNames.includes(emoji.name));
+    // Create a "emoji string" for usage in roles embed
     let emojiString = "";
-    emojis.forEach((emoji, index) => {
-        if (index < emojis.length - 1) emojiString += `${emoji.toString()}, `;
+    roles.emojis.forEach((emoji, index) => {
+        if (index < roles.emojis.length - 1)
+            emojiString += `${emoji.toString()}, `;
         else emojiString += `& ${emoji.toString()}`;
     });
     // Barebone roles embed
-    let rolesEmbed = {
+    roles.embed = {
         title: `***Rollen***`,
         description: `Hier könnt ihr mit den Emojis (${emojiString}) ... **WORK IN PROGRESS**`,
         id: undefined
     };
     // Check if there is already a roles embed in overview channel
-    find_embed(test.overviewChannel, rolesEmbed.title)
+    find_embed(test.overviewChannel, roles.embed.title)
         .then(id => {
-            log_info(`rolesEmbed found!`);
-            rolesEmbed.id = id;
+            log_info(`roles.embed found!`);
+            roles.embed.id = id;
         })
         .catch(() =>
             test.overviewChannel
                 .send(
                     new discord.RichEmbed({
-                        title: rolesEmbed.title,
-                        description: rolesEmbed.description
+                        title: roles.embed.title,
+                        description: roles.embed.description
                     })
                 )
                 .then(msg => {
-                    log_info(`new rolesEmbed sent!`);
+                    log_info(`new roles.embed sent!`);
                     log_msg(msg);
-                    rolesEmbed.id = msg.id;
+                    roles.embed.id = msg.id;
                 })
                 .catch(console.error)
         )
         .finally(() => {
-            log_info(`rolesEmbed.id = ` + rolesEmbed.id);
+            log_info(`roles.embed.id = ` + roles.embed.id);
         });
     // Barebone lectures embed
-    let lecturesEmbed = {
+    lecture.embed = {
         title: `***Vorlesungsübersicht***`,
         description: "",
         id: undefined
     };
     // Check if there is already a lecture embed in overview channel
-    find_embed(test.overviewChannel, lecturesEmbed.title)
+    find_embed(test.overviewChannel, lecture.embed.title)
         .then(id => {
-            log_info(`lecturesEmbed found!`);
-            lecturesEmbed.id = id;
+            log_info(`lectures.embed found!`);
+            lecture.embed.id = id;
         })
         .catch(() =>
             test.overviewChannel
                 .send(
                     new discord.RichEmbed({
-                        title: lecturesEmbed.title,
-                        description: lecturesEmbed.description
+                        title: lecture.embed.title,
+                        description: lecture.embed.description
                     })
                 )
                 .then(msg => {
-                    log_info(`new lecturesEmbed sent!`);
+                    log_info(`new lectures.embed sent!`);
                     log_msg(msg);
-                    lecturesEmbed.id = msg.id;
+                    lecture.embed.id = msg.id;
                 })
                 .catch(console.error)
         )
         .finally(() => {
-            log_info(`lecturesEmbed.id = ` + lecturesEmbed.id);
+            log_info(`lectures.embed.id = ` + lecture.embed.id);
         });
 };
 
