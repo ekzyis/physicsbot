@@ -73,7 +73,7 @@ client.on("messageReactionAdd", (reaction, user) => {
         }!`
     );
     if (reaction.message.id === roles.embed.id) {
-        let associatedRoleId = roles.map[reaction.emoji.name];
+        let associatedRoleId = roles.map[reaction.emoji.name].id;
         if (associatedRoleId) {
             let roleName = test.guild.roles.get(associatedRoleId).name;
             let guildMember = test.guild.member(user);
@@ -101,7 +101,7 @@ client.on("messageReactionRemove", (reaction, user) => {
         }!`
     );
     if (reaction.message.id === roles.embed.id) {
-        let associatedRoleId = roles.map[reaction.emoji.name];
+        let associatedRoleId = roles.map[reaction.emoji.name].id;
         if (associatedRoleId) {
             let roleName = test.guild.roles.get(associatedRoleId).name;
             let guildMember = test.guild.member(user);
@@ -144,24 +144,37 @@ const init_overviewChannel = () => {
     let emojiNames = [];
     emojis.forEach(item => {
         emojiNames.push(item.emojiName);
-        roles.map[item.emojiName] = rolesCollection.find(
-            role => role.name === item.roleName
-        ).id;
+        roles.map[item.emojiName] = {
+            id: rolesCollection.find(role => role.name === item.roleName).id,
+            name: item.roleName
+        };
     });
     roles.emojis = test.guild.emojis
         .array()
         .filter(emoji => emojiNames.includes(emoji.name));
     // Create a "emoji string" for usage in roles embed
     let emojiString = "";
-    roles.emojis.forEach((emoji, index) => {
-        if (index < roles.emojis.length - 1)
-            emojiString += `${emoji.toString()}, `;
-        else emojiString += `& ${emoji.toString()}`;
+    roles.emojis.forEach(emoji => {
+        emojiString += `<@&${
+            roles.map[emoji.name].id
+        }>: ${emoji.toString()}\n\n`;
     });
     // Barebone roles embed
     roles.embed = {
         title: `***Rollen***`,
-        description: `Hier könnt ihr mit den Emojis (${emojiString}) ... **WORK IN PROGRESS**`,
+        description:
+            `\nWillkommen im Rollen-Verteiler, hier könnt ihr auswählen was ihr studiert ` +
+            `und welche Kurse ihr belegt in dem ihr entsprechend auf diese Nachricht *reagiert*.\n\n` +
+            `Das ganze dient zur Übersicht und schaltet nur für die einzelnen Kurse bestimmte Text[- und Sprach]kanäle ` +
+            `frei, die ihr jetzt noch nicht sehen könnt.\n\n` +
+            `Reagieren ist ganz einfach: Klickt einfach auf die einzelnen Symbole unter diesem Post. ` +
+            `Dadurch erscheinen neue Textkanäle, in denen du dich mit deinen Kommilitonen austauschen kannst.\n` +
+            `Dies ist auch reversibel. Ihr könnt hier auch eine Reaktion durch einfaches Klicken wieder entfernen, ` +
+            `um z.B. über LA oder ANA nicht mehr informiert zu werden, bzw. diese Kanäle nicht mehr zu sehen.\n\n` +
+            `Probiert es ruhig aus, ihr könnt nichts falsch machen, nichts ist in Stein gemeißelt. Bei Fragen sind alle in der <#` +
+            test.defaultChannel.id +
+            `> sehr hilfsbereit!\n\n` +
+            `${emojiString}`,
         id: undefined
     };
     // Check if there is already a roles embed in overview channel
@@ -201,7 +214,7 @@ const init_overviewChannel = () => {
     // Barebone lectures embed
     lecture.embed = {
         title: `***Vorlesungsübersicht***`,
-        description: "",
+        description: "*** WIP ***",
         id: undefined
     };
     // Check if there is already a lecture embed in overview channel
