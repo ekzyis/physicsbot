@@ -57,7 +57,7 @@ client.on("guildMemberAdd", member => {
  */
 const physics = {};
 client.on("ready", () => {
-    console.log(
+    log_info(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
     client.user
@@ -80,10 +80,32 @@ client.on("message", msg => {
 });
 
 const log_msg = msg => {
-    console.log(`${msg.guild.name}@${msg.channel.name}: ${msg}`);
+    console.log(
+        `SENDING_MSG@[${timestamp()}] +++\n${msg.guild.name}@${
+            msg.channel.name
+        }: ${msg}`
+    );
 };
 
-console.log("Logging in...");
+const log_info = info => {
+    console.log(`INFO@[${timestamp()}]: ${info}`);
+};
+
+const timestamp = () => {
+    let date = new Date();
+    let format = time => {
+        return time < 10 ? `0${time}` : time;
+    };
+    let hrs = format(date.getHours());
+    let min = format(date.getMinutes());
+    let sec = format(date.getSeconds());
+    let day = format(date.getDay());
+    let mon = format(date.getMonth());
+    let year = date.getFullYear();
+    return `${hrs}:${min}:${sec} ${day}/${mon}/${year}`;
+};
+
+log_info("Logging in...");
 client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {
