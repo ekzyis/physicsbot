@@ -263,14 +263,14 @@ async function find_embed(channel, title) {
 
 const log_msg = msg => {
     console.log(
-        `SENDING_MSG@[${timestamp()}] +++\n${msg.guild.name}@${
+        `SENDING_MSG@[ ${timestamp()} ] +++\n${msg.guild.name}@${
             msg.channel.name
         }: ${msg}`
     );
 };
 
 const log_info = info => {
-    console.log(`INFO@[${timestamp()}]: ${info}`);
+    console.log(`INFO@[ ${timestamp()} ]: ${info}`);
 };
 
 const timestamp = () => {
@@ -281,10 +281,10 @@ const timestamp = () => {
     let hrs = format(date.getHours());
     let min = format(date.getMinutes());
     let sec = format(date.getSeconds());
-    let day = format(date.getDay());
-    let mon = format(date.getMonth());
+    let day = format(date.getDate());
+    let mon = format(date.getMonth() + 1);
     let year = date.getFullYear();
-    return `${hrs}:${min}:${sec} ${day}/${mon}/${year}`;
+    return `${day}/${mon}/${year}T${hrs}:${min}:${sec}`;
 };
 
 log_info("Logging in...");
