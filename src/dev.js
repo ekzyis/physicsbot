@@ -78,7 +78,7 @@ client.on("messageReactionAdd", (reaction, user) => {
             let roleName = test.guild.roles.get(associatedRoleId).name;
             let guildMember = test.guild.member(user);
             guildMember
-                .setRoles(guildMember.roles.array().concat([associatedRoleId]))
+                .addRole(associatedRoleId)
                 .then(member => {
                     log_info(
                         `Set role ${roleName} (ID: ${associatedRoleId}) to ${
