@@ -136,7 +136,7 @@ client.on("ready", () => {
     // console.log(test);
 });
 
-// TODO Improve embed data for roles and lectures
+// TODO Init lectures embed
 const init_overviewChannel = () => {
     // Get emoji objects from guild and map them to roles ids
     roles.map = {};
