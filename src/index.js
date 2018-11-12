@@ -1,5 +1,7 @@
 #!/usr/bin/node
 
+const { log_info, log_msg } = require("./util");
+
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -78,32 +80,6 @@ client.on("message", msg => {
         client.emit("guildMemberAdd", physics.guild.member(msg.author));
     }
 });
-
-const log_msg = msg => {
-    console.log(
-        `SENDING_MSG@[ ${timestamp()} ] +++\n${msg.guild.name}@${
-            msg.channel.name
-        }: ${msg}`
-    );
-};
-
-const log_info = info => {
-    console.log(`INFO@[ ${timestamp()} ]: ${info}`);
-};
-
-const timestamp = () => {
-    let date = new Date();
-    let format = time => {
-        return time < 10 ? `0${time}` : time;
-    };
-    let hrs = format(date.getHours());
-    let min = format(date.getMinutes());
-    let sec = format(date.getSeconds());
-    let day = format(date.getDate());
-    let mon = format(date.getMonth() + 1);
-    let year = date.getFullYear();
-    return `${day}/${mon}/${year}T${hrs}:${min}:${sec}`;
-};
 
 log_info("Logging in...");
 client.login(token).catch(console.error);
