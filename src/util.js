@@ -1,13 +1,26 @@
-const log_msg = msg => {
-    console.log(
-        `SENDING_MSG@[ ${timestamp()} ] +++\n${msg.guild.name}@${
-            msg.channel.name
-        }: ${msg}`
-    );
+const TYPE = {
+    GENERAL: msg => `[ INFO ]@( ${msg} )`,
+    REACTION_ADD: (user, reaction) =>
+        `[ REACTION_ADD ]@( ${user.tag}, ${reaction.emoji.name}, ${
+            reaction.message.id
+        } )`,
+    REACTION_REMOVE: (user, reaction) =>
+        `[ REACTION_REMOVE ]@( ${user.tag}, ${reaction.emoji.name}, ${
+            reaction.message.id
+        } )`,
+    ROLE_ADD: (member, role) =>
+        `[ ROLE_ADD ]@( ${member.user.tag}, ${role.name} )`,
+    ROLE_REMOVE: (member, role) =>
+        `[ ROLE_REMOVE ]@( ${member.user.tag}, ${role.name} )`,
+    SEND_MESSAGE: msg =>
+        `[ SEND_MSG ]@( ${msg.guild.name}@${msg.channel.name}: ${
+            msg.content
+        } )`,
+    ERROR: e => `[ ERROR ]@( ${e.message} )`
 };
 
-const log_info = info => {
-    console.log(`INFO@[ ${timestamp()} ]: ${info}`);
+const log = type => (...a) => {
+    console.log(`[ ${timestamp()} ]${type(...a)}`);
 };
 
 const timestamp = () => {
@@ -25,6 +38,6 @@ const timestamp = () => {
 };
 
 module.exports = {
-    log_msg,
-    log_info
+    log,
+    TYPE
 };

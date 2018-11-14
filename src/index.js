@@ -1,6 +1,15 @@
 #!/usr/bin/node
 
-const { log_info, log_msg } = require("./util");
+const { log, TYPE } = require("./util");
+const {
+    GENERAL,
+    REACTION_ADD,
+    REACTION_REMOVE,
+    ROLE_ADD,
+    ROLE_REMOVE,
+    SEND_MESSAGE,
+    ERROR
+} = TYPE;
 
 const discord = require("discord.js");
 /**
@@ -46,7 +55,7 @@ client.on("guildMemberAdd", member => {
         };
         physics.defaultChannel
             .send(`<@` + member.id + `>`, embedGreeting)
-            .then(log_msg)
+            .then(log(SEND_MESSAGE))
             .catch(console.error);
     }
 });
@@ -59,7 +68,7 @@ client.on("guildMemberAdd", member => {
  */
 const physics = {};
 client.on("ready", () => {
-    log_info(
+    log(GENERAL)(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
     client.user
@@ -81,7 +90,7 @@ client.on("message", msg => {
     }
 });
 
-log_info("Logging in...");
+log(GENERAL)("Logging in...");
 client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {

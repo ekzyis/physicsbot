@@ -1,7 +1,15 @@
 #!/usr/bin/node
 
-const { log_info, log_msg } = require("./util");
-
+const { log, TYPE } = require("./util");
+const {
+    GENERAL,
+    REACTION_ADD,
+    REACTION_REMOVE,
+    ROLE_ADD,
+    ROLE_REMOVE,
+    SEND_MESSAGE,
+    ERROR
+} = TYPE;
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -24,6 +32,7 @@ const token = botData.token;
  * @param {string} server.defaultChannelId      Id of channel where new members arrive
  * @param {string} server.rulesChannelId        Id of channel where rules are listed (access: only admin)
  * @param {string} server.overviewChannelId     Id of bot channel to list information about lectures (access: only bot)
+ * @param {string} server.testChannelId         Id of channel for testing to not annoy guild members
  * @param {string} server.adminId               Id of admin
  */
 const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
@@ -50,8 +59,8 @@ client.on("guildMemberAdd", member => {
         };
         test.defaultChannel
             .send(member.toString(), embedGreeting)
-            .then(log_msg)
-            .catch(console.error);
+            .then(log(SEND_MESSAGE))
+            .catch(log(ERROR));
     }
 });
 client.on("message", msg => {
@@ -64,34 +73,25 @@ client.on("message", msg => {
                 let roles_to_remove = roles.map(item => item.role);
                 reset_roles(roles_to_remove)
                     .then(members => {
-                        members.forEach(m => {
-                            console.log(
-                                `Removed roles from member ${m.user.username}`
-                            );
-                        });
                         msg.reply(
                             `**Folgende Rollen zurückgesetzt**:\n` +
                                 `${roles_to_remove
                                     .map(role => role.toString() + "\n")
                                     .join("")}`
-                        );
+                        ).then(log(SEND_MESSAGE));
                     })
-                    .catch(console.error);
+                    .catch(log(ERROR));
             } else {
-                msg.reply("Keine ausreichenden Rechte.");
+                msg.reply("Keine ausreichenden Rechte.").then(
+                    log(SEND_MESSAGE)
+                );
             }
         }
 });
 
 client.on("messageReactionAdd", (reaction, user) => {
+    log(REACTION_ADD)(user, reaction);
     if (user.bot) return;
-    log_info(
-        `${
-            user.tag
-        } reacted with ${reaction.emoji.toString()} to msg with id: ${
-            reaction.message.id
-        }!`
-    );
     if (reaction.message.id === roles.embed.id) {
         let associatedRole = roles.find(
             item => item.emoji.id === reaction.emoji.id
@@ -101,26 +101,16 @@ client.on("messageReactionAdd", (reaction, user) => {
             guildMember
                 .addRole(associatedRole.id)
                 .then(member => {
-                    log_info(
-                        `Set role ${associatedRole.name} to ${
-                            member.displayName
-                        }`
-                    );
+                    log(ROLE_ADD)(member, associatedRole);
                 })
-                .catch(console.error);
+                .catch(log(ERROR));
         }
     }
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
+    log(REACTION_REMOVE)(user, reaction);
     if (user.bot) return;
-    log_info(
-        `${
-            user.tag
-        } removed reaction ${reaction.emoji.toString()} from msg with id: ${
-            reaction.message.id
-        }!`
-    );
     if (reaction.message.id === roles.embed.id) {
         let associatedRole = roles.find(
             item => item.emoji.id === reaction.emoji.id
@@ -130,19 +120,15 @@ client.on("messageReactionRemove", (reaction, user) => {
             guildMember
                 .removeRole(associatedRole.id)
                 .then(member => {
-                    log_info(
-                        `Removed role ${associatedRole.name} from ${
-                            member.displayName
-                        }`
-                    );
+                    log(ROLE_REMOVE)(member, associatedRole);
                 })
-                .catch(console.error);
+                .catch(log(ERROR));
         }
     }
 });
 
 client.on("ready", () => {
-    log_info(
+    log(GENERAL)(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
     init_test_server();
@@ -159,6 +145,7 @@ const init_test_server = () => {
     test.overviewChannel = test.guild.channels.get(
         server.test.overviewChannelId
     );
+    test.testChannel = test.guild.channels.get(server.test.testChannelId);
 };
 
 const init_roles = () => {
@@ -194,8 +181,8 @@ const init_roles = () => {
 const reset_roles = async roles_to_remove => {
     return new Promise(resolve => {
         roles_to_remove.forEach(role =>
-            console.log(
-                "Removing role " + role.name + ", ID: " + role.id + " ..."
+            log(GENERAL)(
+                "Resetting role " + role.name + ", ID: " + role.id + " ..."
             )
         );
         Promise.all(
@@ -218,7 +205,7 @@ const init_overviewChannel = () => {
     // Check if there is already a roles embed in overview channel
     find_embed(test.overviewChannel, roles.embed.title)
         .then(id => {
-            log_info(`roles.embed found!`);
+            log(GENERAL)(`ROLES.EMBED FOUND - ID: ${id}`);
             roles.embed.id = id;
         })
         .catch(() =>
@@ -230,14 +217,13 @@ const init_overviewChannel = () => {
                     })
                 )
                 .then(msg => {
-                    log_info(`new roles.embed sent!`);
-                    log_msg(msg);
+                    log(GENERAL)(`ROLES.EMBED SENT - ID: ${msg.id}`);
+                    log(SEND_MESSAGE)(msg);
                     roles.embed.id = msg.id;
                 })
-                .catch(console.error)
+                .catch(log(ERROR))
         )
         .finally(() => {
-            log_info(`roles.embed.id = ` + roles.embed.id);
             // React with emotes so users can just click on them
             test.overviewChannel
                 // NOTE we assume there are only 5 messages in overview channel!
@@ -253,7 +239,7 @@ const init_overviewChannel = () => {
     // Check if there is already a lecture embed in overview channel
     find_embed(test.overviewChannel, lecture.embed.title)
         .then(id => {
-            log_info(`lectures.embed found!`);
+            log(GENERAL)(`LECTURES.EMBED FOUND - ID: ${id}`);
             lecture.embed.id = id;
         })
         .catch(() =>
@@ -265,15 +251,12 @@ const init_overviewChannel = () => {
                     })
                 )
                 .then(msg => {
-                    log_info(`new lectures.embed sent!`);
-                    log_msg(msg);
+                    log(GENERAL)(`LECTURES.EMBED SENT - ID: ${msg.id}`);
+                    log(SEND_MESSAGE)(msg);
                     lecture.embed.id = msg.id;
                 })
                 .catch(console.error)
-        )
-        .finally(() => {
-            log_info(`lectures.embed.id = ` + lecture.embed.id);
-        });
+        );
 };
 
 // Resolve id of message when found else reject
@@ -295,7 +278,7 @@ async function find_embed(channel, title) {
     });
 }
 
-log_info("Logging in...");
+log(GENERAL)("Logging in...");
 client.login(token).catch(console.error);
 
 process.on("SIGINT", () => {
