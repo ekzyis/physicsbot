@@ -27,11 +27,7 @@ const token = botData.token;
  * @param {string} server.adminId               Id of admin
  */
 const server = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
-/**
- * @param {String} item.emojiName               Name of emoji in list `emojis`
- * @param {String} item.roleName                Name of role associated to emoji
- */
-const emojis = JSON.parse(fs.readFileSync("exclude/emoji/emoji.json", "utf8"));
+const roles = JSON.parse(fs.readFileSync("exclude/roles.json", "utf8"));
 
 client.on("guildMemberAdd", member => {
     if (member.guild.id === test.guild.id) {
@@ -44,25 +40,47 @@ client.on("guildMemberAdd", member => {
                     test.guild.name
                 }!\n`,
                 description:
-                    `Es wäre cool, wenn du dir die <#` +
-                    test.rulesChannel.id +
-                    `> ansiehst, bevor du dich hier umschaust :slight_smile:\n` +
-                    `Außerdem verwalte ich hier auf dem Server die Rollen für die einzelnen Vorlesungen. Diese kannst du dir in <#` +
-                    test.overviewChannel.id +
-                    `> ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann!`
+                    `Es wäre cool, wenn du dir die ` +
+                    test.rulesChannel +
+                    ` ansiehst, bevor du dich hier umschaust :slight_smile:\n` +
+                    `Außerdem verwalte ich hier auf dem Server die Rollen für die einzelnen Vorlesungen. Diese kannst du dir in ` +
+                    test.overviewChannel +
+                    ` ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann!`
             }
         };
         test.defaultChannel
-            .send(`<@` + member.id + `>`, embedGreeting)
+            .send(member.toString(), embedGreeting)
             .then(log_msg)
             .catch(console.error);
     }
 });
 client.on("message", msg => {
     if (!msg.guild) return;
-    if (msg.content === "!newmember" && msg.guild.id === test.guild.id) {
-        client.emit("guildMemberAdd", test.guild.member(msg.author));
-    }
+    if (msg.guild.id === test.guild.id)
+        if (msg.content === "!newmember") {
+            client.emit("guildMemberAdd", test.guild.member(msg.author));
+        } else if (msg.content === "!resetroles") {
+            if (msg.author.id === server.test.adminId) {
+                let roles_to_remove = roles.map(item => item.role);
+                reset_roles(roles_to_remove)
+                    .then(members => {
+                        members.forEach(m => {
+                            console.log(
+                                `Removed roles from member ${m.user.username}`
+                            );
+                        });
+                        msg.reply(
+                            `**Folgende Rollen zurückgesetzt**:\n` +
+                                `${roles_to_remove
+                                    .map(role => role.toString() + "\n")
+                                    .join("")}`
+                        );
+                    })
+                    .catch(console.error);
+            } else {
+                msg.reply("Keine ausreichenden Rechte.");
+            }
+        }
 });
 
 client.on("messageReactionAdd", (reaction, user) => {
@@ -75,15 +93,16 @@ client.on("messageReactionAdd", (reaction, user) => {
         }!`
     );
     if (reaction.message.id === roles.embed.id) {
-        let associatedRoleId = roles.map[reaction.emoji.name].id;
-        if (associatedRoleId) {
-            let roleName = test.guild.roles.get(associatedRoleId).name;
+        let associatedRole = roles.find(
+            item => item.emoji.id === reaction.emoji.id
+        ).role;
+        if (associatedRole) {
             let guildMember = test.guild.member(user);
             guildMember
-                .addRole(associatedRoleId)
+                .addRole(associatedRole.id)
                 .then(member => {
                     log_info(
-                        `Set role ${roleName} (ID: ${associatedRoleId}) to ${
+                        `Set role ${associatedRole.name} to ${
                             member.displayName
                         }`
                     );
@@ -103,15 +122,16 @@ client.on("messageReactionRemove", (reaction, user) => {
         }!`
     );
     if (reaction.message.id === roles.embed.id) {
-        let associatedRoleId = roles.map[reaction.emoji.name].id;
-        if (associatedRoleId) {
-            let roleName = test.guild.roles.get(associatedRoleId).name;
+        let associatedRole = roles.find(
+            item => item.emoji.id === reaction.emoji.id
+        ).role;
+        if (associatedRole) {
             let guildMember = test.guild.member(user);
             guildMember
-                .removeRole(associatedRoleId)
+                .removeRole(associatedRole.id)
                 .then(member => {
                     log_info(
-                        `Removed role ${roleName} (ID: ${associatedRoleId} from ${
+                        `Removed role ${associatedRole.name} from ${
                             member.displayName
                         }`
                     );
@@ -121,47 +141,37 @@ client.on("messageReactionRemove", (reaction, user) => {
     }
 });
 
-const test = {};
-const roles = {};
-const lecture = {};
 client.on("ready", () => {
     log_info(
         `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
     );
+    init_test_server();
+    init_roles();
+    init_overviewChannel();
+    // console.log(test);
+});
+
+const test = {};
+const init_test_server = () => {
     test.guild = client.guilds.get(server.test.guildId);
     test.defaultChannel = test.guild.channels.get(server.test.defaultChannelId);
     test.rulesChannel = test.guild.channels.get(server.test.rulesChannelId);
     test.overviewChannel = test.guild.channels.get(
         server.test.overviewChannelId
     );
-    init_overviewChannel();
-    // console.log(test);
-});
+};
 
-// TODO Init lectures embed
-const init_overviewChannel = () => {
-    // Get emoji objects from guild and map them to roles ids
-    roles.map = {};
-    let rolesCollection = test.guild.roles;
-    let emojiNames = [];
-    emojis.forEach(item => {
-        emojiNames.push(item.emojiName);
-        roles.map[item.emojiName] = {
-            id: rolesCollection.find(role => role.name === item.roleName).id,
-            name: item.roleName
-        };
+const init_roles = () => {
+    // populate items with given IDs
+    roles.forEach(item => {
+        item.emoji = test.guild.emojis.get(item.emoji.id);
+        item.role = test.guild.roles.get(item.role.id);
     });
-    roles.emojis = test.guild.emojis
-        .array()
-        .filter(emoji => emojiNames.includes(emoji.name));
     // Create a "emoji string" for usage in roles embed
     let emojiString = "";
-    roles.emojis.forEach(emoji => {
-        emojiString += `<@&${
-            roles.map[emoji.name].id
-        }>: ${emoji.toString()}\n\n`;
+    roles.forEach(item => {
+        emojiString += `${item.role.toString()}: ${item.emoji.toString()}\n\n`;
     });
-    // Barebone roles embed
     roles.embed = {
         title: `***Rollen***`,
         description:
@@ -177,6 +187,32 @@ const init_overviewChannel = () => {
             test.defaultChannel.id +
             `> sehr hilfsbereit!\n\n` +
             `${emojiString}`,
+        id: undefined
+    };
+};
+
+const reset_roles = async roles_to_remove => {
+    return new Promise(resolve => {
+        roles_to_remove.forEach(role =>
+            console.log(
+                "Removing role " + role.name + ", ID: " + role.id + " ..."
+            )
+        );
+        Promise.all(
+            test.guild.members.map(member =>
+                member.removeRoles(roles_to_remove)
+            )
+        ).then(members => resolve(members));
+    });
+};
+
+const lecture = {};
+// TODO Init lectures embed
+const init_overviewChannel = () => {
+    // Barebone lectures embed
+    lecture.embed = {
+        title: `***Vorlesungsübersicht***`,
+        description: "*** WIP ***",
         id: undefined
     };
     // Check if there is already a roles embed in overview channel
@@ -204,21 +240,16 @@ const init_overviewChannel = () => {
             log_info(`roles.embed.id = ` + roles.embed.id);
             // React with emotes so users can just click on them
             test.overviewChannel
+                // NOTE we assume there are only 5 messages in overview channel!
                 .fetchMessages({ limit: 5 })
                 .then(messages => {
                     let embed = messages.get(roles.embed.id);
-                    roles.emojis.forEach(emoji => {
-                        embed.react(emoji).catch(console.error);
+                    roles.forEach(item => {
+                        embed.react(item.emoji).catch(console.error);
                     });
                 })
                 .catch(console.error);
         });
-    // Barebone lectures embed
-    lecture.embed = {
-        title: `***Vorlesungsübersicht***`,
-        description: "*** WIP ***",
-        id: undefined
-    };
     // Check if there is already a lecture embed in overview channel
     find_embed(test.overviewChannel, lecture.embed.title)
         .then(id => {
@@ -247,6 +278,7 @@ const init_overviewChannel = () => {
 
 // Resolve id of message when found else reject
 async function find_embed(channel, title) {
+    // NOTE we assume there are only 5 messages in overview channel!
     return channel.fetchMessages({ limit: 5 }).then(messages => {
         return new Promise(function(resolve, reject) {
             messages.array().forEach(msg => {
