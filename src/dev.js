@@ -187,7 +187,13 @@ const reset_roles = async roles_to_remove => {
         );
         Promise.all(
             test.guild.members.map(member =>
-                member.removeRoles(roles_to_remove)
+                member
+                    .removeRoles(roles_to_remove)
+                    .then(member =>
+                        roles_to_remove.forEach(role =>
+                            log(ROLE_REMOVE)(member, role)
+                        )
+                    )
             )
         ).then(members => resolve(members));
     });
