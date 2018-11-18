@@ -16,6 +16,10 @@ const TYPE = {
         `[ SEND_MSG ]@( ${msg.guild.name}@${msg.channel.name}: ${
             msg.content
         } )`,
+    DELETE_MESSAGE: msg =>
+        `[ DELETE_MSG ]@( ${msg.guild.name}@${msg.channel.name}: ${
+            msg.content
+        } )`,
     ERROR: e => `[ ERROR ]@( ${e.message} )`
 };
 
