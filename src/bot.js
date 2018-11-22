@@ -85,14 +85,17 @@ client.on("message", msg => {
   }
 });
 
+// TODO refactor since this is 99% the same as in "messageReactionRemove"
 client.on("messageReactionAdd", (reaction, user) => {
   log(REACTION_ADD)(user, reaction);
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
-    let associatedRole = roles.reactionRoles.find(
+    let associatedItem = roles.reactionRoles.find(
       item => item.emoji.id === reaction.emoji.id
-    ).role;
-    if (associatedRole) {
+    );
+    if (associatedItem) {
+      // Reaction is included in an role item and therefore does have a associated role
+      let associatedRole = associatedItem.role;
       let guildMember = server.guild.member(user);
       guildMember
         .addRole(associatedRole.id)
@@ -108,10 +111,12 @@ client.on("messageReactionRemove", (reaction, user) => {
   log(REACTION_REMOVE)(user, reaction);
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
-    let associatedRole = roles.reactionRoles.find(
+    let associatedItem = roles.reactionRoles.find(
       item => item.emoji.id === reaction.emoji.id
-    ).role;
-    if (associatedRole) {
+    );
+    if (associatedItem) {
+      // Reaction is included in an item in list and therefore does have a associated role
+      let associatedRole = associatedItem.role;
       let guildMember = server.guild.member(user);
       guildMember
         .removeRole(associatedRole.id)
