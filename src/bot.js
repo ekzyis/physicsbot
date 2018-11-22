@@ -174,7 +174,6 @@ const init_server = () => {
 const roles = {};
 const init_roles = () => {
     roles.reactionRoles = [];
-    server.guild.roles.forEach(role => console.log(`${role.name}, ${role.id}`));
     // populate reactionRoles list with given role and emoji IDs
     server.roles.forEach(item => {
         if (item.emoji) {
