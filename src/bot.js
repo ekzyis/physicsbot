@@ -164,7 +164,6 @@ const init_server = () => {
     serverData[KEY].channels.find(item => item.name === "overview").id
   );
   server.roles = serverData[KEY].roles;
-  server.guild.emojis.forEach(item => console.log(`${item.name}, ${item.id}`));
 };
 
 const roles = {};
