@@ -346,6 +346,8 @@ const find_embed = async (channel, title) => {
   });
 };
 
+client.on("error", log(ERROR));
+
 log(GENERAL)("Logging in...");
 client.login(token).catch(console.error);
 
