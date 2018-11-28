@@ -76,7 +76,9 @@ client.on("message", msg => {
               log(SEND_MESSAGE)(msg);
               log(GENERAL)("Roles have been successfully reset");
             })
-            .catch(msg => log(ERROR)("YOU REALLY HAVE A PROBLEM MATE"));
+            .catch(msg =>
+              log(ERROR)("Error sending reply for command !resetroles.")
+            );
         });
       } else {
         msg.reply("Keine ausreichenden Rechte.").then(log(SEND_MESSAGE));
@@ -134,7 +136,7 @@ client.on("ready", () => {
   );
   client.user
     .setActivity("LHC live stream", { type: "WATCHING" })
-    .catch(console.error);
+    .catch(log(ERROR));
   init_server();
   init_roles();
   init_overviewChannel();
@@ -299,10 +301,10 @@ const init_overviewChannel = () => {
         .then(messages => {
           let embed = messages.get(roles.embed.id);
           roles.reactionRoles.forEach(item => {
-            embed.react(item.emoji).catch(console.error);
+            embed.react(item.emoji).catch(log(ERROR));
           });
         })
-        .catch(console.error);
+        .catch(log(ERROR));
     });
   // Check if there is already a lecture embed in overview channel
   find_embed(server.overviewChannel, lecture.embed.title)
@@ -323,7 +325,7 @@ const init_overviewChannel = () => {
           log(SEND_MESSAGE)(msg);
           lecture.embed.id = msg.id;
         })
-        .catch(console.error)
+        .catch(log(ERROR))
     );
 };
 
@@ -349,7 +351,7 @@ const find_embed = async (channel, title) => {
 client.on("error", log(ERROR));
 
 log(GENERAL)("Logging in...");
-client.login(token).catch(console.error);
+client.login(token).catch(log(ERROR));
 
 process.on("SIGINT", () => {
   client.destroy().then(() => process.exit(0));
