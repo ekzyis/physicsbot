@@ -98,12 +98,16 @@ client.on("messageReactionAdd", (reaction, user) => {
     if (associatedItem) {
       // Reaction is included in an role item and therefore does have a associated role
       let associatedRole = associatedItem.role;
-      let guildMember = server.guild.member(user);
-      guildMember
-        .addRole(associatedRole.id)
-        .then(member => {
-          log(ROLE_ADD)(member, associatedRole);
-        })
+      server.guild
+        .fetchMember(user)
+        .then(member =>
+          member
+            .addRole(associatedRole.id)
+            .then(member => {
+              log(ROLE_ADD)(member, associatedRole);
+            })
+            .catch(log(ERROR))
+        )
         .catch(log(ERROR));
     }
   }
@@ -119,12 +123,16 @@ client.on("messageReactionRemove", (reaction, user) => {
     if (associatedItem) {
       // Reaction is included in an item in list and therefore does have a associated role
       let associatedRole = associatedItem.role;
-      let guildMember = server.guild.member(user);
-      guildMember
-        .removeRole(associatedRole.id)
-        .then(member => {
-          log(ROLE_REMOVE)(member, associatedRole);
-        })
+      server.guild
+        .fetchMember(user)
+        .then(member =>
+          member
+            .removeRole(associatedRole.id)
+            .then(member => {
+              log(ROLE_REMOVE)(member, associatedRole);
+            })
+            .catch(log(ERROR))
+        )
         .catch(log(ERROR));
     }
   }
