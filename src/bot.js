@@ -89,9 +89,9 @@ client.on("message", msg => {
 
 // TODO refactor since this is 99% the same as in "messageReactionRemove"
 client.on("messageReactionAdd", (reaction, user) => {
-  log(REACTION_ADD)(user, reaction);
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
+    log(REACTION_ADD)(user, reaction);
     let associatedItem = roles.reactionRoles.find(
       item => item.emoji.id === reaction.emoji.id
     );
@@ -114,9 +114,9 @@ client.on("messageReactionAdd", (reaction, user) => {
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
-  log(REACTION_REMOVE)(user, reaction);
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
+    log(REACTION_REMOVE)(user, reaction);
     let associatedItem = roles.reactionRoles.find(
       item => item.emoji.id === reaction.emoji.id
     );
