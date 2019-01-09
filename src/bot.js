@@ -184,6 +184,7 @@ const init_roles = () => {
     if (item.emoji) {
       roles.reactionRoles.push({
         name: item.name,
+        // NOTE we assume that every item with props emoji also has props role
         role: server.guild.roles.get(item.role.id),
         emoji: server.guild.emojis.get(item.emoji.id)
       });
