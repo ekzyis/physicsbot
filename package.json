@@ -19,7 +19,9 @@
     },
     "homepage": "https://github.com/ekzyis/physicsbot#readme",
     "dependencies": {
-        "discord.js": "^11.4.2",
-        "prettier": "^1.14.3"
+        "discord.js": "^11.4.2"
+    },
+    "devDependencies": {
+        "prettier": "^1.15.3"
     }
 }
