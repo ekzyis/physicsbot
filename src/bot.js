@@ -189,9 +189,9 @@ const init_roles = () => {
         emoji: server.guild.emojis.get(item.emoji.id)
       });
       log(GENERAL)(
-        `POPULATING ...\nNAME: ${item.name},\nID OF ROLE: ${
-          item.role.id
-        },\nID OF EMOJI: ${item.emoji.id}`
+        `role name: ${item.name}, role id: ${item.role.id}, emoji id: ${
+          item.emoji.id
+        }`
       );
     }
   });
@@ -238,7 +238,7 @@ const reset_roles_embed = async () => {
                   })
                 )
                 .then(msg => {
-                  log(GENERAL)(`ROLES.EMBED SENT - ID: ${msg.id}`);
+                  log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
                   roles.embed.id = msg.id;
                   roles.reactionRoles.forEach(item => {
                     msg.react(item.emoji).catch(log(ERROR));
@@ -258,7 +258,9 @@ const reset_roles_embed = async () => {
 const reset_roles = async roles_to_remove => {
   return new Promise(resolve => {
     roles_to_remove.forEach(role =>
-      log(GENERAL)("Resetting role " + role.name + ", ID: " + role.id + " ...")
+      log(GENERAL)(
+        "Resetting role " + role.name + " with id " + role.id + " ..."
+      )
     );
     Promise.all(
       server.guild.members.map(member =>
@@ -284,7 +286,7 @@ const init_overviewChannel = () => {
   // Check if there is already a roles embed in overview channel
   find_embed(server.overviewChannel, roles.embed.title)
     .then(id => {
-      log(GENERAL)(`ROLES.EMBED FOUND - ID: ${id}`);
+      log(GENERAL)(`Found roles.embed - id: ${id}`);
       roles.embed.id = id;
     })
     .catch(() =>
@@ -296,7 +298,7 @@ const init_overviewChannel = () => {
           })
         )
         .then(msg => {
-          log(GENERAL)(`ROLES.EMBED SENT - ID: ${msg.id}`);
+          log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
           log(SEND_MESSAGE)(msg);
           roles.embed.id = msg.id;
         })
@@ -318,7 +320,7 @@ const init_overviewChannel = () => {
   // Check if there is already a lecture embed in overview channel
   find_embed(server.overviewChannel, lecture.embed.title)
     .then(id => {
-      log(GENERAL)(`LECTURES.EMBED FOUND - ID: ${id}`);
+      log(GENERAL)(`Found lectures.embed - id: ${id}`);
       lecture.embed.id = id;
     })
     .catch(() =>
@@ -330,7 +332,7 @@ const init_overviewChannel = () => {
           })
         )
         .then(msg => {
-          log(GENERAL)(`LECTURES.EMBED SENT - ID: ${msg.id}`);
+          log(GENERAL)(`Successfully sent lectures.embed - id: ${msg.id}`);
           log(SEND_MESSAGE)(msg);
           lecture.embed.id = msg.id;
         })

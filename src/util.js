@@ -1,22 +1,22 @@
 const TYPE = {
-  GENERAL: msg => `[ INFO ]@( ${msg} )`,
+  GENERAL: msg => `[ INFO ]:[ ${msg} ]`,
   REACTION_ADD: (user, reaction) =>
-    `[ REACTION_ADD ]@( ${user.tag}, ${reaction.emoji.name}, ${
+    `[ REACTION_ADD ]:[ ${user.tag}, ${reaction.emoji.name}, ${
       reaction.message.id
-    } )`,
+    } ]`,
   REACTION_REMOVE: (user, reaction) =>
-    `[ REACTION_REMOVE ]@( ${user.tag}, ${reaction.emoji.name}, ${
+    `[ REACTION_REMOVE ]:[ ${user.tag}, ${reaction.emoji.name}, ${
       reaction.message.id
-    } )`,
+    } ]`,
   ROLE_ADD: (member, role) =>
-    `[ ROLE_ADD ]@( ${member.user.tag}, ${role.name} )`,
+    `[ ROLE_ADD ]:[ ${member.user.tag}, ${role.name} ]`,
   ROLE_REMOVE: (member, role) =>
-    `[ ROLE_REMOVE ]@( ${member.user.tag}, ${role.name} )`,
+    `[ ROLE_REMOVE ]:[ ${member.user.tag}, ${role.name} ]`,
   SEND_MESSAGE: msg =>
-    `[ SEND_MSG ]@( ${msg.guild.name}@${msg.channel.name}: ${msg.content} )`,
+    `[ SEND_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
   DELETE_MESSAGE: msg =>
-    `[ DELETE_MSG ]@( ${msg.guild.name}@${msg.channel.name}: ${msg.content} )`,
-  ERROR: e => `[ ERROR ]@( ${e.message} )`
+    `[ DELETE_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
+  ERROR: e => `[ ERROR ]:[ ${e.message} ]`
 };
 
 const log = type => (...a) => {
