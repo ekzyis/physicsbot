@@ -11,6 +11,13 @@ const {
   DELETE_MESSAGE,
   ERROR
 } = TYPE;
+const {
+  getLineareAlgebraData,
+  getAnalysisData,
+  getExpData,
+  getTheoData
+} = require("./scrape");
+
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -147,7 +154,7 @@ client.on("ready", () => {
     .catch(log(ERROR));
   init_server();
   init_roles();
-  init_overviewChannel();
+  init_lectures().then(init_overviewChannel);
 });
 
 const server = {};
@@ -218,6 +225,98 @@ const init_roles = () => {
   };
 };
 
+const lecture = {
+  algebra: {},
+  analysis: {},
+  exp: {},
+  theo: {}
+};
+const init_lectures = async () => {
+  // Lineare Algebra embed
+  let algeb_data = await getLineareAlgebraData();
+  lecture.algebra.embed = {
+    title: `${
+      roles.reactionRoles.find(item => item.name === "Lineare Algebra").emoji
+    }  ***Vorlesungsübersicht für Lineare Algebra*** `,
+    fields: (() => {
+      let fields = [];
+      for (let i = 0; i < algeb_data[0].length; ++i) {
+        fields.push({
+          name: algeb_data[0][i],
+          value:
+            `[${algeb_data[1][i].text}](${algeb_data[1][i].link})\t` +
+            `[${algeb_data[2][i].text}](${algeb_data[2][i].link})\t ` +
+            `[${algeb_data[3][i].text}](${algeb_data[3][i].link})\t ` +
+            `[${algeb_data[4][i].text}](${algeb_data[4][i].link})\n`
+        });
+      }
+      return fields;
+    })(),
+    id: undefined
+  };
+  // Analysis embed
+  let ana_data = await getAnalysisData();
+  lecture.analysis.embed = {
+    title: `${
+      roles.reactionRoles.find(item => item.name === "Analysis").emoji
+    }  ***Vorlesungsübersicht für Analysis***`,
+    fields: (() => {
+      let fields = [];
+      ana_data.forEach(obj => {
+        fields.push({
+          name: obj.text,
+          value: obj.link
+        });
+      });
+      return fields;
+    })(),
+    id: undefined
+  };
+  // Experimentalphysik embed
+  let exp_data = await getExpData();
+  lecture.exp.embed = {
+    title: `${
+      roles.reactionRoles.find(item => item.name === "Experimentalphysik").emoji
+    }  ***Vorlesungsübersicht für Experimentalphysik I***`,
+    fields: (() => {
+      let fields = [];
+      exp_data[0].forEach(obj =>
+        fields.push({
+          name: obj.text,
+          value: obj.link
+        })
+      );
+      exp_data[1].forEach(obj => {
+        fields.push({
+          name: obj.text,
+          value: obj.link
+        });
+      });
+      return fields;
+    })(),
+    id: undefined
+  };
+  // Theoretische Physik embed
+  let theo_data = await getTheoData();
+  lecture.theo.embed = {
+    title: `${
+      roles.reactionRoles.find(item => item.name === "Theoretische Physik")
+        .emoji
+    }  ***Vorlesungsübersicht für Theoretische Physik I***`,
+    fields: (() => {
+      let fields = [];
+      theo_data.forEach(obj => {
+        fields.push({
+          name: obj.text,
+          value: obj.link
+        });
+      });
+      return fields;
+    })(),
+    id: undefined
+  };
+};
+
 const reset_roles_embed = async () => {
   return new Promise(resolve => {
     server.overviewChannel
@@ -274,76 +373,59 @@ const reset_roles = async roles_to_remove => {
   });
 };
 
-const lecture = {};
 // TODO Init lectures embed
 const init_overviewChannel = () => {
-  // Barebone lectures embed
-  lecture.embed = {
-    title: `***Vorlesungsübersicht***`,
-    description: "*** WIP ***",
-    id: undefined
-  };
   // Check if there is already a roles embed in overview channel
-  find_embed(server.overviewChannel, roles.embed.title)
+  init_embed(server.overviewChannel, roles.embed).finally(() => {
+    // React with emotes so users can just click on them
+    server.overviewChannel
+      // NOTE we assume there are only 10 messages in overview channel!
+      // TODO can't this be done with getMessage(id) instead of fetching ??
+      .fetchMessages({ limit: 10 })
+      .then(messages => {
+        let embed = messages.get(roles.embed.id);
+        roles.reactionRoles.forEach(item => {
+          embed.react(item.emoji).catch(log(ERROR));
+        });
+      })
+      .catch(log(ERROR));
+  });
+  init_embed(server.overviewChannel, lecture.algebra.embed);
+  init_embed(server.overviewChannel, lecture.analysis.embed);
+  init_embed(server.overviewChannel, lecture.exp.embed);
+  init_embed(server.overviewChannel, lecture.theo.embed);
+};
+
+const init_embed = (channel, embed) => {
+  // look if embed already exists
+  return find_embed(channel, embed.title)
     .then(id => {
-      log(GENERAL)(`Found roles.embed - id: ${id}`);
-      roles.embed.id = id;
+      log(GENERAL)(`Found embed for ${embed.title} - id: ${id}`);
+      embed.id = id;
     })
-    .catch(() =>
-      server.overviewChannel
+    .catch(() => {
+      // if not, create it
+      channel
         .send(
           new discord.RichEmbed({
-            title: roles.embed.title,
-            description: roles.embed.description
+            ...embed
           })
         )
         .then(msg => {
-          log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
+          log(GENERAL)(
+            `Successfully sent embed for ${embed.title} - id: ${msg.id}`
+          );
           log(SEND_MESSAGE)(msg);
-          roles.embed.id = msg.id;
-        })
-        .catch(log(ERROR))
-    )
-    .finally(() => {
-      // React with emotes so users can just click on them
-      server.overviewChannel
-        // NOTE we assume there are only 5 messages in overview channel!
-        .fetchMessages({ limit: 5 })
-        .then(messages => {
-          let embed = messages.get(roles.embed.id);
-          roles.reactionRoles.forEach(item => {
-            embed.react(item.emoji).catch(log(ERROR));
-          });
+          embed.id = msg.id;
         })
         .catch(log(ERROR));
     });
-  // Check if there is already a lecture embed in overview channel
-  find_embed(server.overviewChannel, lecture.embed.title)
-    .then(id => {
-      log(GENERAL)(`Found lectures.embed - id: ${id}`);
-      lecture.embed.id = id;
-    })
-    .catch(() =>
-      server.overviewChannel
-        .send(
-          new discord.RichEmbed({
-            title: lecture.embed.title,
-            description: lecture.embed.description
-          })
-        )
-        .then(msg => {
-          log(GENERAL)(`Successfully sent lectures.embed - id: ${msg.id}`);
-          log(SEND_MESSAGE)(msg);
-          lecture.embed.id = msg.id;
-        })
-        .catch(log(ERROR))
-    );
 };
 
 // Resolve id of message when found else reject
 const find_embed = async (channel, title) => {
   // NOTE we assume there are only 5 messages in overview channel!
-  return channel.fetchMessages({ limit: 5 }).then(messages => {
+  return channel.fetchMessages({ limit: 10 }).then(messages => {
     return new Promise(function(resolve, reject) {
       messages.array().forEach(msg => {
         if (
