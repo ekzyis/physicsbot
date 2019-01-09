@@ -233,21 +233,22 @@ const lecture = {
 };
 const init_lectures = async () => {
   // Lineare Algebra embed
-  let algeb_data = await getLineareAlgebraData();
+  lecture.algebra.data = await getLineareAlgebraData();
   lecture.algebra.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Lineare Algebra").emoji
     }  ***Vorlesungsübersicht für Lineare Algebra*** `,
     fields: (() => {
       let fields = [];
-      for (let i = 0; i < algeb_data[0].length; ++i) {
+      let data = lecture.algebra.data;
+      for (let i = 0; i < data[0].length; ++i) {
         fields.push({
-          name: algeb_data[0][i],
+          name: data[0][i],
           value:
-            `[${algeb_data[1][i].text}](${algeb_data[1][i].link})\t` +
-            `[${algeb_data[2][i].text}](${algeb_data[2][i].link})\t ` +
-            `[${algeb_data[3][i].text}](${algeb_data[3][i].link})\t ` +
-            `[${algeb_data[4][i].text}](${algeb_data[4][i].link})\n`
+            `[${data[1][i].text}](${data[1][i].link})\t` +
+            `[${data[2][i].text}](${data[2][i].link})\t ` +
+            `[${data[3][i].text}](${data[3][i].link})\t ` +
+            `[${data[4][i].text}](${data[4][i].link})\n`
         });
       }
       return fields;
@@ -255,14 +256,15 @@ const init_lectures = async () => {
     id: undefined
   };
   // Analysis embed
-  let ana_data = await getAnalysisData();
+  lecture.analysis.data = await getAnalysisData();
   lecture.analysis.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Analysis").emoji
     }  ***Vorlesungsübersicht für Analysis***`,
     fields: (() => {
       let fields = [];
-      ana_data.forEach(obj => {
+      let data = lecture.analysis.data;
+      data.forEach(obj => {
         fields.push({
           name: obj.text,
           value: obj.link
@@ -273,20 +275,21 @@ const init_lectures = async () => {
     id: undefined
   };
   // Experimentalphysik embed
-  let exp_data = await getExpData();
+  lecture.exp.data = await getExpData();
   lecture.exp.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Experimentalphysik").emoji
     }  ***Vorlesungsübersicht für Experimentalphysik I***`,
     fields: (() => {
       let fields = [];
-      exp_data[0].forEach(obj =>
+      let data = lecture.exp.data;
+      data[0].forEach(obj =>
         fields.push({
           name: obj.text,
           value: obj.link
         })
       );
-      exp_data[1].forEach(obj => {
+      data[1].forEach(obj => {
         fields.push({
           name: obj.text,
           value: obj.link
@@ -297,7 +300,7 @@ const init_lectures = async () => {
     id: undefined
   };
   // Theoretische Physik embed
-  let theo_data = await getTheoData();
+  lecture.theo.data = await getTheoData();
   lecture.theo.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Theoretische Physik")
@@ -305,7 +308,8 @@ const init_lectures = async () => {
     }  ***Vorlesungsübersicht für Theoretische Physik I***`,
     fields: (() => {
       let fields = [];
-      theo_data.forEach(obj => {
+      let data = lecture.theo.data;
+      data.forEach(obj => {
         fields.push({
           name: obj.text,
           value: obj.link
