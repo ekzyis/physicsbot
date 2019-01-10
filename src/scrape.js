@@ -168,8 +168,6 @@ const getTheoData = () => {
   });
 };
 
-getTheoData();
-
 module.exports = {
   getLineareAlgebraData,
   getAnalysisData,
