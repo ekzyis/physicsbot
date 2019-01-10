@@ -411,7 +411,7 @@ const init_embed = (channel, embed) => {
     })
     .catch(() => {
       // if not, create it
-      channel
+      return channel
         .send(
           new discord.RichEmbed({
             ...embed
