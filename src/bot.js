@@ -323,13 +323,12 @@ const init_lectures = async () => {
   };
 };
 
-const reset_roles_embed = async () => {
+const reset_roles_embed = () => {
+  // TODO Shouldn't the promise be rejected in the catch's?
   return new Promise(resolve => {
     server.overviewChannel
-      // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
-      .fetchMessages({ limit: FETCH_LIMIT })
-      .then(messages => {
-        let embed = messages.get(roles.embed.id);
+      .fetchMessage(roles.embed.id)
+      .then(embed => {
         embed.delete().then(msg => {
           log(DELETE_MESSAGE)(msg);
           let roles_to_remove = roles.reactionRoles.map(item => item.role);
@@ -385,13 +384,10 @@ const init_overviewChannel = () => {
   init_embed(server.overviewChannel, roles.embed).finally(() => {
     // React with emotes so users can just click on them
     server.overviewChannel
-      // NOTE we assume there are only 10 messages in overview channel!
-      // TODO can't this be done with getMessage(id) instead of fetching ??
-      .fetchMessages({ limit: FETCH_LIMIT })
-      .then(messages => {
-        let embed = messages.get(roles.embed.id);
+      .fetchMessage(roles.embed.id)
+      .then(message => {
         roles.reactionRoles.forEach(item => {
-          embed.react(item.emoji).catch(log(ERROR));
+          message.react(item.emoji).catch(log(ERROR));
         });
       })
       .catch(log(ERROR));
@@ -429,7 +425,7 @@ const init_embed = (channel, embed) => {
 };
 
 // Resolve id of message when found else reject with message "Message not found" ¯\_(ツ)_/¯
-const find_embed = async (channel, title) => {
+const find_embed = (channel, title) => {
   // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
   return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
     return new Promise(function(resolve, reject) {
