@@ -9,6 +9,7 @@ const {
   ROLE_REMOVE,
   SEND_MESSAGE,
   DELETE_MESSAGE,
+  EDIT,
   ERROR
 } = TYPE;
 const {
@@ -17,7 +18,7 @@ const {
   getExpData,
   getTheoData
 } = require("./scrape");
-
+const { addedDiff } = require("deep-object-diff");
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -227,7 +228,7 @@ const init_roles = () => {
   };
 };
 
-const lecture = {
+const lectures = {
   algebra: {},
   analysis: {},
   exp: {},
@@ -235,90 +236,94 @@ const lecture = {
 };
 const init_lectures = async () => {
   // Lineare Algebra embed
-  lecture.algebra.data = await getLineareAlgebraData();
-  lecture.algebra.embed = {
+  lectures.algebra.data = await getLineareAlgebraData();
+  lectures.algebra.updater = getLineareAlgebraData;
+  lectures.algebra.fieldify = data => {
+    let fields = [];
+    for (let i = 0; i < data[0].length; ++i) {
+      fields.push({
+        name: data[0][i],
+        value:
+          `[${data[1][i].text}](${data[1][i].link})\t` +
+          `[${data[2][i].text}](${data[2][i].link})\t ` +
+          `[${data[3][i].text}](${data[3][i].link})\t ` +
+          `[${data[4][i].text}](${data[4][i].link})\n`
+      });
+    }
+    return fields;
+  };
+  lectures.algebra.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Lineare Algebra").emoji
     }  ***Vorlesungsübersicht für Lineare Algebra***`,
-    fields: (() => {
-      let fields = [];
-      let data = lecture.algebra.data;
-      for (let i = 0; i < data[0].length; ++i) {
-        fields.push({
-          name: data[0][i],
-          value:
-            `[${data[1][i].text}](${data[1][i].link})\t` +
-            `[${data[2][i].text}](${data[2][i].link})\t ` +
-            `[${data[3][i].text}](${data[3][i].link})\t ` +
-            `[${data[4][i].text}](${data[4][i].link})\n`
-        });
-      }
-      return fields;
-    })(),
+    fields: lectures.algebra.fieldify(lectures.algebra.data),
     id: undefined
   };
   // Analysis embed
-  lecture.analysis.data = await getAnalysisData();
-  lecture.analysis.embed = {
+  lectures.analysis.data = await getAnalysisData();
+  lectures.analysis.updater = getAnalysisData;
+  lectures.analysis.fieldify = data => {
+    let fields = [];
+    data.forEach(obj => {
+      fields.push({
+        name: obj.text,
+        value: obj.link
+      });
+    });
+    return fields;
+  };
+  lectures.analysis.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Analysis").emoji
     }  ***Vorlesungsübersicht für Analysis***`,
-    fields: (() => {
-      let fields = [];
-      let data = lecture.analysis.data;
-      data.forEach(obj => {
-        fields.push({
-          name: obj.text,
-          value: obj.link
-        });
-      });
-      return fields;
-    })(),
+    fields: lectures.analysis.fieldify(lectures.analysis.data),
     id: undefined
   };
   // Experimentalphysik embed
-  lecture.exp.data = await getExpData();
-  lecture.exp.embed = {
+  lectures.exp.data = await getExpData();
+  lectures.exp.updater = getExpData;
+  lectures.exp.fieldify = data => {
+    let fields = [];
+    data[0].forEach(obj =>
+      fields.push({
+        name: obj.text,
+        value: obj.link
+      })
+    );
+    data[1].forEach(obj => {
+      fields.push({
+        name: obj.text,
+        value: obj.link
+      });
+    });
+    return fields;
+  };
+  lectures.exp.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Experimentalphysik").emoji
     }  ***Vorlesungsübersicht für Experimentalphysik I***`,
-    fields: (() => {
-      let fields = [];
-      let data = lecture.exp.data;
-      data[0].forEach(obj =>
-        fields.push({
-          name: obj.text,
-          value: obj.link
-        })
-      );
-      data[1].forEach(obj => {
-        fields.push({
-          name: obj.text,
-          value: obj.link
-        });
-      });
-      return fields;
-    })(),
+    fields: lectures.exp.fieldify(lectures.exp.data),
     id: undefined
   };
   // Theoretische Physik embed
-  lecture.theo.data = await getTheoData();
-  lecture.theo.embed = {
+  lectures.theo.data = await getTheoData();
+  lectures.theo.updater = getTheoData;
+  lectures.theo.fieldify = data => {
+    let fields = [];
+    data.forEach(obj => {
+      fields.push({
+        name: obj.text,
+        value: obj.link
+      });
+    });
+    return fields;
+  };
+  lectures.theo.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Theoretische Physik")
         .emoji
     }  ***Vorlesungsübersicht für Theoretische Physik I***`,
-    fields: (() => {
-      let fields = [];
-      let data = lecture.theo.data;
-      data.forEach(obj => {
-        fields.push({
-          name: obj.text,
-          value: obj.link
-        });
-      });
-      return fields;
-    })(),
+    fields: lectures.theo.fieldify(lectures.theo.data),
     id: undefined
   };
 };
@@ -392,10 +397,41 @@ const init_overviewChannel = () => {
       })
       .catch(log(ERROR));
   });
-  init_embed(server.overviewChannel, lecture.algebra.embed);
-  init_embed(server.overviewChannel, lecture.analysis.embed);
-  init_embed(server.overviewChannel, lecture.exp.embed);
-  init_embed(server.overviewChannel, lecture.theo.embed);
+  Promise.all(
+    Object.keys(lectures).map(key =>
+      init_embed(server.overviewChannel, lectures[key].embed)
+    )
+  ).then(
+    setInterval(
+      () => Object.keys(lectures).forEach(key => updateLecture(lectures[key])),
+      5000 * 60 // 5 seconds * 60 = 5 minutes
+    )
+  );
+};
+
+const updateLecture = async lecture => {
+  log(GENERAL)(`updateLecture? ${lecture.embed.title}`);
+  let newData = await lecture.updater();
+  // an update of embed is needed if length of at least one property in newData is greater than property in lecture.data
+  let diff = addedDiff(lecture.data, newData);
+  if (Object.keys(diff).some(key => diff[key] !== undefined)) {
+    log(GENERAL)(`Updated needed for ${lecture.embed.title}! Editing embed...`);
+    lecture.data = newData;
+    lecture.embed = {
+      ...lecture.embed,
+      fields: lecture.fieldify(newData)
+    };
+    edit_embed(server.overviewChannel, lecture.embed.id, lecture.data);
+  }
+};
+
+const edit_embed = (channel, id, updatedEmbed) => {
+  return channel
+    .fetchMessage(id)
+    .then(fetched => {
+      fetched.edit(null, updatedEmbed).then(log(EDIT));
+    })
+    .catch(log(ERROR));
 };
 
 const init_embed = (channel, embed) => {
