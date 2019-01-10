@@ -21,7 +21,9 @@
     "dependencies": {
         "cheerio": "^1.0.0-rc.2",
         "discord.js": "^11.4.2",
-        "prettier": "^1.14.3",
         "request": "^2.88.0"
+    },
+    "devDependencies": {
+        "prettier": "^1.15.3"
     }
 }

@@ -41,6 +41,8 @@ const token = botData.token;
  */
 const serverData = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
+const FETCH_LIMIT = 10;
+
 client.on("guildMemberAdd", member => {
   if (member.guild.id === server.guild.id) {
     let embedGreeting = {
@@ -324,8 +326,8 @@ const init_lectures = async () => {
 const reset_roles_embed = async () => {
   return new Promise(resolve => {
     server.overviewChannel
-      // NOTE we assume there are only 5 messages in overview channel!
-      .fetchMessages({ limit: 5 })
+      // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
+      .fetchMessages({ limit: FETCH_LIMIT })
       .then(messages => {
         let embed = messages.get(roles.embed.id);
         embed.delete().then(msg => {
@@ -385,7 +387,7 @@ const init_overviewChannel = () => {
     server.overviewChannel
       // NOTE we assume there are only 10 messages in overview channel!
       // TODO can't this be done with getMessage(id) instead of fetching ??
-      .fetchMessages({ limit: 10 })
+      .fetchMessages({ limit: FETCH_LIMIT })
       .then(messages => {
         let embed = messages.get(roles.embed.id);
         roles.reactionRoles.forEach(item => {
@@ -426,21 +428,17 @@ const init_embed = (channel, embed) => {
     });
 };
 
-// Resolve id of message when found else reject
+// Resolve id of message when found else reject with message "Message not found" ¯\_(ツ)_/¯
 const find_embed = async (channel, title) => {
-  // NOTE we assume there are only 5 messages in overview channel!
-  return channel.fetchMessages({ limit: 10 }).then(messages => {
+  // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
+  return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
     return new Promise(function(resolve, reject) {
       messages.array().forEach(msg => {
-        if (
-          msg.embeds.some(embed => {
-            return embed.title === title;
-          })
-        ) {
+        if (msg.embeds.some(embed => embed.title === title)) {
           resolve(msg.id);
         }
       });
-      reject("Message not found");
+      reject("Message not found ¯\\_(ツ)_/¯");
     });
   });
 };
