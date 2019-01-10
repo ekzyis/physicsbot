@@ -239,7 +239,7 @@ const init_lectures = async () => {
   lecture.algebra.embed = {
     title: `${
       roles.reactionRoles.find(item => item.name === "Lineare Algebra").emoji
-    }  ***Vorlesungsübersicht für Lineare Algebra*** `,
+    }  ***Vorlesungsübersicht für Lineare Algebra***`,
     fields: (() => {
       let fields = [];
       let data = lecture.algebra.data;
