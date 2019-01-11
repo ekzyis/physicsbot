@@ -404,7 +404,7 @@ const init_overviewChannel = () => {
   ).then(
     setInterval(
       () => Object.keys(lectures).forEach(key => updateLecture(lectures[key])),
-      10000 // 5 seconds * 60 = 5 minutes
+      5000 * 60 // 5 seconds * 60 = 5 minutes
     )
   );
 };
