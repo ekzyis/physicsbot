@@ -347,12 +347,12 @@ const reset_roles_embed = () => {
                   })
                 )
                 .then(msg => {
-                  log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
                   roles.embed.id = msg.id;
                   roles.reactionRoles.forEach(item => {
                     msg.react(item.emoji).catch(log(ERROR));
                   });
                   log(SEND_MESSAGE)(msg);
+                  log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
                   resolve(roles_to_remove);
                 })
                 .catch(log(ERROR));
@@ -404,7 +404,7 @@ const init_overviewChannel = () => {
   ).then(
     setInterval(
       () => Object.keys(lectures).forEach(key => updateLecture(lectures[key])),
-      5000 * 60 // 5 seconds * 60 = 5 minutes
+      10000 // 5 seconds * 60 = 5 minutes
     )
   );
 };
@@ -412,16 +412,16 @@ const init_overviewChannel = () => {
 const updateLecture = async lecture => {
   log(GENERAL)(`updateLecture? ${lecture.embed.title}`);
   let newData = await lecture.updater();
-  // an update of embed is needed if length of at least one property in newData is greater than property in lecture.data
   let diff = addedDiff(lecture.data, newData);
-  if (Object.keys(diff).some(key => diff[key] !== undefined)) {
+  // If object is not empty, update embed
+  if (!!Object.keys(diff).length) {
     log(GENERAL)(`Updated needed for ${lecture.embed.title}! Editing embed...`);
     lecture.data = newData;
     lecture.embed = {
       ...lecture.embed,
       fields: lecture.fieldify(newData)
     };
-    edit_embed(server.overviewChannel, lecture.embed.id, lecture.data);
+    edit_embed(server.overviewChannel, lecture.embed.id, lecture.embed);
   }
 };
 
@@ -429,7 +429,13 @@ const edit_embed = (channel, id, updatedEmbed) => {
   return channel
     .fetchMessage(id)
     .then(fetched => {
-      fetched.edit(null, updatedEmbed).then(log(EDIT));
+      fetched
+        .edit(
+          new discord.RichEmbed({
+            ...updatedEmbed
+          })
+        )
+        .then(log(EDIT));
     })
     .catch(log(ERROR));
 };
