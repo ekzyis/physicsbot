@@ -383,7 +383,6 @@ const reset_roles = async roles_to_remove => {
   });
 };
 
-// TODO Init lectures embed
 const init_overviewChannel = () => {
   // Check if there is already a roles embed in overview channel
   init_embed(server.overviewChannel, roles.embed).finally(() => {
