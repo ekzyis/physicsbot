@@ -49,7 +49,22 @@ const getLineareAlgebraData = () => {
             });
           }
         });
-        resolve(results);
+        // convert data into fields object which can be handled by discord.RichEmbed
+        let fieldify = data => {
+          let fields = [];
+          for (let i = 0; i < data[0].length; ++i) {
+            fields.push({
+              name: data[0][i],
+              value:
+                `[${data[1][i].text}](${data[1][i].link}) ` +
+                `[${data[2][i].text}](${data[2][i].link}) ` +
+                `[${data[3][i].text}](${data[3][i].link}) ` +
+                `[${data[4][i].text}](${data[4][i].link})`
+            });
+          }
+          return fields;
+        };
+        resolve(fieldify(results));
       }
     });
   });
@@ -94,7 +109,17 @@ const getAnalysisData = () => {
             });
           }
         });
-        resolve(results);
+        let fieldify = data => {
+          let fields = [];
+          data.forEach(obj => {
+            fields.push({
+              name: obj.text,
+              value: obj.link
+            });
+          });
+          return fields;
+        };
+        resolve(fieldify(results));
       }
     });
   });
@@ -135,7 +160,23 @@ const getExpData = () => {
                 .attr("href")
           });
         });
-        resolve(results);
+        let fieldify = data => {
+          let fields = [];
+          data[0].forEach(obj =>
+            fields.push({
+              name: obj.text,
+              value: obj.link
+            })
+          );
+          data[1].forEach(obj => {
+            fields.push({
+              name: obj.text,
+              value: obj.link
+            });
+          });
+          return fields;
+        };
+        resolve(fieldify(results));
       }
     });
   });
@@ -162,7 +203,17 @@ const getTheoData = () => {
                 .attr("href")
           });
         });
-        resolve(results);
+        let fieldify = data => {
+          let fields = [];
+          data.forEach(obj => {
+            fields.push({
+              name: obj.text,
+              value: obj.link
+            });
+          });
+          return fields;
+        };
+        resolve(fieldify(results));
       }
     });
   });
