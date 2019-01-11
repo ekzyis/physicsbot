@@ -102,9 +102,9 @@ client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_ADD)(user, reaction);
-    let associatedItem = roles.reactionRoles.find(
-      item => item.emoji.id === reaction.emoji.id
-    );
+    let associatedItem = roles.mapper
+      .values()
+      .find(item => item.emoji.id === reaction.emoji.id);
     if (associatedItem) {
       // Reaction is included in an role item and therefore does have a associated role
       let associatedRole = associatedItem.role;
@@ -127,9 +127,9 @@ client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_REMOVE)(user, reaction);
-    let associatedItem = roles.reactionRoles.find(
-      item => item.emoji.id === reaction.emoji.id
-    );
+    let associatedItem = roles.mapper
+      .values()
+      .find(item => item.emoji.id === reaction.emoji.id);
     if (associatedItem) {
       // Reaction is included in an item in list and therefore does have a associated role
       let associatedRole = associatedItem.role;
@@ -188,26 +188,29 @@ const init_server = () => {
 
 const roles = {};
 const init_roles = () => {
-  roles.reactionRoles = [];
-  // populate reactionRoles list with given role and emoji IDs
+  roles.mapper = new Map();
+  // populate mapper with given role and emoji IDs and if exists, channel
   server.roles.forEach(item => {
     if (item.emoji) {
-      roles.reactionRoles.push({
-        name: item.name,
-        // NOTE we assume that every item with props emoji also has props role
+      // NOTE we assume that every item with props emoji also has props role
+      let value = {
         role: server.guild.roles.get(item.role.id),
         emoji: server.guild.emojis.get(item.emoji.id)
-      });
+      };
+      if (!!item.channel) {
+        value.channel = server.guild.channels.get(item.channel.id);
+      }
+      roles.mapper.set(item.name, value);
       log(GENERAL)(
         `role name: ${item.name}, role id: ${item.role.id}, emoji id: ${
           item.emoji.id
-        }`
+        }, channel id: ${!!item.channel ? item.channel.id : undefined}`
       );
     }
   });
   let emojiString = "";
-  roles.reactionRoles.forEach(item => {
-    emojiString += `${item.role.toString()}: ${item.emoji.toString()}\n\n`;
+  roles.mapper.forEach(value => {
+    emojiString += `${value.role.toString()}: ${value.emoji.toString()}\n\n`;
   });
   roles.embed = {
     title: `***Rollen***`,
@@ -240,42 +243,45 @@ const init_lectures = async () => {
   lectures.algebra.updater = getLineareAlgebraData;
   lectures.algebra.embed = {
     title: `${
-      roles.reactionRoles.find(item => item.name === "Lineare Algebra").emoji
+      roles.mapper.get("Lineare Algebra").emoji
     }  ***Vorlesungsübersicht für Lineare Algebra***`,
     fields: lectures.algebra.fields,
     id: undefined
   };
+  lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
   // Analysis embed
   lectures.analysis.fields = await getAnalysisData();
   lectures.analysis.updater = getAnalysisData;
   lectures.analysis.embed = {
     title: `${
-      roles.reactionRoles.find(item => item.name === "Analysis").emoji
+      roles.mapper.get("Analysis").emoji
     }  ***Vorlesungsübersicht für Analysis***`,
     fields: lectures.analysis.fields,
     id: undefined
   };
+  lectures.analysis.channel = roles.mapper.get("Analysis").channel;
   // Experimentalphysik embed
   lectures.exp.fields = await getExpData();
   lectures.exp.updater = getExpData;
   lectures.exp.embed = {
     title: `${
-      roles.reactionRoles.find(item => item.name === "Experimentalphysik").emoji
+      roles.mapper.get("Experimentalphysik").emoji
     }  ***Vorlesungsübersicht für Experimentalphysik I***`,
     fields: lectures.exp.fields,
     id: undefined
   };
+  lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
   // Theoretische Physik embed
   lectures.theo.fields = await getTheoData();
   lectures.theo.updater = getTheoData;
   lectures.theo.embed = {
     title: `${
-      roles.reactionRoles.find(item => item.name === "Theoretische Physik")
-        .emoji
+      roles.mapper.get("Theoretische Physik").emoji
     }  ***Vorlesungsübersicht für Theoretische Physik I***`,
     fields: lectures.theo.fields,
     id: undefined
   };
+  lectures.theo.channel = roles.mapper.get("Theoretische Physik").channel;
 };
 
 const reset_roles_embed = () => {
@@ -286,7 +292,7 @@ const reset_roles_embed = () => {
       .then(embed => {
         embed.delete().then(msg => {
           log(DELETE_MESSAGE)(msg);
-          let roles_to_remove = roles.reactionRoles.map(item => item.role);
+          let roles_to_remove = roles.mapper.values().map(item => item.role);
           reset_roles(roles_to_remove)
             .then(members => {
               server.overviewChannel
@@ -298,7 +304,7 @@ const reset_roles_embed = () => {
                 )
                 .then(msg => {
                   roles.embed.id = msg.id;
-                  roles.reactionRoles.forEach(item => {
+                  roles.mapper.values().forEach(item => {
                     msg.react(item.emoji).catch(log(ERROR));
                   });
                   log(SEND_MESSAGE)(msg);
@@ -340,8 +346,8 @@ const init_overviewChannel = () => {
     server.overviewChannel
       .fetchMessage(roles.embed.id)
       .then(message => {
-        roles.reactionRoles.forEach(item => {
-          message.react(item.emoji).catch(log(ERROR));
+        roles.mapper.forEach(value => {
+          message.react(value.emoji).catch(log(ERROR));
         });
       })
       .catch(log(ERROR));
