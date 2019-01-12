@@ -252,6 +252,7 @@ const init_lectures = async () => {
       roles.mapper.get("Lineare Algebra").emoji
     }  ***Vorlesungsübersicht für Lineare Algebra***`,
     fields: lectures.algebra.fields,
+    color: 0x1be0ec,
     id: undefined
   };
   lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
@@ -265,6 +266,7 @@ const init_lectures = async () => {
       roles.mapper.get("Analysis").emoji
     }  ***Vorlesungsübersicht für Analysis***`,
     fields: lectures.analysis.fields,
+    color: 0xcfdb15,
     id: undefined
   };
   lectures.analysis.channel = roles.mapper.get("Analysis").channel;
@@ -278,6 +280,7 @@ const init_lectures = async () => {
       roles.mapper.get("Experimentalphysik").emoji
     }  ***Vorlesungsübersicht für Experimentalphysik I***`,
     fields: lectures.exp.fields,
+    color: 0xf31be6,
     id: undefined
   };
   lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
@@ -291,6 +294,7 @@ const init_lectures = async () => {
       roles.mapper.get("Theoretische Physik").emoji
     }  ***Vorlesungsübersicht für Theoretische Physik I***`,
     fields: lectures.theo.fields,
+    color: 0x2be07c,
     id: undefined
   };
   lectures.theo.channel = roles.mapper.get("Theoretische Physik").channel;
