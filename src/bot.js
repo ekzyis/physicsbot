@@ -16,7 +16,11 @@ const {
   getLineareAlgebraData,
   getAnalysisData,
   getExpData,
-  getTheoData
+  getTheoData,
+  algebraOld,
+  analysisOld,
+  expOld,
+  theoOld
 } = require("./scrape");
 const { addedDiff } = require("deep-object-diff");
 const discord = require("discord.js");
@@ -239,7 +243,9 @@ const lectures = {
 };
 const init_lectures = async () => {
   // Lineare Algebra embed
-  lectures.algebra.fields = await getLineareAlgebraData();
+  lectures.algebra.name = "Lineare Algebra";
+  //lectures.algebra.fields = await getLineareAlgebraData();
+  lectures.algebra.fields = algebraOld; // TODO REMOVE WHEN FINISHED TESTING
   lectures.algebra.updater = getLineareAlgebraData;
   lectures.algebra.embed = {
     title: `${
@@ -250,7 +256,9 @@ const init_lectures = async () => {
   };
   lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
   // Analysis embed
-  lectures.analysis.fields = await getAnalysisData();
+  lectures.analysis.name = "Analysis";
+  //lectures.analysis.fields = await getAnalysisData();
+  lectures.analysis.fields = analysisOld; // TODO REMOVE WHEN FINISHED TESTING
   lectures.analysis.updater = getAnalysisData;
   lectures.analysis.embed = {
     title: `${
@@ -261,7 +269,9 @@ const init_lectures = async () => {
   };
   lectures.analysis.channel = roles.mapper.get("Analysis").channel;
   // Experimentalphysik embed
-  lectures.exp.fields = await getExpData();
+  lectures.exp.name = "Experimentalphysik";
+  //lectures.exp.fields = await getExpData();
+  lectures.exp.fields = expOld; // TODO REMOVE WHEN FINISHED TESTING
   lectures.exp.updater = getExpData;
   lectures.exp.embed = {
     title: `${
@@ -272,7 +282,9 @@ const init_lectures = async () => {
   };
   lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
   // Theoretische Physik embed
-  lectures.theo.fields = await getTheoData();
+  lectures.theo.name = "Theoretische Physik";
+  //lectures.theo.fields = await getTheoData();
+  lectures.theo.fields = theoOld; // TODO REMOVE WHEN FINISHED TESTING
   lectures.theo.updater = getTheoData;
   lectures.theo.embed = {
     title: `${
@@ -359,24 +371,42 @@ const init_overviewChannel = () => {
   ).then(
     setInterval(
       () => Object.keys(lectures).forEach(key => updateLecture(lectures[key])),
-      5000 * 60 // 5 seconds * 60 = 5 minutes
+      5000 * 60 // 5 seconds * 60 = 5 minutes //
     )
   );
 };
 
-const updateLecture = async lecture => {
-  log(GENERAL)(`updateLecture? ${lecture.embed.title}`);
-  let newFields = await lecture.updater();
-  let diff = addedDiff(lecture.fields, newFields);
+const updateLecture = async lec => {
+  log(GENERAL)(`updateLecture? ${lec.embed.title}`);
+  let newFields = await lec.updater();
+  let diff = addedDiff(lec.fields, newFields);
   // If object is not empty, update embed
   if (!!Object.keys(diff).length) {
-    log(GENERAL)(`Updated needed for ${lecture.embed.title}! Editing embed...`);
-    lecture.fields = newFields;
-    lecture.embed = {
-      ...lecture.embed,
+    log(GENERAL)(`Updated needed for ${lec.embed.title}! Editing embed...`);
+    lec.fields = newFields;
+    lec.embed = {
+      ...lec.embed,
       fields: newFields
     };
-    edit_embed(server.overviewChannel, lecture.embed.id, lecture.embed);
+    edit_embed(server.overviewChannel, lec.embed.id, lec.embed).then(() => {
+      let channel = roles.mapper.get(lec.name).channel;
+      let role = roles.mapper.get(lec.name).role;
+      // NOTE why is channel.send(string, embed) showing warning about "params don't match"?
+      // https://discord.js.org/#/docs/main/stable/class/TextChannel?scrollTo=send
+      channel
+        .send(
+          `${role}\n${server.overviewChannel.toString()} aktualisiert mit:`,
+          {
+            embed: new discord.RichEmbed({
+              ...lec.embed,
+              title: `${lec.embed.title} (nur aktualisierte Links)`,
+              fields: Object.values(diff)
+            })
+          }
+        )
+        .then(log(SEND_MESSAGE))
+        .catch(log(ERROR));
+    });
   }
 };
 
