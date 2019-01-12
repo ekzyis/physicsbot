@@ -106,9 +106,9 @@ client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_ADD)(user, reaction);
-    let associatedItem = roles.mapper
-      .values()
-      .find(item => item.emoji.id === reaction.emoji.id);
+    let associatedItem = Array.from(roles.mapper.values()).find(
+      item => item.emoji.id === reaction.emoji.id
+    );
     if (associatedItem) {
       // Reaction is included in an role item and therefore does have a associated role
       let associatedRole = associatedItem.role;
@@ -131,9 +131,9 @@ client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_REMOVE)(user, reaction);
-    let associatedItem = roles.mapper
-      .values()
-      .find(item => item.emoji.id === reaction.emoji.id);
+    let associatedItem = Array.from(roles.mapper.values()).find(
+      item => item.emoji.id === reaction.emoji.id
+    );
     if (associatedItem) {
       // Reaction is included in an item in list and therefore does have a associated role
       let associatedRole = associatedItem.role;
@@ -304,7 +304,9 @@ const reset_roles_embed = () => {
       .then(embed => {
         embed.delete().then(msg => {
           log(DELETE_MESSAGE)(msg);
-          let roles_to_remove = roles.mapper.values().map(item => item.role);
+          let roles_to_remove = Array.from(roles.mapper.values()).map(
+            item => item.role
+          );
           reset_roles(roles_to_remove)
             .then(members => {
               server.overviewChannel
@@ -316,7 +318,7 @@ const reset_roles_embed = () => {
                 )
                 .then(msg => {
                   roles.embed.id = msg.id;
-                  roles.mapper.values().forEach(item => {
+                  Array.from(roles.mapper.values()).forEach(item => {
                     msg.react(item.emoji).catch(log(ERROR));
                   });
                   log(SEND_MESSAGE)(msg);
