@@ -152,30 +152,25 @@ client.on("ready", () => {
   init_overviewChannel();
 });
 
-const server = {};
+let server = {};
 const init_server = () => {
   let KEY = "";
   if (process.env.NODE_ENV === "development") {
     KEY = "test";
-    server.testChannel = client.guilds
-      .get(serverData[KEY].id)
-      .channels.get(
-        serverData[KEY].channels.find(item => item.name === "test").id
-      );
   } else if (process.env.NODE_ENV === "production") {
     KEY = "live";
   }
-  server.guild = client.guilds.get(serverData[KEY].id);
+  server = serverData[KEY];
+  server.guild = client.guilds.get(server.id);
   server.defaultChannel = server.guild.channels.get(
-    serverData[KEY].channels.find(item => item.name === "default").id
+    server.channels.find(item => item.name === "default").id
   );
   server.rulesChannel = server.guild.channels.get(
-    serverData[KEY].channels.find(item => item.name === "rules").id
+    server.channels.find(item => item.name === "rules").id
   );
   server.overviewChannel = server.guild.channels.get(
-    serverData[KEY].channels.find(item => item.name === "overview").id
+    server.channels.find(item => item.name === "overview").id
   );
-  server.roles = serverData[KEY].roles;
 };
 
 const roles = {};
