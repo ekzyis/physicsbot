@@ -9,8 +9,15 @@ const {
   ROLE_REMOVE,
   SEND_MESSAGE,
   DELETE_MESSAGE,
+  EDIT,
   ERROR
 } = TYPE;
+const {
+  getLineareAlgebraData,
+  getAnalysisData,
+  getExpData,
+  getTheoData
+} = require("./scrape");
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -94,7 +101,7 @@ client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_ADD)(user, reaction);
-    let associatedItem = roles.reactionRoles.find(
+    let associatedItem = Array.from(roles.mapper.values()).find(
       item => item.emoji.id === reaction.emoji.id
     );
     if (associatedItem) {
@@ -119,7 +126,7 @@ client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.id === roles.embed.id) {
     log(REACTION_REMOVE)(user, reaction);
-    let associatedItem = roles.reactionRoles.find(
+    let associatedItem = Array.from(roles.mapper.values()).find(
       item => item.emoji.id === reaction.emoji.id
     );
     if (associatedItem) {
@@ -149,7 +156,7 @@ client.on("ready", () => {
     .catch(log(ERROR));
   init_server();
   init_roles();
-  init_overviewChannel();
+  init_lectures().then(init_overviewChannel);
 });
 
 let server = {};
@@ -175,26 +182,29 @@ const init_server = () => {
 
 const roles = {};
 const init_roles = () => {
-  roles.reactionRoles = [];
-  // populate reactionRoles list with given role and emoji IDs
+  roles.mapper = new Map();
+  // populate mapper with given role and emoji IDs and if exists, channel
   server.roles.forEach(item => {
     if (item.emoji) {
-      roles.reactionRoles.push({
-        name: item.name,
-        // NOTE we assume that every item with props emoji also has props role
+      // NOTE we assume that every item with props emoji also has props role
+      let value = {
         role: server.guild.roles.get(item.role.id),
         emoji: server.guild.emojis.get(item.emoji.id)
-      });
+      };
+      if (!!item.channel) {
+        value.channel = server.guild.channels.get(item.channel.id);
+      }
+      roles.mapper.set(item.name, value);
       log(GENERAL)(
         `role name: ${item.name}, role id: ${item.role.id}, emoji id: ${
           item.emoji.id
-        }`
+        }, channel id: ${!!item.channel ? item.channel.id : undefined}`
       );
     }
   });
   let emojiString = "";
-  roles.reactionRoles.forEach(item => {
-    emojiString += `${item.role.toString()}: ${item.emoji.toString()}\n\n`;
+  roles.mapper.forEach(value => {
+    emojiString += `${value.role.toString()}: ${value.emoji.toString()}\n\n`;
   });
   roles.embed = {
     title: `***Rollen***`,
@@ -215,16 +225,78 @@ const init_roles = () => {
   };
 };
 
-const reset_roles_embed = async () => {
+const lectures = {
+  algebra: {},
+  analysis: {},
+  exp: {},
+  theo: {}
+};
+const init_lectures = async () => {
+  // Lineare Algebra embed
+  lectures.algebra.name = "Lineare Algebra";
+  lectures.algebra.fields = await getLineareAlgebraData();
+  lectures.algebra.updater = getLineareAlgebraData;
+  lectures.algebra.embed = {
+    title: `${
+      roles.mapper.get("Lineare Algebra").emoji
+    }  ***Vorlesungsübersicht für Lineare Algebra***`,
+    fields: lectures.algebra.fields,
+    color: 0x1be0ec,
+    id: undefined
+  };
+  lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
+  // Analysis embed
+  lectures.analysis.name = "Analysis";
+  lectures.analysis.fields = await getAnalysisData();
+  lectures.analysis.updater = getAnalysisData;
+  lectures.analysis.embed = {
+    title: `${
+      roles.mapper.get("Analysis").emoji
+    }  ***Vorlesungsübersicht für Analysis***`,
+    fields: lectures.analysis.fields,
+    color: 0xcfdb15,
+    id: undefined
+  };
+  lectures.analysis.channel = roles.mapper.get("Analysis").channel;
+  // Experimentalphysik embed
+  lectures.exp.name = "Experimentalphysik";
+  lectures.exp.fields = await getExpData();
+  lectures.exp.updater = getExpData;
+  lectures.exp.embed = {
+    title: `${
+      roles.mapper.get("Experimentalphysik").emoji
+    }  ***Vorlesungsübersicht für Experimentalphysik I***`,
+    fields: lectures.exp.fields,
+    color: 0xf31be6,
+    id: undefined
+  };
+  lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
+  // Theoretische Physik embed
+  lectures.theo.name = "Theoretische Physik";
+  lectures.theo.fields = await getTheoData();
+  lectures.theo.updater = getTheoData;
+  lectures.theo.embed = {
+    title: `${
+      roles.mapper.get("Theoretische Physik").emoji
+    }  ***Vorlesungsübersicht für Theoretische Physik I***`,
+    fields: lectures.theo.fields,
+    color: 0x2be07c,
+    id: undefined
+  };
+  lectures.theo.channel = roles.mapper.get("Theoretische Physik").channel;
+};
+
+const reset_roles_embed = () => {
+  // TODO Shouldn't the promise be rejected in the catch's?
   return new Promise(resolve => {
     server.overviewChannel
-      // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
-      .fetchMessages({ limit: FETCH_LIMIT })
-      .then(messages => {
-        let embed = messages.get(roles.embed.id);
+      .fetchMessage(roles.embed.id)
+      .then(embed => {
         embed.delete().then(msg => {
           log(DELETE_MESSAGE)(msg);
-          let roles_to_remove = roles.reactionRoles.map(item => item.role);
+          let roles_to_remove = Array.from(roles.mapper.values()).map(
+            item => item.role
+          );
           reset_roles(roles_to_remove)
             .then(members => {
               server.overviewChannel
@@ -235,12 +307,12 @@ const reset_roles_embed = async () => {
                   })
                 )
                 .then(msg => {
-                  log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
                   roles.embed.id = msg.id;
-                  roles.reactionRoles.forEach(item => {
+                  Array.from(roles.mapper.values()).forEach(item => {
                     msg.react(item.emoji).catch(log(ERROR));
                   });
                   log(SEND_MESSAGE)(msg);
+                  log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
                   resolve(roles_to_remove);
                 })
                 .catch(log(ERROR));
@@ -271,74 +343,113 @@ const reset_roles = async roles_to_remove => {
   });
 };
 
-const lecture = {};
-// TODO Init lectures embed
 const init_overviewChannel = () => {
-  // Barebone lectures embed
-  lecture.embed = {
-    title: `***Vorlesungsübersicht***`,
-    description: "*** WIP ***",
-    id: undefined
-  };
   // Check if there is already a roles embed in overview channel
-  find_embed(server.overviewChannel, roles.embed.title)
-    .then(id => {
-      log(GENERAL)(`Found roles.embed - id: ${id}`);
-      roles.embed.id = id;
+  init_embed(server.overviewChannel, roles.embed).finally(() => {
+    // React with emotes so users can just click on them
+    server.overviewChannel
+      .fetchMessage(roles.embed.id)
+      .then(message => {
+        roles.mapper.forEach(value => {
+          message.react(value.emoji).catch(log(ERROR));
+        });
+      })
+      .catch(log(ERROR));
+  });
+  Promise.all(
+    Object.keys(lectures).map(key =>
+      init_embed(server.overviewChannel, lectures[key].embed)
+    )
+  ).then(
+    setInterval(
+      () => Object.keys(lectures).forEach(key => updateLecture(lectures[key])),
+      5000 * 60 // 5 seconds * 60 = 5 minutes //
+    )
+  );
+};
+
+const updateLecture = async lec => {
+  let newFields = await lec.updater();
+  // NOTE We ignore elements which old data contains but new data not!
+  let diff = newFields.filter(obj => {
+    // Get elements which are not included in old data
+    return !lec.fields.some(obj2 => {
+      return obj.value === obj2.value;
+    });
+  });
+  // If object is not empty, update embed
+  if (!!Object.keys(diff).length) {
+    log(GENERAL)(`Updated needed for ${lec.embed.title}! Editing embed...`);
+    lec.fields = newFields;
+    lec.embed = {
+      ...lec.embed,
+      fields: newFields
+    };
+    edit_embed(server.overviewChannel, lec.embed.id, lec.embed).then(() => {
+      let channel = roles.mapper.get(lec.name).channel;
+      let role = roles.mapper.get(lec.name).role;
+      // NOTE why is channel.send(string, embed) showing warning about "params don't match"?
+      // https://discord.js.org/#/docs/main/stable/class/TextChannel?scrollTo=send
+      channel
+        .send(
+          `${role}\n${server.overviewChannel.toString()} aktualisiert mit:`,
+          {
+            embed: new discord.RichEmbed({
+              ...lec.embed,
+              title: `${lec.embed.title} (nur aktualisierte Links)`,
+              fields: Object.values(diff)
+            })
+          }
+        )
+        .then(log(SEND_MESSAGE))
+        .catch(log(ERROR));
+    });
+  }
+};
+
+const edit_embed = (channel, id, updatedEmbed) => {
+  return channel
+    .fetchMessage(id)
+    .then(fetched => {
+      fetched
+        .edit(
+          new discord.RichEmbed({
+            ...updatedEmbed
+          })
+        )
+        .then(log(EDIT));
     })
-    .catch(() =>
-      server.overviewChannel
+    .catch(log(ERROR));
+};
+
+const init_embed = (channel, embed) => {
+  // look if embed already exists
+  return find_embed(channel, embed.title)
+    .then(id => {
+      log(GENERAL)(`Found embed for ${embed.title} - id: ${id}`);
+      embed.id = id;
+    })
+    .catch(() => {
+      // if not, create it
+      return channel
         .send(
           new discord.RichEmbed({
-            title: roles.embed.title,
-            description: roles.embed.description
+            ...embed
           })
         )
         .then(msg => {
-          log(GENERAL)(`Successfully sent roles.embed - id: ${msg.id}`);
+          log(GENERAL)(
+            `Successfully sent embed for ${embed.title} - id: ${msg.id}`
+          );
           log(SEND_MESSAGE)(msg);
-          roles.embed.id = msg.id;
-        })
-        .catch(log(ERROR))
-    )
-    .finally(() => {
-      // React with emotes so users can just click on them
-      server.overviewChannel
-        // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
-        .fetchMessages({ limit: FETCH_LIMIT })
-        .then(messages => {
-          let embed = messages.get(roles.embed.id);
-          roles.reactionRoles.forEach(item => {
-            embed.react(item.emoji).catch(log(ERROR));
-          });
+          embed.id = msg.id;
         })
         .catch(log(ERROR));
     });
-  // Check if there is already a lecture embed in overview channel
-  find_embed(server.overviewChannel, lecture.embed.title)
-    .then(id => {
-      log(GENERAL)(`Found lectures.embed - id: ${id}`);
-      lecture.embed.id = id;
-    })
-    .catch(() =>
-      server.overviewChannel
-        .send(
-          new discord.RichEmbed({
-            title: lecture.embed.title,
-            description: lecture.embed.description
-          })
-        )
-        .then(msg => {
-          log(GENERAL)(`Successfully sent lectures.embed - id: ${msg.id}`);
-          log(SEND_MESSAGE)(msg);
-          lecture.embed.id = msg.id;
-        })
-        .catch(log(ERROR))
-    );
 };
 
 // Resolve id of message when found else reject with message "Message not found" ¯\_(ツ)_/¯
-const find_embed = async (channel, title) => {
+const find_embed = (channel, title) => {
   // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
   return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
     return new Promise(function(resolve, reject) {
