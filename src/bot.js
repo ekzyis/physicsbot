@@ -244,7 +244,6 @@ const init_lectures = async () => {
     color: 0x1be0ec,
     id: undefined
   };
-  lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
   // Analysis embed
   lectures.analysis.name = "Analysis";
   lectures.analysis.fields = await getAnalysisData();
@@ -257,7 +256,6 @@ const init_lectures = async () => {
     color: 0xcfdb15,
     id: undefined
   };
-  lectures.analysis.channel = roles.mapper.get("Analysis").channel;
   // Experimentalphysik embed
   lectures.exp.name = "Experimentalphysik";
   lectures.exp.fields = await getExpData();
@@ -270,7 +268,6 @@ const init_lectures = async () => {
     color: 0xf31be6,
     id: undefined
   };
-  lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
   // Theoretische Physik embed
   lectures.theo.name = "Theoretische Physik";
   lectures.theo.fields = await getTheoData();
@@ -283,7 +280,6 @@ const init_lectures = async () => {
     color: 0x2be07c,
     id: undefined
   };
-  lectures.theo.channel = roles.mapper.get("Theoretische Physik").channel;
 };
 
 const reset_roles_embed = () => {
