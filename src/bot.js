@@ -16,13 +16,8 @@ const {
   getLineareAlgebraData,
   getAnalysisData,
   getExpData,
-  getTheoData,
-  algebraOld,
-  analysisOld,
-  expOld,
-  theoOld
+  getTheoData
 } = require("./scrape");
-const { addedDiff } = require("deep-object-diff");
 const discord = require("discord.js");
 /**
  * https://discord.js.org/#/docs/main/stable/class/Client
@@ -244,7 +239,8 @@ const lectures = {
 const init_lectures = async () => {
   // Lineare Algebra embed
   lectures.algebra.name = "Lineare Algebra";
-  lectures.algebra.fields = await getLineareAlgebraData();
+  //lectures.algebra.fields = await getLineareAlgebraData();
+  lectures.algebra.fields = algebraOld; // TODO REMOVE AFTER TESTING
   lectures.algebra.updater = getLineareAlgebraData;
   lectures.algebra.embed = {
     title: `${
@@ -257,7 +253,8 @@ const init_lectures = async () => {
   lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
   // Analysis embed
   lectures.analysis.name = "Analysis";
-  lectures.analysis.fields = await getAnalysisData();
+  //lectures.analysis.fields = await getAnalysisData();
+  lectures.analysis.fields = analysisOld; // TODO REMOVE AFTER TESTING
   lectures.analysis.updater = getAnalysisData;
   lectures.analysis.embed = {
     title: `${
@@ -270,7 +267,8 @@ const init_lectures = async () => {
   lectures.analysis.channel = roles.mapper.get("Analysis").channel;
   // Experimentalphysik embed
   lectures.exp.name = "Experimentalphysik";
-  lectures.exp.fields = await getExpData();
+  //lectures.exp.fields = await getExpData();
+  lectures.exp.fields = expOld; // TODO REMOVE AFTER TESTING
   lectures.exp.updater = getExpData;
   lectures.exp.embed = {
     title: `${
@@ -283,7 +281,8 @@ const init_lectures = async () => {
   lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
   // Theoretische Physik embed
   lectures.theo.name = "Theoretische Physik";
-  lectures.theo.fields = await getTheoData();
+  //lectures.theo.fields = await getTheoData();
+  lectures.theo.fields = theoOld;
   lectures.theo.updater = getTheoData;
   lectures.theo.embed = {
     title: `${
@@ -381,7 +380,13 @@ const init_overviewChannel = () => {
 const updateLecture = async lec => {
   log(GENERAL)(`updateLecture? ${lec.embed.title}`);
   let newFields = await lec.updater();
-  let diff = addedDiff(lec.fields, newFields);
+  // NOTE We ignore elements which old data contains but new data not!
+  let diff = newFields.filter(obj => {
+    // Get elements which are not included in old data
+    return !lec.fields.some(obj2 => {
+      return obj.value === obj2.value;
+    });
+  });
   // If object is not empty, update embed
   if (!!Object.keys(diff).length) {
     log(GENERAL)(`Updated needed for ${lec.embed.title}! Editing embed...`);
