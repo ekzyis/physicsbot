@@ -239,8 +239,7 @@ const lectures = {
 const init_lectures = async () => {
   // Lineare Algebra embed
   lectures.algebra.name = "Lineare Algebra";
-  //lectures.algebra.fields = await getLineareAlgebraData();
-  lectures.algebra.fields = algebraOld; // TODO REMOVE AFTER TESTING
+  lectures.algebra.fields = await getLineareAlgebraData();
   lectures.algebra.updater = getLineareAlgebraData;
   lectures.algebra.embed = {
     title: `${
@@ -253,8 +252,7 @@ const init_lectures = async () => {
   lectures.algebra.channel = roles.mapper.get("Lineare Algebra").channel;
   // Analysis embed
   lectures.analysis.name = "Analysis";
-  //lectures.analysis.fields = await getAnalysisData();
-  lectures.analysis.fields = analysisOld; // TODO REMOVE AFTER TESTING
+  lectures.analysis.fields = await getAnalysisData();
   lectures.analysis.updater = getAnalysisData;
   lectures.analysis.embed = {
     title: `${
@@ -267,8 +265,7 @@ const init_lectures = async () => {
   lectures.analysis.channel = roles.mapper.get("Analysis").channel;
   // Experimentalphysik embed
   lectures.exp.name = "Experimentalphysik";
-  //lectures.exp.fields = await getExpData();
-  lectures.exp.fields = expOld; // TODO REMOVE AFTER TESTING
+  lectures.exp.fields = await getExpData();
   lectures.exp.updater = getExpData;
   lectures.exp.embed = {
     title: `${
@@ -281,8 +278,7 @@ const init_lectures = async () => {
   lectures.exp.channel = roles.mapper.get("Experimentalphysik").channel;
   // Theoretische Physik embed
   lectures.theo.name = "Theoretische Physik";
-  //lectures.theo.fields = await getTheoData();
-  lectures.theo.fields = theoOld;
+  lectures.theo.fields = await getTheoData();
   lectures.theo.updater = getTheoData;
   lectures.theo.embed = {
     title: `${
