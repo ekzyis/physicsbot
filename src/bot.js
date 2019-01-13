@@ -374,7 +374,6 @@ const init_overviewChannel = () => {
 };
 
 const updateLecture = async lec => {
-  log(GENERAL)(`updateLecture? ${lec.embed.title}`);
   let newFields = await lec.updater();
   // NOTE We ignore elements which old data contains but new data not!
   let diff = newFields.filter(obj => {
