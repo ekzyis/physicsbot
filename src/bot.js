@@ -1,44 +1,14 @@
 #!/usr/bin/node
 
 const { log, TYPE } = require("./util");
-const {
-  GENERAL,
-  REACTION_ADD,
-  REACTION_REMOVE,
-  ROLE_ADD,
-  ROLE_REMOVE,
-  SEND_MESSAGE,
-  DELETE_MESSAGE,
-  EDIT,
-  ERROR
-} = TYPE;
-const {
-  getLineareAlgebraData,
-  getAnalysisData,
-  getExpData,
-  getTheoData
-} = require("./scrape");
+// prettier-ignore
+const { GENERAL, REACTION_ADD, REACTION_REMOVE, ROLE_ADD, ROLE_REMOVE, SEND_MESSAGE, DELETE_MESSAGE, EDIT, ERROR } = TYPE;
+// prettier-ignore
+const { getLineareAlgebraData, getAnalysisData, getExpData, getTheoData } = require("./scrape");
 const discord = require("discord.js");
-/**
- * https://discord.js.org/#/docs/main/stable/class/Client
- * @type {module:discord.js.Client}
- */
 const client = new discord.Client();
 const fs = require("fs");
-
-/**
- * @param {Object} botData               Holds private data about used bot
- * @param {string} botData.name          Name with discriminator
- * @param {string} botData.token         Token to login as bot
- */
-const botData = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8"));
-const token = botData.token;
-/**
- * @param {Object} server                       Holds private data about servers
- * @param {Object} server.live                  Holds private data about live server
- * @param {Object} server.test                  Holds private data about test server
- * @param {string} server.id                    Id of server
- */
+const token = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8")).token;
 const serverData = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
 const FETCH_LIMIT = 10;
