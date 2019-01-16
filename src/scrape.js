@@ -13,7 +13,7 @@ const PEP1_URL =
 const PTP1_URL =
   "https://uebungen.physik.uni-heidelberg.de/vorlesung/20182/ptp1";
 
-const getLineareAlgebraData = () => {
+export const getLineareAlgebraData = () => {
   return new Promise((resolve, reject) => {
     // TODO add reject / error checking
     request(LINEARE_ALGEBRA_URL, (error, response, html) => {
@@ -70,7 +70,7 @@ const getLineareAlgebraData = () => {
   });
 };
 
-const getAnalysisData = () => {
+export const getAnalysisData = () => {
   return new Promise((resolve, reject) => {
     // TODO add reject / error checking
     request(ANALYSIS_URL, (error, response, html) => {
@@ -125,7 +125,7 @@ const getAnalysisData = () => {
   });
 };
 
-const getExpData = () => {
+export const getExpData = () => {
   return new Promise((resolve, reject) => {
     // TODO add reject / error checking
     request(PEP1_URL, (error, response, html) => {
@@ -182,7 +182,7 @@ const getExpData = () => {
   });
 };
 
-const getTheoData = () => {
+export const getTheoData = () => {
   return new Promise((resolve, reject) => {
     request(PTP1_URL, (error, response, html) => {
       // server does not respond with status code even though successful...
@@ -217,11 +217,4 @@ const getTheoData = () => {
       }
     });
   });
-};
-
-module.exports = {
-  getLineareAlgebraData,
-  getAnalysisData,
-  getExpData,
-  getTheoData
 };

@@ -1,13 +1,15 @@
 #!/usr/bin/node
+import "@babel/polyfill";
 
-const { log, TYPE } = require("./util");
+import { log, TYPE } from "./util";
+// prettier-ignore
+import { getLineareAlgebraData, getAnalysisData, getExpData, getTheoData } from "./scrape";
+import discord from "discord.js";
+import fs from "fs";
+
 // prettier-ignore
 const { GENERAL, REACTION_ADD, REACTION_REMOVE, ROLE_ADD, ROLE_REMOVE, SEND_MESSAGE, DELETE_MESSAGE, EDIT, ERROR } = TYPE;
-// prettier-ignore
-const { getLineareAlgebraData, getAnalysisData, getExpData, getTheoData } = require("./scrape");
-const discord = require("discord.js");
 const client = new discord.Client();
-const fs = require("fs");
 const token = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8")).token;
 const serverData = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
 
