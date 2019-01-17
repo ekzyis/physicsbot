@@ -2,15 +2,15 @@ module.exports = {
   apps: [
     {
       name: "physicsbot",
-      script: "npm -- start",
-      out: "./physicsbot.log",
-      error: "./physicsbot.log"
+      script: "npm -- run pistart",
+      out: "~/physicsbot/physicsbot.log",
+      error: "~/physicsbot/physicsbot.log"
     },
     {
       name: "physicstest",
-      script: "npm -- run dev",
-      out: "./physicstest.log",
-      error: "./physicstest.log"
+      script: "npm -- run pidev",
+      out: "~/physicsbot/physicstest.log",
+      error: "~/physicsbot/physicstest.log"
     }
   ]
 };
