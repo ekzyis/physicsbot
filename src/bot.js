@@ -355,20 +355,18 @@ const updateLecture = async lec => {
     };
     edit_embed(server.overviewChannel, lec.embed.id, lec.embed).then(() => {
       let channel = roles.mapper.get(lec.name).channel;
-      let role = roles.mapper.get(lec.name).role;
+      // NOTE mentioning of roles disabled for the time being
+      //let role = roles.mapper.get(lec.name).role;
       // NOTE why is channel.send(string, embed) showing warning about "params don't match"?
       // https://discord.js.org/#/docs/main/stable/class/TextChannel?scrollTo=send
       channel
-        .send(
-          `${role}\n${server.overviewChannel.toString()} aktualisiert mit:`,
-          {
-            embed: new discord.RichEmbed({
-              ...lec.embed,
-              title: `${lec.embed.title} (nur aktualisierte Links)`,
-              fields: Object.values(diff)
-            })
-          }
-        )
+        .send(`${server.overviewChannel.toString()} aktualisiert mit:`, {
+          embed: new discord.RichEmbed({
+            ...lec.embed,
+            title: `${lec.embed.title} (nur aktualisierte Links)`,
+            fields: Object.values(diff)
+          })
+        })
         .then(log(SEND_MESSAGE))
         .catch(log(ERROR));
     });
