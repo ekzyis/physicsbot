@@ -133,12 +133,7 @@ client.on("ready", () => {
 
 let server = {};
 const init_server = () => {
-  let KEY = "";
-  if (process.env.NODE_ENV === "development") {
-    KEY = "test";
-  } else if (process.env.NODE_ENV === "production") {
-    KEY = "live";
-  }
+  let KEY = process.env.NODE_ENV;
   server = serverData[KEY];
   server.guild = client.guilds.get(server.id);
   server.defaultChannel = server.guild.channels.get(
