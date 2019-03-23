@@ -7,3 +7,4 @@ A Discord bot intended for usage with a physics discord server hence the reposit
 Current features:
 - greets a new member and encourages him to read the rules (without enforcing it)
 - sets user roles via message reactions
+- scrapes from websites to keep embeds up to date
