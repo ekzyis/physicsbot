@@ -24,7 +24,16 @@ const token = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8")).token;
 
 client.on("guildMemberAdd", member => guildMemberAdd(server, member));
 
-client.on("message", msg => message(msg,server.guild,client,server.overviewChannel,roles.embed,roles.mapper));
+client.on("message", msg =>
+  message(
+    msg,
+    server.guild,
+    client,
+    server.overviewChannel,
+    roles.embed,
+    roles.mapper
+  )
+);
 
 // TODO refactor since this is 99% the same as in "messageReactionRemove"
 client.on("messageReactionAdd", (reaction, user) =>
