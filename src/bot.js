@@ -10,35 +10,18 @@ import {
   getServer,
   init_overviewChannel
 } from "./guild";
+import {
+  guildMemberAdd,
+  messageReactionAdd,
+  messageReactionRemove
+} from "./event";
 
 // prettier-ignore
 const { GENERAL, REACTION_ADD, REACTION_REMOVE, ROLE_ADD, ROLE_REMOVE, SEND_MESSAGE, DELETE_MESSAGE, ERROR } = TYPE;
 const client = new discord.Client();
 const token = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8")).token;
 
-client.on("guildMemberAdd", member => {
-  if (member.guild.id === server.guild.id) {
-    let embedGreeting = {
-      embed: {
-        thumbnail: {
-          url: member.user.avatarURL
-        },
-        title: `Willkommen ${member.user.tag} auf ${server.guild.name}!\n`,
-        description:
-          `Es wäre cool, wenn du dir die ` +
-          server.rulesChannel +
-          ` ansiehst, bevor du dich hier umschaust :slight_smile:\n` +
-          `Außerdem verwalte ich hier auf dem Server die Rollen für die einzelnen Vorlesungen. Diese kannst du dir in ` +
-          server.overviewChannel +
-          ` ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann!`
-      }
-    };
-    server.defaultChannel
-      .send(member.toString(), embedGreeting)
-      .then(log(SEND_MESSAGE))
-      .catch(log(ERROR));
-  }
-});
+client.on("guildMemberAdd", member => guildMemberAdd(server, member));
 
 client.on("message", msg => {
   if (!msg.guild) return;
@@ -70,55 +53,13 @@ client.on("message", msg => {
 });
 
 // TODO refactor since this is 99% the same as in "messageReactionRemove"
-client.on("messageReactionAdd", (reaction, user) => {
-  if (user.bot) return;
-  if (reaction.message.id === roles.embed.id) {
-    log(REACTION_ADD)(user, reaction);
-    let associatedItem = Array.from(roles.mapper.values()).find(
-      item => item.emoji.id === reaction.emoji.id
-    );
-    if (associatedItem) {
-      // Reaction is included in an role item and therefore does have a associated role
-      let associatedRole = associatedItem.role;
-      server.guild
-        .fetchMember(user)
-        .then(member =>
-          member
-            .addRole(associatedRole.id)
-            .then(member => {
-              log(ROLE_ADD)(member, associatedRole);
-            })
-            .catch(log(ERROR))
-        )
-        .catch(log(ERROR));
-    }
-  }
-});
+client.on("messageReactionAdd", (reaction, user) =>
+  messageReactionAdd(server, roles.embed, roles.mapper, reaction, user)
+);
 
-client.on("messageReactionRemove", (reaction, user) => {
-  if (user.bot) return;
-  if (reaction.message.id === roles.embed.id) {
-    log(REACTION_REMOVE)(user, reaction);
-    let associatedItem = Array.from(roles.mapper.values()).find(
-      item => item.emoji.id === reaction.emoji.id
-    );
-    if (associatedItem) {
-      // Reaction is included in an item in list and therefore does have a associated role
-      let associatedRole = associatedItem.role;
-      server.guild
-        .fetchMember(user)
-        .then(member =>
-          member
-            .removeRole(associatedRole.id)
-            .then(member => {
-              log(ROLE_REMOVE)(member, associatedRole);
-            })
-            .catch(log(ERROR))
-        )
-        .catch(log(ERROR));
-    }
-  }
-});
+client.on("messageReactionRemove", (reaction, user) =>
+  messageReactionRemove(server, roles.embed, roles.mapper, reaction, user)
+);
 
 let server = {};
 let roles = {};
