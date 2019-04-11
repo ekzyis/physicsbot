@@ -18,7 +18,7 @@ import {
 } from "./event";
 
 // prettier-ignore
-const { GENERAL, REACTION_ADD, REACTION_REMOVE, ROLE_ADD, ROLE_REMOVE, SEND_MESSAGE, DELETE_MESSAGE, ERROR } = TYPE;
+const { GENERAL, ERROR } = TYPE;
 const client = new discord.Client();
 const token = JSON.parse(fs.readFileSync("exclude/bot.json", "utf8")).token;
 
