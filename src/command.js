@@ -1,7 +1,7 @@
 import { log, TYPE } from "./util";
 import { FETCH_LIMIT } from "./server";
 
-const { ERROR, WARNING, GENERAL } = TYPE;
+const { ERROR, WARNING, GENERAL, SEND_MESSAGE } = TYPE;
 
 const COMMAND_RESET_ROLES = "!resetroles";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";

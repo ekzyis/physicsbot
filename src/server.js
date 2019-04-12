@@ -3,7 +3,7 @@ import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
 
-const { GENERAL, ERROR, SEND_MESSAGE } = TYPE;
+const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
 // using Symbol marks the variables as "private" since they are harder accessible
 const _client = Symbol("client");
