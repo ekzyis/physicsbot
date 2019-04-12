@@ -40,7 +40,7 @@ const messageReactionComposer = (LOG_REACTION, LOG_ROLE, roleFn) => server => (
   user
 ) => {
   if (user.bot) return;
-  if (reaction.message.id === server.embeds.role.id) {
+  if (reaction.message.id === server.embeds.role.message.id) {
     log(LOG_REACTION)(user, reaction);
     let associatedItem = Array.from(server.roleNameMap.values()).find(
       item => item.emoji.id === reaction.emoji.id

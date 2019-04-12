@@ -6,10 +6,12 @@ const { ERROR, WARNING, GENERAL } = TYPE;
 const COMMAND_RESET_ROLES = "!resetroles";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";
 const COMMAND_CLEAR_DEV_CHANNEL = "!cleardev";
+const COMMAND_UPDATE_ROLES_EMBED = "!updaterolesembed";
 export const COMMANDS = [
   COMMAND_RESET_ROLES,
   COMMAND_TEST_MEMBER_ADD,
-  COMMAND_CLEAR_DEV_CHANNEL
+  COMMAND_CLEAR_DEV_CHANNEL,
+  COMMAND_UPDATE_ROLES_EMBED
 ];
 
 export const commandHandler = server => msg => {
@@ -24,6 +26,8 @@ export const commandHandler = server => msg => {
     case COMMAND_CLEAR_DEV_CHANNEL:
       command_clearDevChannel(server)(msg);
       break;
+    case COMMAND_UPDATE_ROLES_EMBED:
+      command_updateRolesEmbed(server)(msg);
     default:
       log(ERROR)(`commandHandler called but no valid command found!`);
   }
