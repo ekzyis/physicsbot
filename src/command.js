@@ -35,7 +35,7 @@ const command_resetRoles = server => msg => {
     server.resetRoles().then(({ members, removed_roles }) => {
       msg
         .reply(
-          `**Folgende Rollen zurückgesetzt**:\n` +
+          `**Folgende Rollen für ${members.length} User zurückgesetzt**:\n` +
             `${removed_roles.map(role => role + "\n").join("")}`
         )
         .then(msg => {

@@ -73,17 +73,17 @@ export class Server {
     // look if embed already exists
     return this[_findEmbedMessage](channel, embed)
       .then(msg => {
-        log(GENERAL)(`Found embed for ${embed.title} - id: ${msg.id}`);
+        log(GENERAL)(`Found embed (${embed.title}) - id: ${msg.id}`);
         return msg;
       })
       .catch(err => {
         // if not, create it
-        log(ERROR)(err);
+        log(GENERAL)(err);
         return channel
           .send(embed)
           .then(msg => {
             log(GENERAL)(
-              `Successfully sent embed for ${embed.title} - id: ${msg.id}`
+              `Successfully sent embed (${embed.title}) - id: ${msg.id}`
             );
             log(SEND_MESSAGE)(msg);
             return msg;
@@ -97,6 +97,9 @@ export class Server {
 
   [_findEmbedMessage] = (channel, embed) => {
     // NOTE we assume there are only FETCH_LIMIT messages in the given channel!
+    log(GENERAL)(
+      `Looking for embed (${embed.title}) in channel ${channel.name}...`
+    );
     return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
       return new Promise((resolve, reject) => {
         messages.array().forEach(msg => {
