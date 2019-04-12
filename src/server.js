@@ -50,7 +50,7 @@ export class Server {
         );
       }
     }
-    Promise.all(promises)
+    return Promise.all(promises)
       .then(ids =>
         // Check if every embed now has a link to a message
         assert(Object.values(this.embeds).every(({ message }) => !!message.id))
@@ -140,40 +140,47 @@ export class Server {
             .catch(log(ERROR))
         )
       )
-        .then(members => resolve({ members, removed_roles: roles_to_remove }))
-        .then(() => this[_resetRolesEmbed]())
+        .then(members =>
+          this[_resetRolesEmbed]().then(() =>
+            resolve({ members, removed_roles: roles_to_remove })
+          )
+        )
         .catch(log(ERROR))
     );
   };
 
   [_resetRolesEmbed] = () => {
-    this.embeds.role.embed
+    return this.embeds.role.message
       .delete()
       .then(msg => {
         log(DELETE_MESSAGE)(msg);
-        this.embeds.role.id = undefined;
+        this.embeds.role.message = undefined;
         return this[_initEmbed](
           this.embeds.role.channel,
           this.embeds.role.embed
         );
       })
-      .then(msg => this[_addReactionsToRolesEmbed]())
+      .then(msg => {
+        this.embeds.role.message = msg;
+        return this[_addReactionsToRolesEmbed]();
+      })
       .catch(log(ERROR));
   };
 
-  [_addReactionsToRolesEmbed] = () => {
-    return Promise.all(
-      Array.from(this.roleNameMap.values()).map(item =>
-        this.embeds.role.message.react(item.emoji)
-      )
-    );
+  [_addReactionsToRolesEmbed] = async () => {
+    for (let fn of Array.from(this.roleNameMap.values()).map(item => () => {
+      log(GENERAL)(`Reacting to roles embed with ${item.emoji}`);
+      return this.embeds.role.message.react(item.emoji);
+    })) {
+      await fn();
+    }
   };
 
   updateRolesEmbed = () => {
     this.embeds.role.message
       .edit(this.embeds.role.embed)
       .then(msg => this[_addReactionsToRolesEmbed]())
-      .then(reactions => {
+      .then(() => {
         log(GENERAL)(`Updated roles embed!`);
       })
       .catch(log(ERROR));
