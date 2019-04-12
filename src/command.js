@@ -80,6 +80,7 @@ const command_clearDevChannel = server => async msg => {
         log(ERROR)(err);
         return -1;
       });
-    log(GENERAL)(`Deleted ${deleted} messages in dev channel.`);
+    if (deleted > 0)
+      log(GENERAL)(`Deleted ${deleted} messages in dev channel.`);
   } while (deleted > 0);
 };
