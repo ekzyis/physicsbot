@@ -241,9 +241,8 @@ const init_embed = (channel, embed) => {
     });
 };
 
-const FETCH_LIMIT = 10;
 // Resolve id of message when found else reject with message "Message not found" ¯\_(ツ)_/¯
-const find_embed = (channel, title) => {
+export const find_embed = (channel, title) => {
   // NOTE we assume there are only FETCH_LIMIT messages in overview channel!
   return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
     return new Promise(function(resolve, reject) {

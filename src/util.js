@@ -18,7 +18,8 @@ const TYPE = {
     `[ DELETE_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
   EDIT: msg =>
     `[ EDIT_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
-  ERROR: e => `[ ERROR ]:[ ${e.message} ]`
+  ERROR: e => `[ ERROR ]:[ ${e.message || e} ]`,
+  WARNING: msg => `[ WARNING ]:[ ${msg} ]`
 };
 
 const log = type => (...a) => {

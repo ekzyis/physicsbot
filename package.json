@@ -4,8 +4,8 @@
   "description": "A Discord bot intended for usage with a physics discord server",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build && NODE_ENV=production node lib/bot.js",
-    "dev": "npm run build && NODE_ENV=development node lib/bot.js",
+    "start": "npm run build && NODE_ENV=production CONFIG=exclude/server.json node lib/index.js",
+    "dev": "npm run build && NODE_ENV=development CONFIG=exclude/server.json node lib/index.js",
     "build": "rm -rf lib/ && babel src/ -d lib/",
     "pidev": "cd ~/physicstest && npm run dev",
     "pistart": "cd ~/physicsbot && npm run start",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/polyfill": "^7.2.5",
     "@babel/preset-env": "^7.2.3",
     "prettier": "^1.15.3"
