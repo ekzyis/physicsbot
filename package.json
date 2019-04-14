@@ -4,8 +4,8 @@
   "description": "A Discord bot intended for usage with a physics discord server",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build && NODE_ENV=production CONFIG=config.json node lib/index.js",
-    "dev": "npm run build && NODE_ENV=development CONFIG=config.json node lib/index.js",
+    "start": "npm run build && NODE_ENV=production CONFIG=config.json TOKEN=$(cat token) node lib/index.js",
+    "dev": "npm run build && NODE_ENV=development CONFIG=config.json TOKEN=$(cat token) node lib/index.js",
     "build": "rm -rf lib/ && babel src/ -d lib/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
