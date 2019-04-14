@@ -9,7 +9,7 @@ import {
   messageReactionRemoveHandler,
   messageHandler
 } from "./handlers";
-import { Server } from "./server";
+import { BotClient } from "./botClient";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;
@@ -22,12 +22,12 @@ client.on("ready", () => {
   client.user
     .setActivity("LHC live stream", { type: "WATCHING" })
     .catch(log(ERROR));
-  const server = new Server(client);
-  server.on("message", messageHandler);
-  server.on("messageReactionAdd", messageReactionAddHandler);
-  server.on("messageReactionRemove", messageReactionRemoveHandler);
-  server.on("guildMemberAdd", guildMemberAddHandler);
-  server.initEmbeds();
+  const bot = new BotClient(client);
+  bot.on("message", messageHandler);
+  bot.on("messageReactionAdd", messageReactionAddHandler);
+  bot.on("messageReactionRemove", messageReactionRemoveHandler);
+  bot.on("guildMemberAdd", guildMemberAddHandler);
+  bot.initEmbeds();
 });
 
 client.on("error", log(ERROR));

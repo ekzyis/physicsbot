@@ -1,5 +1,5 @@
 import { log, TYPE } from "./util";
-import { FETCH_LIMIT } from "./server";
+import { FETCH_LIMIT } from "./botClient";
 
 const { ERROR, WARNING, GENERAL, SEND_MESSAGE } = TYPE;
 
@@ -12,27 +12,27 @@ export const COMMANDS = [
   COMMAND_CLEAR_DEV_CHANNEL
 ];
 
-export const commandHandler = server => msg => {
+export const commandHandler = bot => msg => {
   let cmd = msg.content;
   switch (cmd) {
     case COMMAND_RESET_ROLES:
-      command_resetRoles(server)(msg);
+      command_resetRoles(bot)(msg);
       break;
     case COMMAND_TEST_MEMBER_ADD:
-      command_guildMemberAdd(server)(msg);
+      command_guildMemberAdd(bot)(msg);
       break;
     case COMMAND_CLEAR_DEV_CHANNEL:
-      command_clearDevChannel(server)(msg);
+      command_clearDevChannel(bot)(msg);
       break;
     default:
       log(ERROR)(`commandHandler called but no valid command found!`);
   }
 };
 
-const command_resetRoles = server => msg => {
-  let guildMember = server.guild.member(msg.author);
+const command_resetRoles = bot => msg => {
+  let guildMember = bot.guild.member(msg.author);
   if (guildMember.hasPermission("MANAGE_ROLES")) {
-    server.resetRoles().then(({ members, removed_roles }) => {
+    bot.resetRoles().then(({ members, removed_roles }) => {
       msg
         .reply(
           `**Folgende Rollen für ${members.length} User zurückgesetzt**:\n` +
@@ -53,19 +53,19 @@ const command_resetRoles = server => msg => {
   }
 };
 
-const command_guildMemberAdd = server => msg => {
-  let guildMember = server.guild.member(msg.author);
-  return server.emit("guildMemberAdd", guildMember);
+const command_guildMemberAdd = bot => msg => {
+  let guildMember = bot.guild.member(msg.author);
+  return bot.emit("guildMemberAdd", guildMember);
 };
 
-const command_clearDevChannel = server => async msg => {
+const command_clearDevChannel = bot => async msg => {
   if (process.env.NODE_ENV !== "development")
     return log(WARNING)(
       "Clearing dev channel is only available in development mode!"
     );
   let deleted;
   do {
-    deleted = await server.devChannel
+    deleted = await bot.devChannel
       .fetchMessages({ limit: FETCH_LIMIT })
       .then(messages => {
         return Promise.all(messages.map(m => m.delete())).then(

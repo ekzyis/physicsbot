@@ -13,7 +13,7 @@ const _resetRolesEmbed = Symbol("reset_roles_embed");
 const _addReactionsToRolesEmbed = Symbol("add_reactions_to_roles_embed");
 export const FETCH_LIMIT = 30;
 
-export class Server {
+export class BotClient {
   constructor(client) {
     // NOTE we assume the client is already logged in!
     this[_client] = client;
