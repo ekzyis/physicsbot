@@ -6,7 +6,6 @@ import fs from "fs";
 const expect = chai.expect;
 
 describe("genServerInstance should return a valid instance according to config", function() {
-  this.timeout(15000);
   let client;
   before(function(done) {
     client = new discord.Client();

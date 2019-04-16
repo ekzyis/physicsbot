@@ -6,7 +6,6 @@ import fs from "fs";
 const expect = chai.expect;
 
 describe("genRoleNameMap should return a valid map according to config", function() {
-  this.timeout(15000);
   let client;
   before(function(done) {
     client = new discord.Client();
