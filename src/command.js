@@ -1,5 +1,6 @@
 import { log, TYPE } from "./util";
 import { FETCH_LIMIT } from "./botClient";
+import { clearChannel } from "./guild";
 
 const { ERROR, WARNING, GENERAL, SEND_MESSAGE } = TYPE;
 
@@ -63,20 +64,5 @@ const command_clearDevChannel = bot => async msg => {
     return log(WARNING)(
       "Clearing dev channel is only available in development mode!"
     );
-  let deleted;
-  do {
-    deleted = await bot.devChannel
-      .fetchMessages({ limit: FETCH_LIMIT })
-      .then(messages => {
-        return Promise.all(messages.map(m => m.delete())).then(
-          msgs => msgs.length
-        );
-      })
-      .catch(err => {
-        log(ERROR)(err);
-        return -1;
-      });
-    if (deleted > 0)
-      log(GENERAL)(`Deleted ${deleted} messages in dev channel.`);
-  } while (deleted > 0);
+  return clearChannel(bot.devChannel);
 };

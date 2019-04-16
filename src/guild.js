@@ -9,6 +9,7 @@ import {
   getTheoData
 } from "./scrape";
 import discord from "discord.js";
+import { FETCH_LIMIT } from "./botClient";
 
 export const getServer = client => {
   let serverData = JSON.parse(fs.readFileSync("exclude/server.json", "utf8"));
@@ -254,4 +255,24 @@ export const find_embed = (channel, title) => {
       reject("Message not found ¯\\_(ツ)_/¯");
     });
   });
+};
+
+export const clearChannel = async channel => {
+  let deleted;
+  do {
+    deleted = await channel
+      .fetchMessages({ limit: FETCH_LIMIT })
+      .then(messages => {
+        return Promise.all(messages.map(m => m.delete())).then(
+          msgs => msgs.length
+        );
+      })
+      .catch(err => {
+        log(ERROR)(err);
+        return -1;
+      });
+    if (deleted > 0)
+      log(GENERAL)(`Deleted ${deleted} message(s) in channel ${channel.name}.`);
+  } while (deleted > 0);
+  return deleted;
 };
