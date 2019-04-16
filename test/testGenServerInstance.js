@@ -30,24 +30,24 @@ describe("genServerInstance should return a valid instance according to config",
       const getConfigGuild = () => client.guilds.get(config.guild.id);
       const getConfigChannel = id => getConfigGuild().channels.get(id);
 
-      it("guild is properly set", function() {
+      it("id of guild is equal to given id in config", function() {
         let guild = getConfigGuild();
         expect(instance.guild).to.equal(guild);
       });
-      it("default channel is properly set", function() {
+      it("id of default channel is equal to given id in config", function() {
         let defaultChannel = getConfigChannel(config.channel.default.id);
         expect(instance.defaultChannel).to.equal(defaultChannel);
       });
-      it("rules channel is properly set", function() {
+      it("id of rules channel is equal to given id in config", function() {
         let rulesChannel = getConfigChannel(config.channel.rules.id);
         expect(instance.rulesChannel).to.equal(rulesChannel);
       });
-      it("overview channel is properly set", function() {
+      it("id of overview channel is equal to given id in config", function() {
         let overviewChannel = getConfigChannel(config.channel.overview.id);
         expect(instance.overviewChannel).to.equal(overviewChannel);
       });
       if (env === "development") {
-        it("dev channel is properly set", function() {
+        it("id of dev channel is equal to given id in config", function() {
           let devChannel = getConfigChannel(config.channel.dev.id);
           expect(instance.devChannel).to.equal(devChannel);
         });
