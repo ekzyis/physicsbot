@@ -64,7 +64,7 @@ export class BotClient {
         if (!roleEmojis.every(emoji =>
           this.embeds.role.message.reactions.map(r => r.emoji).includes(emoji)
         )) {
-          this.updateRolesEmbed();
+          return this.updateRolesEmbed();
         }
       });
   };
@@ -176,7 +176,7 @@ export class BotClient {
     }
   };
 
-  updateRolesEmbed = () => {
+  updateRolesEmbed = () =>
     this.embeds.role.message
       .edit(this.embeds.role.embed)
       .then(msg => this[_addReactionsToRolesEmbed]())
@@ -184,5 +184,4 @@ export class BotClient {
         log(GENERAL)(`Updated roles embed!`);
       })
       .catch(log(ERROR));
-  };
 }
