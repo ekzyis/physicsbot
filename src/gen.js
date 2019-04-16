@@ -40,13 +40,14 @@ export const genRoleNameMap = (config, guild) => {
   return map;
 };
 
+export const ROLE_EMBED_TITLE = "***Rollen***";
 export const genRoleEmbed = (defaultChannel, roleNameMap) => {
   let emojiRows = "";
   roleNameMap.forEach(v => {
     emojiRows += `${v.role.toString()}: ${v.emoji.toString()}\n\n`;
   });
   let embed = new discord.RichEmbed();
-  embed.setTitle(`***Rollen***`);
+  embed.setTitle(ROLE_EMBED_TITLE);
   let description =
     `\nWillkommen im Rollen-Verteiler, hier könnt ihr auswählen was ihr studiert ` +
     `und welche Kurse ihr belegt in dem ihr entsprechend auf diese Nachricht *reagiert*.\n\n` +
