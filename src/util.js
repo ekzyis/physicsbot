@@ -23,7 +23,7 @@ const TYPE = {
 };
 
 const log = type => (...a) => {
-  console.log(`[ ${timestamp()} ]${type(...a)}`);
+  if (!process.env.TEST) console.log(`[ ${timestamp()} ]${type(...a)}`);
 };
 
 const timestamp = () => {
