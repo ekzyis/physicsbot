@@ -103,15 +103,15 @@ const command_clearDevChannel = bot => msg => {
   return clearChannel(bot.devChannel);
 };
 
-// TODO Damn, this code is ugly. Add proper documentation and/or refactor!
-// The purpose of this code is to synchronously add roles to prevent warning
-// "MaxListenersExceededWarning: Possible EventEmitter memory leak detected.
-//    11 guildMemberUpdate listeners added. Use emitter.setMaxListeners() to increase limit"
 const command_addRandomRoles = bot => async msg => {
   try {
     log(GENERAL)(`Adding roles randomly to users in guild...`);
     let available_roles = Array.from(bot.roleNameMap.values()).map(i => i.role);
     const CHANCE_TO_GET_ROLE = 1 / (2 * available_roles.length);
+    // TODO Damn, this code is ugly. Add proper documentation and/or refactor!
+    // The purpose of this code is to synchronously add roles to prevent warning
+    // "MaxListenersExceededWarning: Possible EventEmitter memory leak detected.
+    //    11 guildMemberUpdate listeners added. Use emitter.setMaxListeners() to increase limit"
     const addFunctions = bot.guild.members
       .map(m => {
         return available_roles.map(r => () => {
@@ -130,16 +130,17 @@ const command_addRandomRoles = bot => async msg => {
     for (let addFn of addFunctions) {
       await addFn();
     }
-    try {
-      return msg.reply(`Rollen erfolgreich zufällig verteilt!`).then(msg => {
+    return msg
+      .reply(`Rollen erfolgreich zufällig verteilt!`)
+      .then(msg => {
         log(SEND_MESSAGE)(msg);
         log(GENERAL)(`Roles have been successfully randomly added.`);
-      });
-    } catch (err) {
-      log(ERROR)(
-        `Error sending reply for command ${COMMAND_ADD_RANDOM_ROLES}. Reason: ${msg}`
+      })
+      .catch(err =>
+        log(ERROR)(
+          `Error sending reply for command ${COMMAND_ADD_RANDOM_ROLES}. Reason: ${err}`
+        )
       );
-    }
   } catch (err) {
     log(ERROR)(err);
   }
