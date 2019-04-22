@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 const ROLES_BACKUP_FILE = "testResetRoles_roles_backup.json";
 
-describe("Writing !resetRoles with sufficient permissions should trigger resetting of all roles in guild", function() {
+describe(`Writing ${COMMAND_RESET_ROLES} with sufficient permissions should trigger resetting of all roles in guild`, function() {
   this.timeout(180000);
   let client;
   before(function(done) {
