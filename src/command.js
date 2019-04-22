@@ -105,7 +105,7 @@ const command_addRandomRoles = bot => async msg => {
   try {
     log(GENERAL)(`Adding roles randomly to users in guild...`);
     let available_roles = Array.from(bot.roleNameMap.values()).map(i => i.role);
-    const CHANCE_TO_GET_ROLE = 1 / (2 * available_roles.length);
+    const CHANCE_TO_GET_ROLE = 3 / (4 * available_roles.length);
     // TODO Damn, this code is ugly. Add proper documentation and/or refactor!
     // The purpose of this code is to synchronously add roles to prevent warning
     // "MaxListenersExceededWarning: Possible EventEmitter memory leak detected.
