@@ -5,7 +5,7 @@ const { ERROR, WARNING, GENERAL, SEND_MESSAGE, ROLE_ADD } = TYPE;
 export const COMMAND_RESET_ROLES = "!resetroles";
 const COMMAND_RESET_ROLES_EMBED = "!resetrolesembed";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";
-const COMMAND_CLEAR_CHANNEL = "!clearchannel";
+export const COMMAND_CLEAR_CHANNEL = "!clearchannel";
 const COMMAND_ADD_RANDOM_ROLES = "!addrandomroles";
 export const COMMANDS = [
   COMMAND_RESET_ROLES,
@@ -94,10 +94,17 @@ const command_guildMemberAdd = bot => msg => {
 };
 
 const command_clearChannel = bot => msg => {
-  if (process.env.NODE_ENV !== "development")
-    return log(WARNING)(
-      "Clearing a channel is only available in development mode!"
-    );
+  if (process.env.NODE_ENV !== "development") {
+    const ERROR_MESSAGE =
+      "Clearing a channel is only available in development mode!";
+    log(WARNING)(ERROR_MESSAGE);
+    return Promise.reject(ERROR_MESSAGE);
+  }
+  if (!msg.author.hasPermission("MANAGE_GUILD")) {
+    const ERROR_MESSAGE = "Not enough permissions to clear channel!";
+    log(WARNING)(ERROR_MESSAGE);
+    return Promise.reject(ERROR_MESSAGE);
+  }
   return clearChannel(msg.channel);
 };
 
