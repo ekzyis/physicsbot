@@ -7,8 +7,6 @@ const COMMAND_RESET_ROLES_EMBED = "!resetrolesembed";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";
 const COMMAND_CLEAR_DEV_CHANNEL = "!cleardev";
 const COMMAND_ADD_RANDOM_ROLES = "!addrandomroles";
-export const COMMAND_SUCCESS = "SUCCESS";
-export const COMMAND_FAILURE = "FAILURE";
 export const COMMANDS = [
   COMMAND_RESET_ROLES,
   COMMAND_RESET_ROLES_EMBED,
@@ -21,20 +19,15 @@ export const commandHandler = bot => msg => {
   let cmd = msg.content;
   switch (cmd) {
     case COMMAND_RESET_ROLES:
-      command_resetRoles(bot)(msg);
-      break;
+      return command_resetRoles(bot)(msg);
     case COMMAND_TEST_MEMBER_ADD:
-      command_guildMemberAdd(bot)(msg);
-      break;
+      return command_guildMemberAdd(bot)(msg);
     case COMMAND_CLEAR_DEV_CHANNEL:
-      command_clearDevChannel(bot)(msg);
-      break;
+      return command_clearDevChannel(bot)(msg);
     case COMMAND_RESET_ROLES_EMBED:
-      command_resetRolesEmbed(bot)(msg);
-      break;
+      return command_resetRolesEmbed(bot)(msg);
     case COMMAND_ADD_RANDOM_ROLES:
-      command_addRandomRoles(bot)(msg);
-      break;
+      return command_addRandomRoles(bot)(msg);
     default:
       log(WARNING)(`commandHandler called but no valid command found!`);
   }
