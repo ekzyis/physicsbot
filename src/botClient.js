@@ -2,6 +2,7 @@ import fs from "fs";
 import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
+import { COMMAND_RESET_ROLES, COMMAND_SUCCESS } from "./command";
 
 const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
@@ -9,7 +10,6 @@ const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 const _client = Symbol("client");
 const _initEmbed = Symbol("init_embed");
 const _findEmbedMessage = Symbol("find_embed_message");
-const _resetRolesEmbed = Symbol("reset_roles_embed");
 const _addReactionsToRolesEmbed = Symbol("add_reactions_to_roles_embed");
 export const FETCH_LIMIT = 30;
 
@@ -17,6 +17,7 @@ export class BotClient {
   constructor(client) {
     // NOTE we assume the client is already logged in!
     this[_client] = client;
+    this.id = client.user.id;
     let config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
       process.env.NODE_ENV
     ];
@@ -116,8 +117,8 @@ export class BotClient {
     this[_client].on(event, handler(this));
   };
 
-  emit = event => {
-    this[_client].emit(event);
+  emit = (event, data) => {
+    this[_client].emit(event, data);
   };
 
   resetRoles = () => {
@@ -139,17 +140,13 @@ export class BotClient {
             )
             .catch(log(ERROR))
         )
-      )
-        .then(members =>
-          this[_resetRolesEmbed]().then(() =>
-            resolve({ members, removed_roles: roles_to_remove })
-          )
-        )
-        .catch(log(ERROR))
-    );
+      ).then(members => {
+        return resolve({ members, removed_roles: roles_to_remove });
+      })
+    ).catch(log(ERROR));
   };
 
-  [_resetRolesEmbed] = () => {
+  resetRolesEmbed = () => {
     return this.embeds.role.message
       .delete()
       .then(msg => {
