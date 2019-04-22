@@ -7,7 +7,7 @@ import { COMMAND_RESET_ROLES, commandHandler } from "../src/command";
 
 const expect = chai.expect;
 
-const ROLES_BACKUP_FILE = "testResetRoles_roles_backup.json";
+const ROLES_BACKUP_FILE = "roles_backup.json";
 
 describe(`Writing ${COMMAND_RESET_ROLES} with sufficient permissions should trigger resetting of all roles in guild`, function() {
   this.timeout(180000);
