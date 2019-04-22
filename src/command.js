@@ -38,22 +38,25 @@ const command_resetRoles = bot => msg => {
   if (guildMember.hasPermission("MANAGE_ROLES")) {
     return bot
       .resetRoles()
-      .catch(log(ERROR))
-      .then(({ members, removed_roles }) =>
-        msg
-          .reply(
-            `**Folgende Rollen für ${members.length} User zurückgesetzt**:\n` +
-              `${removed_roles.map(role => role + "\n").join("")}`
-          )
-          .then(msg => {
-            log(SEND_MESSAGE)(msg);
-            log(GENERAL)("Roles have been successfully reset");
-          })
-          .catch(msg =>
-            log(ERROR)(
-              `Error sending reply for command ${COMMAND_RESET_ROLES}. Reason: ${msg}`
+      .then(
+        ({ members, removed_roles }) =>
+          msg
+            .reply(
+              `**Folgende Rollen für ${
+                members.length
+              } User zurückgesetzt**:\n` +
+                `${removed_roles.map(role => role + "\n").join("")}`
             )
-          )
+            .then(msg => {
+              log(SEND_MESSAGE)(msg);
+              log(GENERAL)("Roles have been successfully reset");
+            })
+            .catch(msg =>
+              log(ERROR)(
+                `Error sending reply for command ${COMMAND_RESET_ROLES}. Reason: ${msg}`
+              )
+            ),
+        err => log(ERROR)(`Error while resetting roles. Reason: ${err}`)
       )
       .catch(log(ERROR));
   } else {
@@ -69,16 +72,18 @@ const command_resetRolesEmbed = bot => msg => {
   if (guildMember.hasPermission("MANAGE_ROLES")) {
     return bot
       .resetRolesEmbed()
-      .catch(log(ERROR))
-      .then(() => msg.reply(`**Rollenübersicht erfolgreich zurückgesetzt!`))
-      .then(msg => {
-        log(SEND_MESSAGE)(msg);
-        log(GENERAL)("Roles embed has been successfully reset");
-      })
+      .then(
+        () => msg.reply(`**Rollenübersicht erfolgreich zurückgesetzt!`),
+        err => log(ERROR)(`Error while resetting roles embed. Reason: ${err}`)
+      )
       .catch(msg => {
         log(ERROR)(
           `Error sending reply for command ${COMMAND_RESET_ROLES_EMBED}. Reason: ${msg}`
         );
+      })
+      .then(msg => {
+        log(SEND_MESSAGE)(msg);
+        log(GENERAL)("Roles embed has been successfully reset");
       });
   }
 };
