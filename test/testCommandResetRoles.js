@@ -23,24 +23,11 @@ describe(`Writing ${COMMAND_RESET_ROLES} with sufficient permissions should trig
   const GET_ENV_DESCRIBE = env =>
     describe(`${env} environment`, function() {
       let bot,
-        devChannel,
         roles_backup,
         message = {};
       before(function() {
         process.env.NODE_ENV = env;
         bot = new BotClient(client);
-        let devConfig = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
-          "development"
-        ];
-        // NOTE all embeds should be sent to the dev channel!
-        devChannel = client.guilds
-          .get(devConfig.guild.id)
-          .channels.get(devConfig.channel.dev.id);
-        for (let key in bot.embeds) {
-          if (bot.embeds.hasOwnProperty(key)) {
-            bot.embeds[key].channel = devChannel;
-          }
-        }
         message.content = COMMAND_RESET_ROLES;
         message.reply = () => Promise.resolve("");
       });
