@@ -5,13 +5,13 @@ const { ERROR, WARNING, GENERAL, SEND_MESSAGE, ROLE_ADD } = TYPE;
 export const COMMAND_RESET_ROLES = "!resetroles";
 const COMMAND_RESET_ROLES_EMBED = "!resetrolesembed";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";
-const COMMAND_CLEAR_DEV_CHANNEL = "!cleardev";
+const COMMAND_CLEAR_CHANNEL = "!clearchannel";
 const COMMAND_ADD_RANDOM_ROLES = "!addrandomroles";
 export const COMMANDS = [
   COMMAND_RESET_ROLES,
   COMMAND_RESET_ROLES_EMBED,
   COMMAND_TEST_MEMBER_ADD,
-  COMMAND_CLEAR_DEV_CHANNEL,
+  COMMAND_CLEAR_CHANNEL,
   COMMAND_ADD_RANDOM_ROLES
 ];
 
@@ -22,8 +22,8 @@ export const commandHandler = bot => msg => {
       return command_resetRoles(bot)(msg);
     case COMMAND_TEST_MEMBER_ADD:
       return command_guildMemberAdd(bot)(msg);
-    case COMMAND_CLEAR_DEV_CHANNEL:
-      return command_clearDevChannel(bot)(msg);
+    case COMMAND_CLEAR_CHANNEL:
+      return command_clearChannel(bot)(msg);
     case COMMAND_RESET_ROLES_EMBED:
       return command_resetRolesEmbed(bot)(msg);
     case COMMAND_ADD_RANDOM_ROLES:
@@ -93,12 +93,12 @@ const command_guildMemberAdd = bot => msg => {
   return bot.emit("guildMemberAdd", guildMember);
 };
 
-const command_clearDevChannel = bot => msg => {
+const command_clearChannel = bot => msg => {
   if (process.env.NODE_ENV !== "development")
     return log(WARNING)(
-      "Clearing dev channel is only available in development mode!"
+      "Clearing a channel is only available in development mode!"
     );
-  return clearChannel(bot.devChannel);
+  return clearChannel(msg.channel);
 };
 
 const command_addRandomRoles = bot => async msg => {
