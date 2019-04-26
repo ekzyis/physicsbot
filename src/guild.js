@@ -27,52 +27,6 @@ export const getServer = client => {
   return server;
 };
 
-export const getRoles = server => {
-  let roles = {};
-  roles.mapper = new Map();
-  // populate mapper with given role and emoji IDs and if exists, channel
-  server.roles.forEach(item => {
-    if (item.emoji) {
-      // NOTE we assume that every item with props emoji also has props role
-      let value = {
-        role: server.guild.roles.get(item.role.id),
-        emoji: server.guild.emojis.get(item.emoji.id)
-      };
-      if (!!item.channel) {
-        value.channel = server.guild.channels.get(item.channel.id);
-      }
-      roles.mapper.set(item.name, value);
-      log(GENERAL)(
-        `role name: ${item.name}, role id: ${item.role.id}, emoji id: ${
-          item.emoji.id
-        }, channel id: ${!!item.channel ? item.channel.id : undefined}`
-      );
-    }
-  });
-  let emojiString = "";
-  roles.mapper.forEach(value => {
-    emojiString += `${value.role.toString()}: ${value.emoji.toString()}\n\n`;
-  });
-  roles.embed = {
-    title: `***Rollen***`,
-    description:
-      `\nWillkommen im Rollen-Verteiler, hier könnt ihr auswählen was ihr studiert ` +
-      `und welche Kurse ihr belegt in dem ihr entsprechend auf diese Nachricht *reagiert*.\n\n` +
-      `Das ganze dient zur Übersicht und schaltet nur für die einzelnen Kurse bestimmte Text[- und Sprach]kanäle ` +
-      `frei, die ihr jetzt noch nicht sehen könnt.\n\n` +
-      `Reagieren ist ganz einfach: Klickt einfach auf die einzelnen Symbole unter diesem Post. ` +
-      `Dadurch erscheinen neue Textkanäle, in denen du dich mit deinen Kommilitonen austauschen kannst.\n` +
-      `Dies ist auch reversibel. Ihr könnt hier auch eine Reaktion durch einfaches Klicken wieder entfernen, ` +
-      `um z.B. über LA oder ANA nicht mehr informiert zu werden, bzw. diese Kanäle nicht mehr zu sehen.\n\n` +
-      `Probiert es ruhig aus, ihr könnt nichts falsch machen, nichts ist in Stein gemeißelt. Bei Fragen sind alle in der <#` +
-      server.defaultChannel.id +
-      `> sehr hilfsbereit!\n\n` +
-      `${emojiString}`,
-    id: undefined
-  };
-  return roles;
-};
-
 export const getLectures = async mapper => {
   let lectures = {
     algebra: {},
@@ -129,39 +83,6 @@ export const getLectures = async mapper => {
     id: undefined
   };
   return lectures;
-};
-
-export const init_overviewChannel = (
-  overviewChannel,
-  rolesEmbed,
-  rolesMapper,
-  lectures
-) => {
-  // Check if there is already a roles embed in overview channel
-  init_embed(overviewChannel, rolesEmbed).finally(() => {
-    // React with emotes so users can just click on them
-    overviewChannel
-      .fetchMessage(rolesEmbed.id)
-      .then(message => {
-        rolesMapper.forEach(value => {
-          message.react(value.emoji).catch(log(ERROR));
-        });
-      })
-      .catch(log(ERROR));
-  });
-  Promise.all(
-    Object.keys(lectures).map(key =>
-      init_embed(overviewChannel, lectures[key].embed)
-    )
-  ).then(
-    setInterval(
-      () =>
-        Object.keys(lectures).forEach(key =>
-          updateLecture(overviewChannel, rolesMapper, lectures[key])
-        ),
-      5000 * 60 // 5 seconds * 60 = 5 minutes //
-    )
-  );
 };
 
 const updateLecture = async (overviewChannel, mapper, lec) => {
