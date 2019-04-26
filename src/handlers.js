@@ -50,7 +50,7 @@ const messageReactionComposer = (LOG_REACTION, LOG_ROLE, roleFn) => bot => (
     if (associatedItem) {
       // Reaction is included in a role item and therefore does have a associated role
       let associatedRole = associatedItem.role;
-      bot.guild
+      return bot.guild
         .fetchMember(user)
         .then(member =>
           roleFn(member, associatedRole.id)
