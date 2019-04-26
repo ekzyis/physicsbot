@@ -2,7 +2,6 @@ import fs from "fs";
 import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
-import { COMMAND_RESET_ROLES, COMMAND_SUCCESS } from "./command";
 
 const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
