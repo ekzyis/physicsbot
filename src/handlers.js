@@ -9,6 +9,8 @@ const {
   ERROR
 } = TYPE;
 
+export const GREETING_EMBED_TITLE = (bot, member) =>
+  `Willkommen ${member.user.tag} auf ${bot.guild.name}!\n`;
 export const guildMemberAddHandler = bot => member => {
   if (member.guild.id === bot.guild.id) {
     let embedGreeting = {
@@ -18,7 +20,7 @@ export const guildMemberAddHandler = bot => member => {
         thumbnail: {
           url: member.user.avatarURL
         },
-        title: `Willkommen ${member.user.tag} auf ${bot.guild.name}!\n`,
+        title: GREETING_EMBED_TITLE(bot, member),
         description:
           `Es wäre cool, wenn du dir die ` +
           bot.rulesChannel +
@@ -28,7 +30,7 @@ export const guildMemberAddHandler = bot => member => {
           ` ansehen. Sag mir dort am besten gleich, welche Vorlesungen du besuchst, damit ich dir die jeweiligen Kanäle freischalten kann!`
       }
     };
-    bot.defaultChannel
+    return bot.defaultChannel
       .send(member.toString(), embedGreeting)
       .then(log(SEND_MESSAGE))
       .catch(log(ERROR));
