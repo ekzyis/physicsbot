@@ -7,7 +7,7 @@
     "start": "npm run build && NODE_ENV=production CONFIG=config.json TOKEN=$(cat token) node lib/index.js",
     "dev": "npm run build && NODE_ENV=development CONFIG=config.json TOKEN=$(cat token) node lib/index.js",
     "build": "rm -rf lib/ && babel src/ -d lib/",
-    "test": "TEST=true CONFIG=config.json TOKEN=$(cat token) mocha --require @babel/register"
+    "test": "TEST=true CONFIG=config.json TOKEN=$(cat token) nyc --reporter=text mocha --require @babel/register"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,8 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.4.0",
     "chai": "^4.2.0",
-    "mocha": "^6.1.3",
+    "mocha": "^6.1.4",
+    "nyc": "^14.0.0",
     "prettier": "^1.15.3"
   }
 }
