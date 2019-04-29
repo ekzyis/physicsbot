@@ -100,7 +100,8 @@ const command_clearChannel = bot => msg => {
     log(WARNING)(ERROR_MESSAGE);
     return Promise.reject(ERROR_MESSAGE);
   }
-  if (!msg.author.hasPermission("MANAGE_GUILD")) {
+  let guildMember = bot.guild.member(msg.author);
+  if (!guildMember.hasPermission("MANAGE_GUILD")) {
     const ERROR_MESSAGE = "Not enough permissions to clear channel!";
     log(WARNING)(ERROR_MESSAGE);
     return Promise.reject(ERROR_MESSAGE);
