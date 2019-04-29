@@ -10,6 +10,7 @@ import {
   messageHandler
 } from "./handlers";
 import { BotClient } from "./botClient";
+import { PEP2_UPDATE } from "./update/pep2";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;
@@ -28,6 +29,7 @@ client.on("ready", () => {
   bot.on("messageReactionRemove", messageReactionRemoveHandler);
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
+  bot.interval(PEP2_UPDATE, 5000);
 });
 
 client.on("error", log(ERROR));

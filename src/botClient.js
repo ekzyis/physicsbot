@@ -2,6 +2,7 @@ import fs from "fs";
 import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
+import { connect } from "./db";
 
 const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
@@ -34,7 +35,23 @@ export class BotClient {
       embed: genRoleEmbed(instance.defaultChannel, roleNameMap),
       message: undefined
     };
+    this.db = connect("mongodb://localhost/physicsbot");
+    this.updateIntervals = [];
   }
+
+  interval = (intervalFunction, interval) => {
+    let intervalResult = setInterval(intervalFunction(this), interval);
+    this.updateIntervals.push(intervalResult);
+    return intervalResult;
+  };
+
+  on = (event, handler) => {
+    this[_client].on(event, handler(this));
+  };
+
+  emit = (event, data) => {
+    this[_client].emit(event, data);
+  };
 
   // if embed alreadys exists, sets id of existing message with embed
   // else a new embed is created and this new message id is saved
@@ -110,14 +127,6 @@ export class BotClient {
         reject("Embed not found ¯\\_(ツ)_/¯");
       });
     });
-  };
-
-  on = (event, handler) => {
-    this[_client].on(event, handler(this));
-  };
-
-  emit = (event, data) => {
-    this[_client].emit(event, data);
   };
 
   resetRoles = () => {

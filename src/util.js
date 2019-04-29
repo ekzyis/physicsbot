@@ -19,7 +19,8 @@ const TYPE = {
   EDIT: msg =>
     `[ EDIT_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
   ERROR: e => `[ ERROR ]:[ ${e.message || e} ]`,
-  WARNING: msg => `[ WARNING ]:[ ${msg} ]`
+  WARNING: msg => `[ WARNING ]:[ ${msg} ]`,
+  DB: msg => `[ DB ]:[ ${msg} ]`
 };
 
 const log = type => (...a) => {
