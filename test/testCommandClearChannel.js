@@ -5,7 +5,6 @@ import { BotClient } from "../src/botClient";
 import { COMMAND_CLEAR_CHANNEL, commandHandler } from "../src/command";
 
 const expect = chai.expect;
-const assert = chai.assert;
 
 describe(`Writing ${COMMAND_CLEAR_CHANNEL} with sufficient permissions should clear the channel but only in development mode`, function() {
   this.slow(15000);
