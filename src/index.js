@@ -29,7 +29,7 @@ client.on("ready", () => {
   bot.on("messageReactionRemove", messageReactionRemoveHandler);
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
-  bot.interval(PEP2_UPDATE, 5000);
+  bot.interval(PEP2_UPDATE, 5000 * 60);
 });
 
 client.on("error", log(ERROR));
