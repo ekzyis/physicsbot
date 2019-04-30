@@ -35,7 +35,7 @@ export class BotClient {
       embed: genRoleEmbed(instance.defaultChannel, roleNameMap),
       message: undefined
     };
-    this.db = connect("mongodb://localhost/physicsbot");
+    this.db = connect(this)("mongodb://localhost/physicsbot");
     this.updateIntervals = [];
   }
 

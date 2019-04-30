@@ -11,7 +11,7 @@ const createDocument = (Model, data) => {
   return model.save();
 };
 
-export const connect = ADDRESS => {
+export const connect = bot => ADDRESS => {
   mongoose.connect(
     ADDRESS,
     {
@@ -30,8 +30,7 @@ export const connect = ADDRESS => {
     if (count === 0) {
       return createDocument(Lecture, {
         name: PEP2_LECTURE_NAME,
-        // TODO get this from config instead of hardcoding
-        channel: "506552477542383627",
+        channel: bot.roleNameMap.get("Theoretische Physik 2").channel,
         color: "#29ca62"
       });
     }
