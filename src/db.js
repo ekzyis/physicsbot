@@ -30,7 +30,7 @@ export const connect = bot => ADDRESS => {
     if (count === 0) {
       return createDocument(Lecture, {
         name: PEP2_LECTURE_NAME,
-        channel: bot.roleNameMap.get("Theoretische Physik 2").channel,
+        channel: bot.roleNameMap.get("Theoretische Physik 2").channel.id,
         color: "#29ca62"
       });
     }
