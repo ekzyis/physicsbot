@@ -7,6 +7,7 @@ const LectureSchema = mongoose.Schema(
     color: { type: String, default: null },
     updates: [
       {
+        // TODO Check if default value is really date of insertion and not time of compilation of this code
         time: { type: Date, default: new Date().getUTCDate() },
         scrape: { type: [{}] },
         notification: {
