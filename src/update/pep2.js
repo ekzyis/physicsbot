@@ -9,12 +9,13 @@ const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
 const req = util.promisify(request);
 
-export const PEP2_LECTURE_NAME = "Theoretische Physik II";
-export const PEP2_UPDATE = bot => async () => {
-  const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
-  const PEP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
+const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
 
-  let $ = await req(UEBUNGEN_PHYSIK_URL + PEP2_URL_SUFFIX)
+export const PTP2_LECTURE_NAME = "Theoretische Physik II";
+export const PTP2_UPDATE = bot => async () => {
+  const PTP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
+
+  let $ = await req(UEBUNGEN_PHYSIK_URL + PTP2_URL_SUFFIX)
     .then(res => cheerio.load(res.body))
     .catch(err => {
       log(ERROR)(err);
@@ -30,7 +31,7 @@ export const PEP2_UPDATE = bot => async () => {
     text: `Blatt ${i + 1}`,
     href: h
   }));
-  handleUpdate(bot)(PEP2_LECTURE_NAME, scrape, $.root().html());
+  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape, $.root().html());
 };
 
 const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { log, TYPE } from "./util";
 import Lecture from "./model/Lectures";
-import { PEP2_LECTURE_NAME } from "./update/pep2";
+import { PTP2_LECTURE_NAME } from "./update/pep2";
 
 const { ERROR, DB } = TYPE;
 
@@ -25,11 +25,11 @@ export const connect = bot => ADDRESS => {
   db.once("open", () => log(DB)(`Database connection successful!`));
 
   // Initialize documents
-  Lecture.countDocuments({ name: PEP2_LECTURE_NAME }, (err, count) => {
+  Lecture.countDocuments({ name: PTP2_LECTURE_NAME }, (err, count) => {
     if (err) throw err;
     if (count === 0) {
       return createDocument(Lecture, {
-        name: PEP2_LECTURE_NAME,
+        name: PTP2_LECTURE_NAME,
         channel: bot.roleNameMap.get("Theoretische Physik 2").channel.id,
         color: "#29ca62"
       });
