@@ -10,7 +10,7 @@ import {
   messageHandler
 } from "./handlers";
 import { BotClient } from "./botClient";
-import { PTP2_UPDATE } from "./update/pep2";
+import { PEP2_UPDATE, PTP2_UPDATE } from "./scrape";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;
@@ -30,6 +30,7 @@ client.on("ready", () => {
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
   bot.interval(PTP2_UPDATE, 5000 * 60);
+  bot.interval(PEP2_UPDATE, 5000 * 60);
 });
 
 client.on("error", log(ERROR));

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { log, TYPE } from "./util";
 import Lecture from "./model/Lectures";
-import { PTP2_LECTURE_NAME } from "./update/pep2";
+import { PEP2_LECTURE_NAME, PTP2_LECTURE_NAME } from "./scrape";
 
 const { ERROR, DB } = TYPE;
 
@@ -31,7 +31,19 @@ export const connect = bot => ADDRESS => {
       return createDocument(Lecture, {
         name: PTP2_LECTURE_NAME,
         channel: bot.roleNameMap.get("Theoretische Physik 2").channel.id,
+        // TODO get from config
         color: "#29ca62"
+      });
+    }
+  });
+  Lecture.countDocuments({ name: PEP2_LECTURE_NAME }, (err, count) => {
+    if (err) throw err;
+    if (count === 0) {
+      return createDocument(Lecture, {
+        name: PEP2_LECTURE_NAME,
+        channel: bot.roleNameMap.get("Experimentalphysik 2").channel.id,
+        // TODO get from config
+        color: "#df22d3"
       });
     }
   });

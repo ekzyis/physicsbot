@@ -1,220 +1,149 @@
-const request = require("request");
-const cheerio = require("cheerio");
+import cheerio from "cheerio";
+import request from "request";
+import util from "util";
+import { log, TYPE } from "./util";
+import Lecture from "./model/Lectures";
+import discord from "discord.js";
+import fs from "fs";
 
-const LINEARE_ALGEBRA_URL =
-  "https://ssp.math.uni-heidelberg.de/la1-ws2018/uebung.html";
+const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
-const ANALYSIS_URL =
-  "https://www.mathi.uni-heidelberg.de/~hofmann/files/ana1.html";
+const req = util.promisify(request);
+const reqpost = util.promisify(request.post);
 
-const PEP1_URL =
-  "https://uebungen.physik.uni-heidelberg.de/vorlesung/20182/pep1";
+const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
+const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
+const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
 
-const PTP1_URL =
-  "https://uebungen.physik.uni-heidelberg.de/vorlesung/20182/ptp1";
-
-export const getLineareAlgebraData = () => {
-  return new Promise((resolve, reject) => {
-    // TODO add reject / error checking
-    request(LINEARE_ALGEBRA_URL, (error, response, html) => {
-      if (!error && response.statusCode === 200) {
-        let $ = cheerio.load(html);
-        // 0: abgabeblätter
-        // 1: lösungen
-        // 2: präsenzblätter
-        // 3: lösungen
-        let results = [[], [], [], [], []];
-        $("div#content > table > tbody > tr").each((i, element) => {
-          // get week string
-          let week = $(element)
-            .children()
-            .eq(0)
-            .text()
-            .replace(/\s\s+/g, " ");
-          results[0].push(week);
-          for (let i = 1; i < 5; i++) {
-            // get links
-            let subelement = $(element)
-              .children()
-              .eq(i)
-              .children("a");
-            let link =
-              // TODO replace hardcoded url
-              "https://ssp.math.uni-heidelberg.de/la1-ws2018/" +
-              $(subelement).attr("href");
-            let text = $(subelement).text();
-            results[i].push({
-              text,
-              link
-            });
-          }
-        });
-        // convert data into fields object which can be handled by discord.RichEmbed
-        let fieldify = data => {
-          let fields = [];
-          for (let i = 0; i < data[0].length; ++i) {
-            fields.push({
-              name: data[0][i],
-              value:
-                `[${data[1][i].text}](${data[1][i].link}) ` +
-                `[${data[2][i].text}](${data[2][i].link}) ` +
-                `[${data[3][i].text}](${data[3][i].link}) ` +
-                `[${data[4][i].text}](${data[4][i].link})`
-            });
-          }
-          return fields;
-        };
-        resolve(fieldify(results));
-      }
-    });
-  });
+const formatHrefs = (hrefs, text = i => `Blatt ${i}`) => {
+  return hrefs.map((h, i) => ({
+    text: text(i + 1),
+    href: h
+  }));
 };
 
-export const getAnalysisData = () => {
-  return new Promise((resolve, reject) => {
-    // TODO add reject / error checking
-    request(ANALYSIS_URL, (error, response, html) => {
-      // server does not respond with status code even though successful...
-      //console.log(response.status);
-      if (!error) {
-        let $ = cheerio.load(html);
-        let results = [];
-        // <tr>'s of table
-        let table = $(
-          "div#MainColumn > table.mathi > tbody > tr > td > table.mathi"
-        )
-          .eq(1)
-          .children("tbody")
-          .children("tr")
-          .eq(7)
-          .children("td")
-          .children("table.mathi")
-          .children("tbody")
-          .children();
-        table.each((i, row) => {
-          // ignore first row
-          if (i !== 0) {
-            let cells = $(row).children();
-            // first element is number of exercise
-            results.push({
-              text: `Blatt ${cells.eq(0).text()}`,
-              link:
-                // TODO replace hardcoded url
-                "https://www.mathi.uni-heidelberg.de/~hofmann/files/" +
-                cells
-                  .eq(2)
-                  .children("a")
-                  .attr("href")
-                  .substr(2)
-            });
+export const PTP2_LECTURE_NAME = "Theoretische Physik II";
+export const PTP2_UPDATE = bot => async () => {
+  const PTP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
+
+  let $ = await req(UEBUNGEN_PHYSIK_URL + PTP2_URL_SUFFIX)
+    .then(res => cheerio.load(res.body))
+    .catch(err => {
+      log(ERROR)(err);
+      return null;
+    });
+  const hrefs = $("#infoarea-5631")
+    .find("ul > li > a")
+    .map(function(i, el) {
+      return UEBUNGEN_PHYSIK_URL + $(this).attr("href");
+    })
+    .get();
+  const scrape = formatHrefs(hrefs);
+  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape, $.root().html());
+};
+
+const MOODLE_CREDENTIALS_PATH = "moodle_creds.json";
+const moodle_login = async () => {
+  const cookieJar = request.jar();
+  await req({
+    url: MOODLE_URL_LOGIN,
+    followAllRedirects: true,
+    jar: cookieJar
+  })
+    .then(res => {
+      const $ = cheerio.load(res.body);
+      // Get the login token needed for the login POST request 😏
+      const logintoken = $('#login > input[type="hidden"]:nth-child(6)').attr(
+        "value"
+      );
+      // Login!
+      const creds = JSON.parse(fs.readFileSync(MOODLE_CREDENTIALS_PATH));
+      return reqpost({
+        url: MOODLE_URL_LOGIN,
+        form: {
+          ...creds,
+          logintoken,
+          anchor: ""
+        },
+        followAllRedirects: true,
+        jar: cookieJar
+      });
+    })
+    .catch(log(ERROR));
+  return cookieJar;
+};
+
+export const PEP2_LECTURE_NAME = "Experimentalphysik II";
+export const PEP2_UPDATE = bot => async () => {
+  const PEP2_URL_SUFFIX = "/course/view.php?id=21423";
+  const cookieJar = await moodle_login();
+  const $ = await req(MOODLE_URL + PEP2_URL_SUFFIX, {
+    jar: cookieJar
+  })
+    .then(res => cheerio.load(res.body))
+    .catch(log(ERROR));
+  let hrefs = $("span.instancename")
+    .filter((i, el) => {
+      return !!$(el)
+        .text()
+        .match(/^Blatt/);
+    })
+    .map((i, el) => {
+      return $(el)
+        .parent()
+        .attr("href");
+    })
+    .get();
+  let scrape = formatHrefs(hrefs);
+  handleUpdate(bot)(PEP2_LECTURE_NAME, scrape, $.root().html());
+};
+
+const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
+  Lecture.findOne({ name: DB_LECTURE_NAME }, "updates color channel", function(
+    err,
+    lec
+  ) {
+    if (err) throw err;
+    if (lec.updates.length > 0) {
+      // there is at least one element already in updates!
+      // NOTE should checking for difference be more sophisticated or is this enough?
+      let diff =
+        scrape.length - lec.updates[lec.updates.length - 1].scrape.length;
+      if (diff > 0) {
+        // a previously not scraped element is found!
+        // send notification!
+        let channel = bot.guild.channels.get(lec.channel);
+        let title = `**${DB_LECTURE_NAME}: Neues Blatt!**`;
+        let description = scrape
+          .slice(diff)
+          .map((el, i) => `${el.text}\n${el.href}\n\n`)
+          .join("");
+        const embed = new discord.RichEmbed()
+          .setTitle(title)
+          .setDescription(description)
+          .setColor(lec.color);
+        channel
+          .send(embed)
+          .then(log(SEND_MESSAGE))
+          .catch(log(ERROR));
+        // save new update in document
+        lec.updates.push({
+          scrape,
+          html,
+          notification: {
+            title,
+            description
           }
         });
-        let fieldify = data => {
-          let fields = [];
-          data.forEach(obj => {
-            fields.push({
-              name: obj.text,
-              value: obj.link
-            });
-          });
-          return fields;
-        };
-        resolve(fieldify(results));
+        lec.save();
+        log(DB)(`Updated ${DB_LECTURE_NAME}`);
       }
-    });
-  });
-};
-
-export const getExpData = () => {
-  return new Promise((resolve, reject) => {
-    // TODO add reject / error checking
-    request(PEP1_URL, (error, response, html) => {
-      // server does not respond with status code even though successful...
-      //console.log(response.status);
-      if (!error) {
-        let $ = cheerio.load(html);
-        let results = [[], []];
-        // Folien
-        $("div#infoarea-4861 > div > div.picfileline").each((i, element) => {
-          results[0].push({
-            text: $(element)
-              .children("a")
-              .text(),
-            link:
-              // TODO replace hardcoded url
-              "https://uebungen.physik.uni-heidelberg.de" +
-              $(element)
-                .children("a")
-                .attr("href")
-          });
-        });
-        // Übungsblätter
-        $("div#infoarea-4862 > ul > li > ul > li").each((i, element) => {
-          results[1].push({
-            text: $(element).text(),
-            link:
-              // TODO replace hardcoded url
-              "https://uebungen.physik.uni-heidelberg.de" +
-              $(element)
-                .contents("a")
-                .attr("href")
-          });
-        });
-        let fieldify = data => {
-          let fields = [];
-          data[0].forEach(obj =>
-            fields.push({
-              name: obj.text,
-              value: obj.link
-            })
-          );
-          data[1].forEach(obj => {
-            fields.push({
-              name: obj.text,
-              value: obj.link
-            });
-          });
-          return fields;
-        };
-        resolve(fieldify(results));
-      }
-    });
-  });
-};
-
-export const getTheoData = () => {
-  return new Promise((resolve, reject) => {
-    request(PTP1_URL, (error, response, html) => {
-      // server does not respond with status code even though successful...
-      //console.log(response.status);
-      if (!error) {
-        let $ = cheerio.load(html);
-        let results = [];
-        $("div#infoarea-5006 > ul > li > ul > li").each((i, element) => {
-          results.push({
-            text: $(element)
-              .children("a")
-              .text(),
-            link:
-              // TODO replace hardcoded url
-              "https://uebungen.physik.uni-heidelberg.de" +
-              $(element)
-                .children("a")
-                .attr("href")
-          });
-        });
-        let fieldify = data => {
-          let fields = [];
-          data.forEach(obj => {
-            fields.push({
-              name: obj.text,
-              value: obj.link
-            });
-          });
-          return fields;
-        };
-        resolve(fieldify(results));
-      }
-    });
+      log(DB)(`No update for ${DB_LECTURE_NAME}`);
+    } else {
+      log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
+      // first time saving state of website
+      lec.updates.push({ scrape, html });
+      lec.save();
+    }
   });
 };
