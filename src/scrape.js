@@ -115,7 +115,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
         let channel = bot.guild.channels.get(lec.channel);
         let title = `**${DB_LECTURE_NAME}: Neues Blatt!**`;
         let description = scrape
-          .slice(diff)
+          .slice(-diff)
           .map((el, i) => `${el.text}\n${el.href}\n\n`)
           .join("");
         const embed = new discord.RichEmbed()
