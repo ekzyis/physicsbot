@@ -30,11 +30,11 @@ export const genRoleNameMap = (config, guild) => {
         value.channel = guild.channels.get(item.channel.id);
       }
       map.set(item.name, value);
-      log(GENERAL)(
+      /*log(GENERAL)(
         `role name: ${item.name}, role id: ${item.role.id}, emoji id: ${
           item.emoji.id
         } ${!!item.channel ? `, channel id: ${item.channel.id}` : ""}`
-      );
+      );*/
     }
   });
   return map;
