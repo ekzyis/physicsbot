@@ -13,8 +13,7 @@ const LectureSchema = mongoose.Schema(
         notification: {
           title: { type: String, default: null },
           description: { type: String, default: null }
-        },
-        html: { type: String, default: null }
+        }
       }
     ]
   },

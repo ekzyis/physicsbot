@@ -39,7 +39,7 @@ export const PTP2_UPDATE = bot => async () => {
     })
     .get();
   const scrape = formatHrefs(hrefs);
-  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape, $.root().html());
+  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape);
 };
 
 const MOODLE_CREDENTIALS_PATH = "moodle_creds.json";
@@ -95,7 +95,7 @@ export const PEP2_UPDATE = bot => async () => {
     })
     .get();
   let scrape = formatHrefs(hrefs);
-  handleUpdate(bot)(PEP2_LECTURE_NAME, scrape, $.root().html());
+  handleUpdate(bot)(PEP2_LECTURE_NAME, scrape);
 };
 
 const areEqual = (item1, item2) =>
@@ -154,7 +154,7 @@ const createEmbed = (lecDocument, added, files) => {
     .attachFiles(attachments);
 };
 
-const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
+const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
   Lecture.findOne(
     { name: DB_LECTURE_NAME },
     "updates color channel",
@@ -182,7 +182,6 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
           // save new update in document
           lec.updates.push({
             scrape,
-            html,
             notification: {
               title: embed.title,
               description: embed.description
@@ -210,7 +209,6 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
           // save new update in document
           lec.updates.push({
             scrape,
-            html,
             notification: {
               title: null,
               description: null
@@ -226,7 +224,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
           scrape.map(item => download(item, DB_LECTURE_NAME))
         );
         // first time saving state of website
-        lec.updates.push({ scrape, html });
+        lec.updates.push({ scrape });
         if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
           const embed = createEmbed(DB_LECTURE_NAME, scrape, files);
