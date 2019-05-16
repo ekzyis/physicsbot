@@ -157,7 +157,7 @@ const createEmbed = (lecDocument, added, files) => {
 const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
   Lecture.findOne(
     { name: DB_LECTURE_NAME },
-    "updates color channel",
+    "name updates color channel",
     async function(err, lec) {
       if (err) throw err;
       if (lec.updates.length > 0) {
@@ -174,7 +174,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           );
           // send notification!
           let channel = bot.guild.channels.get(lec.channel);
-          const embed = createEmbed(DB_LECTURE_NAME, added, files);
+          const embed = createEmbed(lec, added, files);
           channel
             .send(embed)
             .then(log(SEND_MESSAGE))
@@ -215,7 +215,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
         lec.updates.push({ time: new Date(), scrape });
         if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
-          const embed = createEmbed(DB_LECTURE_NAME, scrape, files);
+          const embed = createEmbed(lec, scrape, files);
           channel
             .send(embed)
             .then(log(SEND_MESSAGE))
