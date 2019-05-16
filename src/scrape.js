@@ -144,7 +144,7 @@ const download = async (item, lectureName) => {
 };
 
 const createUpdateNotification = (channel, lecDocument, added, files) => {
-  let title = `**${lecDocument.name}: Neues Blatt!**`;
+  let title = `**${lecDocument.name}: Neue Materialien verfübgar!**`;
   let description = added.map((el, i) => `${el.text}\n${el.href}\n\n`).join("");
   let attachments = files.map((f, i) => ({
     name: `${lecDocument.name}_${added[i].text}${
