@@ -189,6 +189,7 @@ export const clearChannel = async channel => {
         );
       })
       .catch(err => {
+        // FIXME "Unknown error"
         log(ERROR)(err);
         return -1;
       });
