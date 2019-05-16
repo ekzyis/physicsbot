@@ -15,13 +15,6 @@ const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
 const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
 const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
 
-const formatHrefs = (hrefs, text = i => `Blatt ${i}`) => {
-  return hrefs.map((h, i) => ({
-    text: text(i + 1),
-    href: h
-  }));
-};
-
 export const PTP2_LECTURE_NAME = "Theoretische Physik II";
 export const PTP2_UPDATE = bot => async () => {
   const PTP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
@@ -32,13 +25,15 @@ export const PTP2_UPDATE = bot => async () => {
       log(ERROR)(err);
       return null;
     });
-  const hrefs = $("#infoarea-5631")
+  const scrape = $("#infoarea-5631")
     .find("ul > li > a")
     .map(function(i, el) {
-      return UEBUNGEN_PHYSIK_URL + $(this).attr("href");
+      return {
+        href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
+        text: $(this).text()
+      };
     })
     .get();
-  const scrape = formatHrefs(hrefs);
   handleUpdate(bot)(PTP2_LECTURE_NAME, scrape);
 };
 
@@ -82,19 +77,27 @@ export const PEP2_UPDATE = bot => async () => {
   })
     .then(res => cheerio.load(res.body))
     .catch(log(ERROR));
-  let hrefs = $("span.instancename")
+  const scrape = $("span.instancename")
     .filter((i, el) => {
+      // filter all elements which have a PDF icon next to them
       return !!$(el)
-        .text()
-        .match(/^Blatt/i);
+        .prev()
+        .attr("src")
+        .match(/core\/1547554624\/f\/pdf-24$/);
     })
     .map((i, el) => {
-      return $(el)
-        .parent()
-        .attr("href");
+      // the parent is the <a> tag with the link for downloading
+      return {
+        text: $(el)
+          .parent()
+          .text()
+          .replace(/ Datei/, ""),
+        href: $(el)
+          .parent()
+          .attr("href")
+      };
     })
     .get();
-  let scrape = formatHrefs(hrefs);
   handleUpdate(bot)(PEP2_LECTURE_NAME, scrape);
 };
 
