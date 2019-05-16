@@ -143,18 +143,39 @@ const download = async (item, lectureName) => {
     .catch(log(ERROR));
 };
 
-const createEmbed = (lecDocument, added, files) => {
+const createNotification = (channel, lecDocument, added, files) => {
   let title = `**${lecDocument.name}: Neues Blatt!**`;
   let description = added.map((el, i) => `${el.text}\n${el.href}\n\n`).join("");
   let attachments = files.map((f, i) => ({
-    name: `${lecDocument.name}_${added[i].text}.pdf`,
+    name: `${lecDocument.name}_${added[i].text}${
+      added[i].text.match(/\.pdf$/) ? "" : ".pdf"
+    }`,
     attachment: f
   }));
-  return new discord.RichEmbed()
+  let embed = new discord.RichEmbed()
     .setTitle(title)
     .setDescription(description)
-    .setColor(lecDocument.color)
-    .attachFiles(attachments);
+    .setColor(lecDocument.color);
+  return channel
+    .send(embed)
+    .then(log(SEND_MESSAGE))
+    .catch(log(ERROR))
+    .then(async () => {
+      // create chunks of size 10
+      let chunks = attachments.reduce((all, one, i) => {
+        const ch = Math.floor(i / 10);
+        all[ch] = [].concat(all[ch] || [], one);
+        return all;
+      }, []);
+      for (let chunk of chunks) {
+        await channel
+          .send({
+            files: chunk
+          })
+          .then(log(SEND_MESSAGE))
+          .catch(log(ERROR));
+      }
+    });
 };
 
 const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
@@ -177,11 +198,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           );
           // send notification!
           let channel = bot.guild.channels.get(lec.channel);
-          const embed = createEmbed(lec, added, files);
-          channel
-            .send(embed)
-            .then(log(SEND_MESSAGE))
-            .catch(log(ERROR));
+          await createNotification(channel, lec, added, files);
           // save new update in document
           lec.updates.push({ time: new Date(), scrape });
           lec.save();
@@ -218,11 +235,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
         lec.updates.push({ time: new Date(), scrape });
         if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
-          const embed = createEmbed(lec, scrape, files);
-          channel
-            .send(embed)
-            .then(log(SEND_MESSAGE))
-            .catch(log(ERROR));
+          await createNotification(channel, lec, scrape, files);
         }
         lec.save();
       }
