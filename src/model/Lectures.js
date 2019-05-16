@@ -8,11 +8,7 @@ const LectureSchema = mongoose.Schema(
     updates: [
       {
         time: { type: Date, default: null },
-        scrape: { type: [{}] },
-        notification: {
-          title: { type: String, default: null },
-          description: { type: String, default: null }
-        }
+        scrape: { type: [{}] }
       }
     ]
   },

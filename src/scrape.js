@@ -180,14 +180,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
             .then(log(SEND_MESSAGE))
             .catch(log(ERROR));
           // save new update in document
-          lec.updates.push({
-            time: new Date(),
-            scrape,
-            notification: {
-              title: embed.title,
-              description: embed.description
-            }
-          });
+          lec.updates.push({ time: new Date(), scrape });
           lec.save();
           log(DB)(`Updated ${DB_LECTURE_NAME}`);
         }
