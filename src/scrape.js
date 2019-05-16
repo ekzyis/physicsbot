@@ -165,7 +165,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
             .map((el, i) => `${el.text}\n${el.href}\n\n`)
             .join("");
           let attachments = files.map((f, i) => ({
-            name: `${DB_LECTURE_NAME}_${scrape[i].text}.pdf`,
+            name: `${DB_LECTURE_NAME}_${added[i].text}.pdf`,
             attachment: f
           }));
           const embed = new discord.RichEmbed()
