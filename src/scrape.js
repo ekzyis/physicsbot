@@ -143,7 +143,7 @@ const download = async (item, lectureName) => {
     .catch(log(ERROR));
 };
 
-const createNotification = (channel, lecDocument, added, files) => {
+const createUpdateNotification = (channel, lecDocument, added, files) => {
   let title = `**${lecDocument.name}: Neues Blatt!**`;
   let description = added.map((el, i) => `${el.text}\n${el.href}\n\n`).join("");
   let attachments = files.map((f, i) => ({
@@ -198,7 +198,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           );
           // send notification!
           let channel = bot.guild.channels.get(lec.channel);
-          await createNotification(channel, lec, added, files);
+          await createUpdateNotification(channel, lec, added, files);
           // save new update in document
           lec.updates.push({ time: new Date(), scrape });
           lec.save();
@@ -235,7 +235,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
         lec.updates.push({ time: new Date(), scrape });
         if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
-          await createNotification(channel, lec, scrape, files);
+          await createUpdateNotification(channel, lec, scrape, files);
         }
         lec.save();
       }
