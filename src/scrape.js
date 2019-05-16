@@ -86,7 +86,7 @@ export const PEP2_UPDATE = bot => async () => {
     .filter((i, el) => {
       return !!$(el)
         .text()
-        .match(/^Blatt/);
+        .match(/^Blatt/i);
     })
     .map((i, el) => {
       return $(el)
