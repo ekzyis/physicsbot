@@ -140,6 +140,20 @@ const download = async (item, lectureName) => {
     .catch(log(ERROR));
 };
 
+const createEmbed = (lecDocument, added, files) => {
+  let title = `**${lecDocument.name}: Neues Blatt!**`;
+  let description = added.map((el, i) => `${el.text}\n${el.href}\n\n`).join("");
+  let attachments = files.map((f, i) => ({
+    name: `${lecDocument.name}_${added[i].text}.pdf`,
+    attachment: f
+  }));
+  return new discord.RichEmbed()
+    .setTitle(title)
+    .setDescription(description)
+    .setColor(lecDocument.color)
+    .attachFiles(attachments);
+};
+
 const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
   Lecture.findOne(
     { name: DB_LECTURE_NAME },
@@ -160,19 +174,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
           );
           // send notification!
           let channel = bot.guild.channels.get(lec.channel);
-          let title = `**${DB_LECTURE_NAME}: Neues Blatt!**`;
-          let description = added
-            .map((el, i) => `${el.text}\n${el.href}\n\n`)
-            .join("");
-          let attachments = files.map((f, i) => ({
-            name: `${DB_LECTURE_NAME}_${added[i].text}.pdf`,
-            attachment: f
-          }));
-          const embed = new discord.RichEmbed()
-            .setTitle(title)
-            .setDescription(description)
-            .setColor(lec.color)
-            .attachFiles(attachments);
+          const embed = createEmbed(DB_LECTURE_NAME, added, files);
           channel
             .send(embed)
             .then(log(SEND_MESSAGE))
@@ -182,8 +184,8 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
             scrape,
             html,
             notification: {
-              title,
-              description
+              title: embed.title,
+              description: embed.description
             }
           });
           lec.save();
@@ -220,9 +222,19 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape, html) => {
       } else {
         log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
         // download data
-        scrape.map(item => download(item, DB_LECTURE_NAME));
+        let files = await Promise.all(
+          scrape.map(item => download(item, DB_LECTURE_NAME))
+        );
         // first time saving state of website
         lec.updates.push({ scrape, html });
+        if (process.env.NODE_ENV === "development") {
+          let channel = bot.guild.channels.get(lec.channel);
+          const embed = createEmbed(DB_LECTURE_NAME, scrape, files);
+          channel
+            .send(embed)
+            .then(log(SEND_MESSAGE))
+            .catch(log(ERROR));
+        }
         lec.save();
       }
     }
