@@ -7,8 +7,7 @@ const LectureSchema = mongoose.Schema(
     color: { type: String, default: null },
     updates: [
       {
-        // FIXME date is not set to date of insertion, but of code compilation!
-        time: { type: Date, default: new Date().getUTCDate() },
+        time: { type: Date, default: null },
         scrape: { type: [{}] },
         notification: {
           title: { type: String, default: null },

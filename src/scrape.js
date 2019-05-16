@@ -181,6 +181,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
             .catch(log(ERROR));
           // save new update in document
           lec.updates.push({
+            time: new Date(),
             scrape,
             notification: {
               title: embed.title,
@@ -207,13 +208,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
             .catch(log(ERROR));
           log(DB)(logMessage);
           // save new update in document
-          lec.updates.push({
-            scrape,
-            notification: {
-              title: null,
-              description: null
-            }
-          });
+          lec.updates.push({ time: new Date(), scrape });
           lec.save();
           log(DB)(`Updated ${DB_LECTURE_NAME}`);
         } else log(DB)(`No update for ${DB_LECTURE_NAME}`);
@@ -224,7 +219,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           scrape.map(item => download(item, DB_LECTURE_NAME))
         );
         // first time saving state of website
-        lec.updates.push({ scrape });
+        lec.updates.push({ time: new Date(), scrape });
         if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
           const embed = createEmbed(DB_LECTURE_NAME, scrape, files);
