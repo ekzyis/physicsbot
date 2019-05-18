@@ -160,9 +160,9 @@ const download = async (item, lectureName) => {
       let dateFileNameFormat = new Date()
         .toISOString()
         .replace(/\..+/, "")
-        .replace(":", "")
-        .replace("-", "");
-      let filename = `${lectureName.replace(" ", "_")}_${item.href
+        .replace(/:/g, "")
+        .replace(/-/g, "");
+      let filename = `${lectureName.replace(/\s/g, "_")}_${item.href
         .split("/")
         .slice(-1)}_${dateFileNameFormat}`;
       if (!fs.existsSync("download")) {
