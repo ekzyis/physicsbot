@@ -14,6 +14,7 @@ const reqpost = util.promisify(request.post);
 const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
 const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
 const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
+const MATHI_UNI_HD_URL = "https://www.mathi.uni-heidelberg.de";
 
 export const PTP2_LECTURE_NAME = "Theoretische Physik II";
 export const PTP2_UPDATE = bot => async () => {
@@ -99,6 +100,36 @@ export const PEP2_UPDATE = bot => async () => {
     })
     .get();
   handleUpdate(bot)(PEP2_LECTURE_NAME, scrape);
+};
+
+export const ANA2_LECTURE_NAME = "Analysis 2";
+export const ANA2_UPDATE = bot => async () => {
+  const ANA2_URL_SUFFIX = "/~hofmann/files/ana2.html";
+  let $ = await req(MATHI_UNI_HD_URL + ANA2_URL_SUFFIX)
+    .then(res => cheerio.load(res.body))
+    .catch(err => {
+      log(ERROR)(err);
+      return null;
+    });
+  const scrape = $(
+    "#MainColumn > table > tbody > tr > td > table:nth-child(15) > tbody > tr:nth-child(3) > td > table > tbody"
+  )
+    .find("li")
+    .map((i, el) => {
+      let text = $(el)
+        .contents()[0]
+        .data.trim();
+      let href =
+        MATHI_UNI_HD_URL +
+        ANA2_URL_SUFFIX.replace("ana2.html", "") +
+        $(el)
+          .find("a")
+          .attr("href")
+          .slice(2);
+      return { text, href };
+    })
+    .get();
+  handleUpdate(bot)(ANA2_LECTURE_NAME, scrape);
 };
 
 const areEqual = (item1, item2) =>

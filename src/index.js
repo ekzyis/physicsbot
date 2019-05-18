@@ -10,7 +10,7 @@ import {
   messageHandler
 } from "./handlers";
 import { BotClient } from "./botClient";
-import { PEP2_UPDATE, PTP2_UPDATE } from "./scrape";
+import { ANA2_UPDATE, PEP2_UPDATE, PTP2_UPDATE } from "./scrape";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;
@@ -32,6 +32,8 @@ client.on("ready", () => {
   // NOTE this will retrigger without caring if previous update is finished!
   bot.interval(PTP2_UPDATE, 2500 * 60);
   bot.interval(PEP2_UPDATE, 2500 * 60);
+  bot.interval(ANA2_UPDATE, 2500 * 60);
+  ANA2_UPDATE(bot)();
 });
 
 client.on("error", log(ERROR));
