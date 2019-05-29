@@ -33,7 +33,6 @@ client.on("ready", () => {
   bot.interval(PTP2_UPDATE, 2500 * 60);
   bot.interval(PEP2_UPDATE, 2500 * 60);
   bot.interval(ANA2_UPDATE, 2500 * 60);
-  ANA2_UPDATE(bot)();
 });
 
 client.on("error", log(ERROR));
