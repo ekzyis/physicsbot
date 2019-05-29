@@ -254,7 +254,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           lec.updates.push({ time: new Date(), scrape });
           lec.save();
           log(DB)(`Updated ${DB_LECTURE_NAME}`);
-        } else log(DB)(`No update for ${DB_LECTURE_NAME}`);
+        }
       } else {
         log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
         // download data
