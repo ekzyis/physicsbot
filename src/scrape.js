@@ -235,7 +235,10 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           log(DB)(`Updated ${DB_LECTURE_NAME}`);
         }
         if (removed.length !== 0) {
-          let logMessage = `Following items have been removed for ${DB_LECTURE_NAME}: ${removed}`;
+          let removedDescription = removed
+            .map(i => `{ text: ${i.text}, href: ${i.href} }`)
+            .join("\n");
+          let logMessage = `Following items have been removed for ${DB_LECTURE_NAME}:\n${removedDescription}`;
           // Write superuser a direct message since this should not happen!
           let config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
             "development"
