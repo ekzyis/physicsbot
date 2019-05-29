@@ -217,7 +217,6 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
       if (err) throw err;
       if (lec.updates.length > 0) {
         // there is at least one element already in updates!
-        // NOTE should checking for difference be more sophisticated or is this enough?
         let previouslyScraped = lec.updates[lec.updates.length - 1].scrape;
         let added = addedDiff(previouslyScraped, scrape);
         let removed = removedDiff(previouslyScraped, scrape);
