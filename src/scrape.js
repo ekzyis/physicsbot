@@ -252,11 +252,12 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
             .createDM()
             .then(dmChannel => dmChannel.send(logMessage))
             .catch(log(ERROR));
-          log(DB)(logMessage);
+          // FIXME for some reason sometimes nothing is scraped - bad internet connection?
+          //log(DB)(logMessage);
           // save new update in document
-          lec.updates.push({ time: new Date(), scrape });
-          lec.save();
-          log(DB)(`Updated ${DB_LECTURE_NAME}`);
+          //lec.updates.push({ time: new Date(), scrape });
+          //lec.save();
+          //log(DB)(`Updated ${DB_LECTURE_NAME}`);
         }
       } else {
         log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
