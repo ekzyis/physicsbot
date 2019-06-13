@@ -225,7 +225,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
     { name: DB_LECTURE_NAME },
     "name updates color channel",
     async function(err, lec) {
-      if (err) throw err;
+      if (err) return log(ERROR)(err);
       if (lec.updates.length > 0) {
         // there is at least one element already in updates!
         let previouslyScraped = lec.updates[lec.updates.length - 1].scrape;
@@ -260,7 +260,7 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
             member.roles.some(r => r.id === superUserRoleId)
           );
           // FIXME for some reason superuser is only SOMETIMES null?
-          if (!superuser) throw new Error(`Superuser not found!`);
+          if (!superuser) return log(ERROR)(`Superuser not found!`);
           superuser
             .createDM()
             .then(dmChannel => dmChannel.send(logMessage))
