@@ -43,7 +43,7 @@ export class BotClient {
 
   interval = (intervalFunction, interval) => {
     let intervalResult = setInterval(
-      intervalFunction(this).catch(log(ERROR)),
+      () => intervalFunction(this)().catch(log(ERROR)),
       interval
     );
     this.updateIntervals.push(intervalResult);
