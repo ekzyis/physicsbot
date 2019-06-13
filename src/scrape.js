@@ -259,6 +259,8 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
           let superuser = bot.guild.members.find(member =>
             member.roles.some(r => r.id === superUserRoleId)
           );
+          // FIXME for some reason superuser is only SOMETIMES null?
+          if (!superuser) throw new Error(`Superuser not found!`);
           superuser
             .createDM()
             .then(dmChannel => dmChannel.send(logMessage))
