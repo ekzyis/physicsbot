@@ -127,16 +127,37 @@ export const ANA2_UPDATE = bot => async () => {
   )
     .find("li")
     .map((i, el) => {
-      let text = $(el)
-        .contents()[0]
-        .data.trim();
-      let href =
-        MATHI_UNI_HD_URL +
-        ANA2_URL_SUFFIX.replace("ana2.html", "") +
-        $(el)
+      // https://github.com/ekzyis/physicsbot/issues/24
+      let text = "";
+      let type = $(el).contents()[0].type;
+      if (type !== "text") {
+        text = $(el)
+          .contents()[0]
+          .children.find(el => el.type === "text")
+          .data.trim();
+      } else {
+        text = $(el)
+          .contents()[0]
+          .data.trim();
+      }
+      let embedded_href = "";
+      let hreftext = $(el)
+        .find("a")
+        .text();
+      if (hreftext !== "(pdf)") {
+        embedded_href = $(el)
+          .children("a")[1]
+          .attribs.href.slice(2);
+      } else {
+        embedded_href = $(el)
           .find("a")
           .attr("href")
           .slice(2);
+      }
+      let href =
+        MATHI_UNI_HD_URL +
+        ANA2_URL_SUFFIX.replace("ana2.html", "") +
+        embedded_href;
       return { text, href };
     })
     .get();
