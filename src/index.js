@@ -23,6 +23,9 @@ client.on("ready", () => {
   client.user
     .setActivity("LHC live stream", { type: "WATCHING" })
     .catch(log(ERROR));
+})
+
+client.once("ready", () => {
   const bot = new BotClient(client);
   bot.on("message", messageHandler);
   bot.on("messageReactionAdd", messageReactionAddHandler);
