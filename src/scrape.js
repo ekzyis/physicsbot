@@ -123,7 +123,7 @@ export const ANA2_UPDATE = bot => async () => {
   // if $ is null (or undefined)
   if (!$) throw SCRAPE_ERROR(MATHI_UNI_HD_URL + ANA2_URL_SUFFIX);
   const scrape = $(
-    "#MainColumn > table > tbody > tr > td > table:nth-child(15) > tbody > tr:nth-child(3) > td > table > tbody"
+    "#MainColumn > table > tbody > tr > td > table:nth-child(15) > tbody > tr:nth-child(2) > td > table > tbody"
   )
     .find("li")
     .map((i, el) => {
