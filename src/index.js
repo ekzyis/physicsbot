@@ -33,9 +33,9 @@ client.once("ready", () => {
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
   // NOTE this will retrigger without caring if previous update is finished!
-  bot.interval(PTP2_UPDATE, 2500 * 60);
-  bot.interval(PEP2_UPDATE, 2500 * 60);
-  bot.interval(ANA2_UPDATE, 2500 * 60);
+  //bot.interval(PTP2_UPDATE, 2500 * 60);
+  //bot.interval(PEP2_UPDATE, 2500 * 60);
+  //bot.interval(ANA2_UPDATE, 2500 * 60);
 });
 
 client.on("error", log(ERROR));
