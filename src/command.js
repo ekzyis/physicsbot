@@ -7,12 +7,14 @@ const COMMAND_RESET_ROLES_EMBED = "!resetrolesembed";
 const COMMAND_TEST_MEMBER_ADD = "!newmember";
 export const COMMAND_CLEAR_CHANNEL = "!clearchannel";
 const COMMAND_ADD_RANDOM_ROLES = "!addrandomroles";
+const COMMAND_STATUS = "!status";
 export const COMMANDS = [
   COMMAND_RESET_ROLES,
   COMMAND_RESET_ROLES_EMBED,
   COMMAND_TEST_MEMBER_ADD,
   COMMAND_CLEAR_CHANNEL,
-  COMMAND_ADD_RANDOM_ROLES
+  COMMAND_ADD_RANDOM_ROLES,
+  COMMAND_STATUS
 ];
 
 export const commandHandler = bot => msg => {
@@ -28,9 +30,22 @@ export const commandHandler = bot => msg => {
       return command_resetRolesEmbed(bot)(msg);
     case COMMAND_ADD_RANDOM_ROLES:
       return command_addRandomRoles(bot)(msg);
+    case COMMAND_STATUS:
+      return command_status(bot)(msg);
     default:
       log(WARNING)(`commandHandler called but no valid command found!`);
   }
+};
+
+const command_status = bot => msg => {
+  msg
+    .reply(bot.status())
+    .then(log(SEND_MESSAGE))
+    .catch(msg =>
+      log(ERROR)(
+        `Error sending reply for command ${COMMAND_RESET_ROLES}. Reason: ${msg}`
+      )
+    );
 };
 
 const command_resetRoles = bot => msg => {
