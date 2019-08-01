@@ -11,4 +11,4 @@ Current features:
 - can set user roles via message reactions
 - scrapes from websites to keep embeds up to date
 
-*P.S.: Not designed for public usage since the scraping part is tailored for specific websites but the source code may help some people?*
+*P.S.: Not designed for public usage since the scraping part is tailored (who got it? :smirk:) for specific websites but the source code may help some people?*
