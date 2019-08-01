@@ -20,7 +20,10 @@ const TYPE = {
     `[ DELETE_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
   EDIT: msg =>
     `[ EDIT_MSG ]:[ ${msg.guild.name}@${msg.channel.name}: ${msg.content} ]`,
-  ERROR: e => `[ ERROR ]:[ ${e.message || e} ]`,
+  ERROR: e => {
+    if (e.name && e.message) return `[ ${e.name} ]:[ ${e.message} ]`;
+    return `[ ERROR ]:[ ${e} ]`;
+  },
   WARNING: msg => `[ WARNING ]:[ ${msg} ]`,
   DB: msg => `[ DB ]:[ ${msg} ]`
 };
