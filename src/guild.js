@@ -189,7 +189,8 @@ export const clearChannel = async channel => {
         );
       })
       .catch(err => {
-        // FIXME "Unknown error"
+        // NOTE "Discord API Unknown Error" thrown here when multiple bot instances run
+        // Error is thrown because the other bot already deleted it making the message "unknown".
         log(ERROR)(err);
         return -1;
       });
