@@ -2,7 +2,7 @@ import fs from "fs";
 import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
-import { connect } from "./db";
+import { connect, initDatabase } from "./db";
 
 const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
@@ -35,11 +35,16 @@ export class BotClient {
       embed: genRoleEmbed(instance.defaultChannel, roleNameMap),
       message: undefined
     };
-    this.db = connect(this)(
-      `mongodb://localhost/physicsbot_${process.env.NODE_ENV.slice(0, 3)}`
-    );
     this.updateIntervals = [];
   }
+
+  connect = url => {
+    this.db = connect(url);
+  };
+
+  initDB = () => {
+    return initDatabase(this);
+  };
 
   interval = (intervalFunction, interval) => {
     let intervalResult = setInterval(

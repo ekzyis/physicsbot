@@ -11,6 +11,7 @@ import {
 } from "./handlers";
 import { BotClient } from "./botClient";
 import { ANA2_UPDATE, PEP2_UPDATE, PTP2_UPDATE } from "./scrape";
+import { connect } from "./db";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;
@@ -32,6 +33,11 @@ client.once("ready", () => {
   bot.on("messageReactionRemove", messageReactionRemoveHandler);
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
+  // connect to database
+  bot.connect(
+    `mongodb://localhost/physicsbot_${process.env.NODE_ENV.slice(0, 3)}`
+  );
+  bot.initDB();
   // NOTE this will retrigger without caring if previous update is finished!
   //bot.interval(PTP2_UPDATE, 2500 * 60);
   //bot.interval(PEP2_UPDATE, 2500 * 60);

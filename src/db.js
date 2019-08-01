@@ -12,17 +12,31 @@ const { ERROR, DB } = TYPE;
 const createDocument = (Model, data) => {
   log(DB)(`Creating new document (${Model.modelName})`);
   let model = new Model(data);
-  return model.save();
-};
-
-const initDocument = (Model, identifier, data) => {
-  Model.countDocuments(identifier, (err, count) => {
-    if (err) throw err;
-    if (count === 0) return createDocument(Model, data);
+  return new Promise((resolve, reject) => {
+    model.save((err, doc) => {
+      if (err) return reject(err);
+      resolve(doc);
+    });
   });
 };
 
-export const connect = bot => ADDRESS => {
+// Creates a document with specified identifier else creates it with specified data
+const initDocument = (Model, identifier, data) => {
+  return new Promise((resolve, reject) => {
+    Model.countDocuments(identifier, (err, count) => {
+      if (err) reject(err);
+      if (count === 0) {
+        createDocument(Model, data)
+          .then(resolve)
+          .catch(reject);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+export const connect = ADDRESS => {
   mongoose.connect(
     ADDRESS,
     {
@@ -35,38 +49,45 @@ export const connect = bot => ADDRESS => {
   db.on("error", log(ERROR));
   db.once("open", () => log(DB)(`Database connection successful!`));
 
-  // Initialize documents
+  return db;
+};
 
-  initDocument(
-    Lecture,
-    { name: PTP2_LECTURE_NAME },
+export const initDatabase = bot => {
+  // TODO make creating of this object obsolete
+  // TODO get color from config
+  let initDocumentProps = [
     {
       name: PTP2_LECTURE_NAME,
-      channel: bot.roleNameMap.get("Theoretische Physik 2").channel.id,
-      // TODO get from config
+      roleNameMapIdentifier: "Theoretische Physik 2",
       color: "#29ca62"
-    }
-  );
-  initDocument(
-    Lecture,
-    { name: PEP2_LECTURE_NAME },
+    },
     {
       name: PEP2_LECTURE_NAME,
-      channel: bot.roleNameMap.get("Experimentalphysik 2").channel.id,
-      // TODO get from config
+      roleNameMapIdentifier: "Experimentalphysik 2",
       color: "#df22d3"
-    }
-  );
-  initDocument(
-    Lecture,
-    { name: ANA2_LECTURE_NAME },
+    },
     {
       name: ANA2_LECTURE_NAME,
-      channel: bot.roleNameMap.get("Analysis 2").channel.id,
-      // TODO get from config
+      roleNameMapIdentifier: "Analysis 2",
       color: "#6d602e"
     }
-  );
+  ];
 
-  return db;
+  return Promise.all(
+    initDocumentProps.map(({ name, roleNameMapIdentifier, color }) => {
+      return new Promise((resolve, reject) => {
+        initDocument(
+          Lecture,
+          { name },
+          {
+            name,
+            channel: bot.roleNameMap.get(roleNameMapIdentifier).channel.id,
+            color
+          }
+        )
+          .then(resolve)
+          .catch(reject);
+      });
+    })
+  );
 };
