@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 const TYPE = {
   GENERAL: msg => `[ INFO ]:[ ${msg} ]`,
   REACTION_ADD: (user, reaction) =>
