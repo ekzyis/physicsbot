@@ -1,4 +1,5 @@
 import fs from "fs";
+import discord from "discord.js";
 import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
@@ -37,6 +38,16 @@ export class BotClient {
     };
     this.updateIntervals = [];
   }
+
+  status = () => {
+    let embed = new discord.RichEmbed();
+    embed.setTitle(`Status for bot in ${process.env.NODE_ENV} mode`);
+    embed.addField("Default channel id", this.defaultChannel.id, true);
+    embed.addField("Rules channel id", this.rulesChannel.id, true);
+    embed.addField("Overview channel id", this.overviewChannel.id, true);
+    embed.addField("Active listeners", this.updateIntervals.length, true);
+    return embed;
+  };
 
   connect = url => {
     this.db = connect(url);
