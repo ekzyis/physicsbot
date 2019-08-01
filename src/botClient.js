@@ -46,6 +46,7 @@ export class BotClient {
     embed.addField("Rules channel id", this.rulesChannel.id, true);
     embed.addField("Overview channel id", this.overviewChannel.id, true);
     embed.addField("Active listeners", this.updateIntervals.length, true);
+    embed.addField("Running commit", process.env.COMMIT);
     return embed;
   };
 
