@@ -2,7 +2,7 @@
 
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-A Discord bot for usage in a physics discord server of my university hence the repository name
+A Discord bot used within a physics discord server of my university hence the repository name
 
 Written in Node.js with [discord.js](https://discord.js.org/#/)
 
