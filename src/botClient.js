@@ -4,7 +4,7 @@ import { log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
 import { connect, initDatabase } from "./db";
-
+import YAML from "yaml";
 const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
 // using Symbol marks the variables as "private" since they are harder accessible
@@ -19,7 +19,7 @@ export class BotClient {
     // NOTE we assume the client is already logged in!
     this[_client] = client;
     this.id = client.user.id;
-    let config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+    let config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
       process.env.NODE_ENV
     ];
     let instance = genServerInstance(config, client);
