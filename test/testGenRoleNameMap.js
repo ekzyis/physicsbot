@@ -2,6 +2,7 @@ import chai from "chai";
 import discord from "discord.js";
 import { genRoleNameMap } from "../src/gen.js";
 import fs from "fs";
+import YAML from "yaml";
 
 const expect = chai.expect;
 
@@ -20,7 +21,7 @@ describe("genRoleNameMap should return a valid map according to config", functio
       let config, roleNameMap;
       before(function() {
         process.env.NODE_ENV = env;
-        config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           process.env.NODE_ENV
         ];
         let guild = client.guilds.get(config.guild.id);

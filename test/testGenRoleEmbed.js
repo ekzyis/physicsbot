@@ -2,6 +2,7 @@ import chai from "chai";
 import discord from "discord.js";
 import { genRoleEmbed, ROLE_EMBED_TITLE as title } from "../src/gen.js";
 import fs from "fs";
+import YAML from "yaml";
 
 const expect = chai.expect;
 
@@ -20,7 +21,7 @@ describe(`genRoleEmbed should return an embed which includes the roles with emoj
       let config, embed;
       before(function() {
         process.env.NODE_ENV = env;
-        config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           process.env.NODE_ENV
         ];
         const getConfigGuild = () => client.guilds.get(config.guild.id);

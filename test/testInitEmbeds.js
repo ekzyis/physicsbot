@@ -4,6 +4,7 @@ import discord from "discord.js";
 import { BotClient, FETCH_LIMIT } from "../src/botClient";
 import fs from "fs";
 import { clearChannel } from "../src/guild";
+import YAML from "yaml";
 
 const expect = chai.expect;
 
@@ -29,7 +30,7 @@ describe("initEmbeds should make sure that the embeds are properly initialized",
         process.env.NODE_ENV = env;
         // NOTE Bot is reinitialized before every test!
         bot = new BotClient(client);
-        let devConfig = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        let devConfig = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           "development"
         ];
         // NOTE all embeds should be sent to the dev channel!

@@ -5,6 +5,7 @@ import { GREETING_EMBED_TITLE, guildMemberAddHandler } from "../src/handlers";
 import fs from "fs";
 import { clearChannel } from "../src/guild";
 
+import YAML from "yaml";
 const expect = chai.expect;
 
 describe(`If a new member enters the guild, the bot should greet him`, function() {
@@ -16,7 +17,7 @@ describe(`If a new member enters the guild, the bot should greet him`, function(
       .then(() => {
         process.env.NODE_ENV = "development";
         bot = new BotClient(client);
-        let devConfig = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        let devConfig = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           "development"
         ];
         bot.defaultChannel = bot.guild.channels.get(devConfig.channel.dev.id);

@@ -2,7 +2,7 @@ import chai from "chai";
 import discord from "discord.js";
 import { genServerInstance } from "../src/gen.js";
 import fs from "fs";
-
+import YAML from "yaml";
 const expect = chai.expect;
 
 describe("genServerInstance should return a valid instance according to config", function() {
@@ -20,7 +20,7 @@ describe("genServerInstance should return a valid instance according to config",
       let instance, config;
       before(function() {
         process.env.NODE_ENV = env;
-        config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           process.env.NODE_ENV
         ];
         instance = genServerInstance(config, client);

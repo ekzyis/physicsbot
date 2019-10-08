@@ -7,6 +7,7 @@ import {
   messageReactionRemoveHandler
 } from "../src/handlers";
 import { clearChannel } from "../src/guild";
+import YAML from "yaml";
 
 const expect = chai.expect;
 
@@ -43,7 +44,7 @@ describe(`Reacting to roles embed should add and remove roles`, function() {
         role = Array.from(bot.roleNameMap.values()).find(
           item => item.emoji.id === reaction.emoji.id
         ).role;
-        let devConfig = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+        let devConfig = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
           "development"
         ];
         member = bot.guild.members.random();
