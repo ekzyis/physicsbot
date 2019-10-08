@@ -11,7 +11,7 @@ import {
 
 const expect = chai.expect;
 
-describe.only(`All lectures are initialized in MongoDB as own documents`, function() {
+describe(`All lectures are initialized in MongoDB as own documents`, function() {
   let client;
   before(function(done) {
     client = new discord.Client();
