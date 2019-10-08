@@ -6,7 +6,7 @@ import {
   messageReactionAddHandler,
   messageReactionRemoveHandler
 } from "../src/handlers";
-import { clearChannel } from "../src/guild";
+import { clearChannel } from "../src/command";
 import YAML from "yaml";
 
 const expect = chai.expect;

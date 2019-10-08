@@ -1,5 +1,5 @@
 import { log, TYPE } from "./util";
-import { clearChannel } from "./guild";
+import { FETCH_LIMIT } from "./botClient";
 const { ERROR, WARNING, GENERAL, SEND_MESSAGE, ROLE_ADD } = TYPE;
 
 export const COMMAND_RESET_ROLES = "!resetroles";
@@ -122,6 +122,28 @@ const command_clearChannel = bot => msg => {
     return Promise.reject(ERROR_MESSAGE);
   }
   return clearChannel(msg.channel);
+};
+
+export const clearChannel = async channel => {
+  let deleted;
+  do {
+    deleted = await channel
+      .fetchMessages({ limit: FETCH_LIMIT })
+      .then(messages => {
+        return Promise.all(messages.map(m => m.delete())).then(
+          msgs => msgs.length
+        );
+      })
+      .catch(err => {
+        // NOTE "Discord API Unknown Error" thrown here when multiple bot instances run
+        // Error is thrown because the other bot already deleted it making the message "unknown".
+        log(ERROR)(err);
+        return -1;
+      });
+    if (deleted > 0)
+      log(GENERAL)(`Deleted ${deleted} message(s) in channel ${channel.name}.`);
+  } while (deleted > 0);
+  return deleted;
 };
 
 const command_addRandomRoles = bot => async msg => {

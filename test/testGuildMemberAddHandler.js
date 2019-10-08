@@ -3,8 +3,7 @@ import discord from "discord.js";
 import { BotClient } from "../src/botClient";
 import { GREETING_EMBED_TITLE, guildMemberAddHandler } from "../src/handlers";
 import fs from "fs";
-import { clearChannel } from "../src/guild";
-
+import { clearChannel } from "../src/command";
 import YAML from "yaml";
 const expect = chai.expect;
 

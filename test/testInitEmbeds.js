@@ -3,7 +3,7 @@ import chai from "chai";
 import discord from "discord.js";
 import { BotClient, FETCH_LIMIT } from "../src/botClient";
 import fs from "fs";
-import { clearChannel } from "../src/guild";
+import { clearChannel } from "../src/command";
 import YAML from "yaml";
 
 const expect = chai.expect;
