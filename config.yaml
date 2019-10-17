@@ -116,6 +116,13 @@ production:
         id: "629706910890721280"
       channel:
         id: "629709041085710347"
+    - name: "Praktische Informatik"
+      emoji:
+        id: "634501134270332948"
+      role:
+        id: "634456581081399316"
+      channel:
+        id: "634264225107410955"
     - name: "Mathe"
       emoji:
         id: "513462751507644416"
