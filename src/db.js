@@ -4,6 +4,7 @@ import Lecture from "./model/Lectures";
 import {
   ANA2_LECTURE_NAME,
   PEP2_LECTURE_NAME,
+  PTP1_LECTURE_NAME,
   PTP2_LECTURE_NAME
 } from "./scrape";
 
@@ -58,6 +59,7 @@ export const initDatabase = bot => {
   let initDocumentProps = [
     {
       name: PTP2_LECTURE_NAME,
+      // the name property of this entity in the configuration file
       roleNameMapIdentifier: "Theoretische Physik 2",
       color: "#29ca62"
     },
@@ -70,6 +72,11 @@ export const initDatabase = bot => {
       name: ANA2_LECTURE_NAME,
       roleNameMapIdentifier: "Analysis 2",
       color: "#6d602e"
+    },
+    {
+      name: PTP1_LECTURE_NAME,
+      roleNameMapIdentifier: "Theoretische Physik",
+      color: "#29ca62"
     }
   ];
 

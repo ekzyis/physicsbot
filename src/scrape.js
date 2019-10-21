@@ -18,6 +18,36 @@ const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
 const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
 const MATHI_UNI_HD_URL = "https://www.mathi.uni-heidelberg.de";
 
+const load_with_cheerio = async url => {
+  let $ = await req(url)
+    .then(res => cheerio.load(res.body))
+    .catch(err => {
+      log(ERROR)(err);
+      return null;
+    });
+  if (!$) throw SCRAPE_ERROR(url);
+  else return $;
+};
+
+export const PTP1_LECTURE_NAME = "Theoretische Physik I";
+export const PTP1_UPDATE = bot => async () => {
+  const PTP1_URL_SUFFIX = "/vorlesung/20192/1058";
+  load_with_cheerio(UEBUNGEN_PHYSIK_URL + PTP1_URL_SUFFIX)
+    .then($ => {
+      const scrape = $("#infoarea-6191")
+        .find("ul > li > a")
+        .map(function(i, el) {
+          return {
+            href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
+            text: $(this).text()
+          };
+        })
+        .get();
+      return handleUpdate(bot)(PTP1_LECTURE_NAME, scrape, { download: false });
+    })
+    .catch(log(ERROR));
+};
+
 export const PTP2_LECTURE_NAME = "Theoretische Physik II";
 export const PTP2_UPDATE = bot => async () => {
   const PTP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
@@ -241,7 +271,11 @@ const createUpdateNotification = (channel, lecDocument, added, files) => {
     });
 };
 
-const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
+const handleUpdate = bot => (
+  DB_LECTURE_NAME,
+  scrape,
+  options = { download: true }
+) => {
   Lecture.findOne(
     { name: DB_LECTURE_NAME },
     "name updates color channel",
@@ -255,9 +289,12 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
         if (added.length !== 0) {
           // a previously not scraped element is found!
           // download material
-          let files = await Promise.all(
-            added.map(item => download(item, DB_LECTURE_NAME))
-          );
+          let files = [];
+          if (options.download) {
+            files = await Promise.all(
+              added.map(item => download(item, DB_LECTURE_NAME))
+            );
+          }
           // send notification!
           let channel = bot.guild.channels.get(lec.channel);
           await createUpdateNotification(channel, lec, added, files);
@@ -296,9 +333,11 @@ const handleUpdate = bot => (DB_LECTURE_NAME, scrape) => {
       } else {
         log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
         // download data
-        let files = await Promise.all(
-          scrape.map(item => download(item, DB_LECTURE_NAME))
-        );
+        let files = [];
+        if (options.download)
+          files = await Promise.all(
+            scrape.map(item => download(item, DB_LECTURE_NAME))
+          );
         // first time saving state of website
         lec.updates.push({ time: new Date(), scrape });
         if (process.env.NODE_ENV === "development") {
