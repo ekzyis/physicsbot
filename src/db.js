@@ -4,6 +4,7 @@ import Lecture from "./model/Lectures";
 import {
   ANA1_LECTURE_NAME,
   ANA2_LECTURE_NAME,
+  PEP1_LECTURE_NAME,
   PEP2_LECTURE_NAME,
   PTP1_LECTURE_NAME,
   PTP2_LECTURE_NAME
@@ -67,6 +68,11 @@ export const initDatabase = bot => {
       name: ANA1_LECTURE_NAME,
       roleNameMapIdentifier: "Analysis",
       color: "#e2ff08"
+    },
+    {
+      name: PEP1_LECTURE_NAME,
+      roleNameMapIdentifier: "Experimentalphysik",
+      color: "#df22d3"
     }
   ];
 

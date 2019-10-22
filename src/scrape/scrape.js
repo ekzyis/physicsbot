@@ -1,7 +1,12 @@
 import { log, TYPE } from "../util";
 import puppeteer from "puppeteer";
 import { handleUpdate, load_with_cheerio } from "./util";
-import { HEIBOX_UNI_HD_URL, UEBUNGEN_PHYSIK_URL } from "./const";
+import {
+  HEIBOX_UNI_HD_URL,
+  UEBUNGEN_PHYSIK_URL,
+  PUPPETEER,
+  REQUEST
+} from "./const";
 
 const { ERROR } = TYPE;
 
@@ -49,4 +54,28 @@ export const ANA1_UPDATE = bot => async () => {
   )).filter(el => !!el.text);
   handleUpdate(bot)(ANA1_LECTURE_NAME, scrape, { download: false });
   await browser.close();
+};
+
+export const PEP1_LECTURE_NAME = "Experimentalphysik I";
+export const PEP1_UPDATE = bot => async (options = { scraper: PUPPETEER }) => {
+  const PEP1_URL_SUFFIX = "/vorlesung/20192/pep1";
+  const url = UEBUNGEN_PHYSIK_URL + PEP1_URL_SUFFIX;
+  let scrape = [];
+  if (options.scraper === PUPPETEER) {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(url);
+    scrape = await page.evaluate(() =>
+      Array.from(
+        document.querySelectorAll("#infoarea-6406 > ul > li > ul > li > a"),
+        el => ({
+          text: el.textContent,
+          href: el.href
+        })
+      )
+    );
+    await browser.close();
+  } else if (options.scraper === REQUEST) {
+  }
+  handleUpdate(bot)(PEP1_LECTURE_NAME, scrape, { download: false });
 };
