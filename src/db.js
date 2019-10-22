@@ -7,7 +7,7 @@ import {
   PEP2_LECTURE_NAME,
   PTP1_LECTURE_NAME,
   PTP2_LECTURE_NAME
-} from "./scrape";
+} from "./scrape/scrape";
 
 const { ERROR, DB } = TYPE;
 

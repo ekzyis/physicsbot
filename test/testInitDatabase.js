@@ -7,7 +7,7 @@ import {
   ANA2_LECTURE_NAME,
   PEP2_LECTURE_NAME,
   PTP2_LECTURE_NAME
-} from "../src/scrape";
+} from "../trash/scrape";
 
 const expect = chai.expect;
 

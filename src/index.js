@@ -10,7 +10,7 @@ import {
   messageHandler
 } from "./handlers";
 import { BotClient } from "./botClient";
-import { ANA1_UPDATE, PTP1_UPDATE } from "./scrape";
+import { ANA1_UPDATE, PTP1_UPDATE } from "./scrape/scrape";
 
 // prettier-ignore
 const { GENERAL, ERROR } = TYPE;

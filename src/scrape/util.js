@@ -1,26 +1,18 @@
 import cheerio from "cheerio";
-import request from "request";
 import util from "util";
-import { log, TYPE } from "./util";
-import Lecture from "./model/Lectures";
-import discord from "discord.js";
+import { log, TYPE } from "../util";
+import request from "request";
 import fs from "fs";
-import puppeteer from "puppeteer";
+import discord from "discord.js";
+import { MOODLE_URL, MOODLE_URL_LOGIN } from "./const";
+import Lecture from "../model/Lectures";
 
 const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
 const req = util.promisify(request);
 const reqpost = util.promisify(request.post);
 
-const SCRAPE_ERROR = url => new Error(`Could not scrape website ${url}`);
-
-const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
-const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
-const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
-const MATHI_UNI_HD_URL = "https://www.mathi.uni-heidelberg.de";
-const HEIBOX_UNI_HD_URL = "https://heibox.uni-heidelberg.de";
-
-const load_with_cheerio = async url => {
+export const load_with_cheerio = async url => {
   let $ = await req(url)
     .then(res => cheerio.load(res.body))
     .catch(err => {
@@ -29,49 +21,6 @@ const load_with_cheerio = async url => {
     });
   if (!$) throw SCRAPE_ERROR(url);
   else return $;
-};
-
-export const PTP1_LECTURE_NAME = "Theoretische Physik I";
-export const PTP1_UPDATE = bot => async () => {
-  const PTP1_URL_SUFFIX = "/vorlesung/20192/1058";
-  load_with_cheerio(UEBUNGEN_PHYSIK_URL + PTP1_URL_SUFFIX)
-    .then($ => {
-      const scrape = $("#infoarea-6191")
-        .find("ul > li > a")
-        .map(function(i, el) {
-          return {
-            href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
-            text: $(this).text()
-          };
-        })
-        .get();
-      return handleUpdate(bot)(PTP1_LECTURE_NAME, scrape, { download: false });
-    })
-    .catch(log(ERROR));
-};
-
-export const PTP2_LECTURE_NAME = "Theoretische Physik II";
-export const PTP2_UPDATE = bot => async () => {
-  const PTP2_URL_SUFFIX = "/vorlesung/20191/ptp2";
-
-  let $ = await req(UEBUNGEN_PHYSIK_URL + PTP2_URL_SUFFIX)
-    .then(res => cheerio.load(res.body))
-    .catch(err => {
-      log(ERROR)(err);
-      return null;
-    });
-  // if $ is null (or undefined)
-  if (!$) throw SCRAPE_ERROR(UEBUNGEN_PHYSIK_URL + PTP2_URL_SUFFIX);
-  const scrape = $("#infoarea-5631")
-    .find("ul > li > a")
-    .map(function(i, el) {
-      return {
-        href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
-        text: $(this).text()
-      };
-    })
-    .get();
-  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape);
 };
 
 const MOODLE_CREDENTIALS_PATH = "moodle_creds.json";
@@ -103,123 +52,6 @@ const moodle_login = async () => {
     })
     .catch(log(ERROR));
   return cookieJar;
-};
-
-export const PEP2_LECTURE_NAME = "Experimentalphysik II";
-export const PEP2_UPDATE = bot => async () => {
-  const PEP2_URL_SUFFIX = "/course/view.php?id=21423";
-  const cookieJar = await moodle_login();
-  const $ = await req(MOODLE_URL + PEP2_URL_SUFFIX, {
-    jar: cookieJar
-  })
-    .then(res => cheerio.load(res.body))
-    .catch(err => {
-      log(ERROR)(err);
-      return null;
-    });
-  // if $ is null (or undefined)
-  if (!$) throw SCRAPE_ERROR(MOODLE_URL + PEP2_URL_SUFFIX);
-  const scrape = $("span.instancename")
-    .filter((i, el) => {
-      // filter all elements which have a PDF icon next to them
-      return !!$(el)
-        .prev()
-        .attr("src")
-        .match(/core\/1547554624\/f\/pdf-24$/);
-    })
-    .map((i, el) => {
-      // the parent is the <a> tag with the link for downloading
-      return {
-        text: $(el)
-          .parent()
-          .text()
-          .replace(/ Datei/, ""),
-        href: $(el)
-          .parent()
-          .attr("href")
-      };
-    })
-    .get();
-  handleUpdate(bot)(PEP2_LECTURE_NAME, scrape);
-};
-
-export const ANA1_LECTURE_NAME = "Analysis 1";
-export const ANA1_UPDATE = bot => async () => {
-  const HEIBOX_ANA1_SUFFIX = "/d/0583bd9e56af4b5ab9db";
-  const url = HEIBOX_UNI_HD_URL + HEIBOX_ANA1_SUFFIX;
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto(url);
-  await page.type(
-    "#share-passwd-form > input.input",
-    "Ana19&Cauchy-Schwarz_20"
-  );
-  await page.click("#share-passwd-form > input[type=submit]:nth-child(7)");
-  await page.waitForSelector("#wrapper > div > div.o-auto > div > table");
-  await page.goto(url + "/?p=%2F%C3%9Cbungsbl%C3%A4tter&mode=list");
-  await page.waitForSelector("#wrapper > div > div.o-auto > div > table");
-  const scrape = (await page.evaluate(() =>
-    Array.from(
-      document.querySelectorAll(
-        "#wrapper > div > div.o-auto > div > table > tbody > tr > td > a"
-      ),
-      el => ({ text: el.textContent, href: el.href })
-    )
-  )).filter(el => !!el.text);
-  handleUpdate(bot)(ANA1_LECTURE_NAME, scrape, { download: false });
-  await browser.close();
-};
-export const ANA2_LECTURE_NAME = "Analysis 2";
-export const ANA2_UPDATE = bot => async () => {
-  const ANA2_URL_SUFFIX = "/~hofmann/files/ana2.html";
-  let $ = await req(MATHI_UNI_HD_URL + ANA2_URL_SUFFIX)
-    .then(res => cheerio.load(res.body))
-    .catch(err => {
-      log(ERROR)(err);
-      return null;
-    });
-  // if $ is null (or undefined)
-  if (!$) throw SCRAPE_ERROR(MATHI_UNI_HD_URL + ANA2_URL_SUFFIX);
-  const scrape = $(
-    "#MainColumn > table > tbody > tr > td > table:nth-child(15) > tbody > tr:nth-child(2) > td > table > tbody"
-  )
-    .find("li")
-    .map((i, el) => {
-      // https://github.com/ekzyis/physicsbot/issues/24
-      let text = "";
-      let type = $(el).contents()[0].type;
-      if (type !== "text") {
-        text = $(el)
-          .contents()[0]
-          .children.find(el => el.type === "text")
-          .data.trim();
-      } else {
-        text = $(el)
-          .contents()[0]
-          .data.trim();
-      }
-      let embedded_href = "";
-      let hreftext = $(el)
-        .find("a")
-        .text();
-      if (hreftext !== "(pdf)") {
-        embedded_href = $(el)
-          .children("a")[1]
-          .attribs.href.slice(2);
-      } else {
-        embedded_href = $(el)
-          .find("a")
-          .attr("href")
-          .slice(2);
-      }
-      let href =
-        MATHI_UNI_HD_URL +
-        ANA2_URL_SUFFIX.replace("ana2.html", "") +
-        embedded_href;
-      return { text, href };
-    })
-    .get();
-  handleUpdate(bot)(ANA2_LECTURE_NAME, scrape);
 };
 
 const areEqual = (item1, item2) =>
@@ -299,7 +131,7 @@ const createUpdateNotification = (channel, lecDocument, added, files) => {
     });
 };
 
-const handleUpdate = bot => (
+export const handleUpdate = bot => (
   DB_LECTURE_NAME,
   scrape,
   options = { download: true }
