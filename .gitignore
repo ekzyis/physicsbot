@@ -4,3 +4,4 @@ exclude/
 lib/
 node_modules/
 .nyc_output
+creds.yaml
