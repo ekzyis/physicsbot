@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { log, TYPE } from "./util";
 import Lecture from "./model/Lectures";
 import {
+  ANA1_LECTURE_NAME,
   ANA2_LECTURE_NAME,
   PEP2_LECTURE_NAME,
   PTP1_LECTURE_NAME,
@@ -77,6 +78,11 @@ export const initDatabase = bot => {
       name: PTP1_LECTURE_NAME,
       roleNameMapIdentifier: "Theoretische Physik",
       color: "#29ca62"
+    },
+    {
+      name: ANA1_LECTURE_NAME,
+      roleNameMapIdentifier: "Analysis",
+      color: "#e2ff08"
     }
   ];
 

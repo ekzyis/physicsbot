@@ -5,6 +5,7 @@ import { log, TYPE } from "./util";
 import Lecture from "./model/Lectures";
 import discord from "discord.js";
 import fs from "fs";
+import puppeteer from "puppeteer";
 
 const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
@@ -17,6 +18,7 @@ const UEBUNGEN_PHYSIK_URL = "https://uebungen.physik.uni-heidelberg.de";
 const MOODLE_URL = "https://elearning2.uni-heidelberg.de";
 const MOODLE_URL_LOGIN = "https://elearning2.uni-heidelberg.de/login/index.php";
 const MATHI_UNI_HD_URL = "https://www.mathi.uni-heidelberg.de";
+const HEIBOX_UNI_HD_URL = "https://heibox.uni-heidelberg.de";
 
 const load_with_cheerio = async url => {
   let $ = await req(url)
@@ -141,6 +143,32 @@ export const PEP2_UPDATE = bot => async () => {
   handleUpdate(bot)(PEP2_LECTURE_NAME, scrape);
 };
 
+export const ANA1_LECTURE_NAME = "Analysis 1";
+export const ANA1_UPDATE = bot => async () => {
+  const HEIBOX_ANA1_SUFFIX = "/d/0583bd9e56af4b5ab9db";
+  const url = HEIBOX_UNI_HD_URL + HEIBOX_ANA1_SUFFIX;
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url);
+  await page.type(
+    "#share-passwd-form > input.input",
+    "Ana19&Cauchy-Schwarz_20"
+  );
+  await page.click("#share-passwd-form > input[type=submit]:nth-child(7)");
+  await page.waitForSelector("#wrapper > div > div.o-auto > div > table");
+  await page.goto(url + "/?p=%2F%C3%9Cbungsbl%C3%A4tter&mode=list");
+  await page.waitForSelector("#wrapper > div > div.o-auto > div > table");
+  const scrape = (await page.evaluate(() =>
+    Array.from(
+      document.querySelectorAll(
+        "#wrapper > div > div.o-auto > div > table > tbody > tr > td > a"
+      ),
+      el => ({ text: el.textContent, href: el.href })
+    )
+  )).filter(el => !!el.text);
+  handleUpdate(bot)(ANA1_LECTURE_NAME, scrape, { download: false });
+  await browser.close();
+};
 export const ANA2_LECTURE_NAME = "Analysis 2";
 export const ANA2_UPDATE = bot => async () => {
   const ANA2_URL_SUFFIX = "/~hofmann/files/ana2.html";
