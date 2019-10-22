@@ -59,22 +59,6 @@ export const initDatabase = bot => {
   // TODO get color from config
   let initDocumentProps = [
     {
-      name: PTP2_LECTURE_NAME,
-      // the name property of this entity in the configuration file
-      roleNameMapIdentifier: "Theoretische Physik 2",
-      color: "#29ca62"
-    },
-    {
-      name: PEP2_LECTURE_NAME,
-      roleNameMapIdentifier: "Experimentalphysik 2",
-      color: "#df22d3"
-    },
-    {
-      name: ANA2_LECTURE_NAME,
-      roleNameMapIdentifier: "Analysis 2",
-      color: "#6d602e"
-    },
-    {
       name: PTP1_LECTURE_NAME,
       roleNameMapIdentifier: "Theoretische Physik",
       color: "#29ca62"
