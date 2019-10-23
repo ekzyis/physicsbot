@@ -1,11 +1,12 @@
 import { log, TYPE } from "../util";
 import puppeteer from "puppeteer";
-import { handleUpdate, load_with_cheerio } from "./util";
+import { handleUpdate, load_with_cheerio, moodle_login } from "./util";
 import {
   HEIBOX_UNI_HD_URL,
   UEBUNGEN_PHYSIK_URL,
   PUPPETEER,
-  REQUEST
+  REQUEST,
+  MOODLE_URL
 } from "./const";
 
 const { ERROR } = TYPE;
@@ -79,4 +80,44 @@ export const PEP1_UPDATE = bot => async (options = { scraper: PUPPETEER }) => {
   } else if (options.scraper === REQUEST) {
   }
   handleUpdate(bot)(PEP1_LECTURE_NAME, scrape, { download: false });
+};
+
+const moodle_scraper = async suffix => {
+  const cookieJar = await moodle_login();
+  const url = MOODLE_URL + suffix;
+  return load_with_cheerio(url, { jar: cookieJar })
+    .then($ => {
+      return $("span.instancename")
+        .filter((i, el) => {
+          // filter all elements which have a PDF icon next to them
+          return !!$(el)
+            .prev()
+            .attr("src")
+            .match(/core\/1571723059\/f\/pdf-24$/);
+        })
+        .map((i, el) => {
+          // the parent is the <a> tag with the link for downloading
+          return {
+            text: $(el)
+              .parent()
+              .text(),
+            href: $(el)
+              .parent()
+              .attr("href")
+          };
+        })
+        .get();
+    })
+    .catch(err => {
+      // log error and then rethrow to keep promise chain rejected
+      log(ERROR)(err);
+      throw err;
+    });
+};
+
+export const PEP3_LECTURE_NAME = "Experimentalphysik III";
+export const PEP3_UPDATE = bot => async () => {
+  const PEP3_URL_SUFFIX = "/course/view.php?id=22982";
+  const scrape = await moodle_scraper(PEP3_URL_SUFFIX);
+  handleUpdate(bot)(PEP3_LECTURE_NAME, scrape);
 };

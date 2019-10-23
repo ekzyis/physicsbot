@@ -6,6 +6,7 @@ import {
   ANA2_LECTURE_NAME,
   PEP1_LECTURE_NAME,
   PEP2_LECTURE_NAME,
+  PEP3_LECTURE_NAME,
   PTP1_LECTURE_NAME,
   PTP2_LECTURE_NAME
 } from "./scrape/scrape";
@@ -72,6 +73,11 @@ export const initDatabase = bot => {
     {
       name: PEP1_LECTURE_NAME,
       roleNameMapIdentifier: "Experimentalphysik",
+      color: "#df22d3"
+    },
+    {
+      name: PEP3_LECTURE_NAME,
+      roleNameMapIdentifier: "Experimentalphysik 3",
       color: "#df22d3"
     }
   ];

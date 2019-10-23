@@ -9,13 +9,13 @@ import Lecture from "../model/Lectures";
 import YAML from "yaml";
 
 const { ERROR, SEND_MESSAGE, DB } = TYPE;
-
 const req = util.promisify(request);
 const reqpost = util.promisify(request.post);
 const SCRAPE_ERROR = url => new Error(`Could not scrape website ${url}`);
 
-export const load_with_cheerio = async url => {
-  let $ = await req(url)
+export const load_with_cheerio = async (url, options = {}) => {
+  options.url = url;
+  let $ = await req(options)
     .then(res => cheerio.load(res.body))
     .catch(err => {
       log(ERROR)(err);
