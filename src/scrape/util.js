@@ -11,6 +11,7 @@ const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
 const req = util.promisify(request);
 const reqpost = util.promisify(request.post);
+const SCRAPE_ERROR = url => new Error(`Could not scrape website ${url}`);
 
 export const load_with_cheerio = async url => {
   let $ = await req(url)
