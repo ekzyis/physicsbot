@@ -6,6 +6,7 @@ import fs from "fs";
 import discord from "discord.js";
 import { MOODLE_URL, MOODLE_URL_LOGIN } from "./const";
 import Lecture from "../model/Lectures";
+import YAML from "yaml";
 
 const { ERROR, SEND_MESSAGE, DB } = TYPE;
 
@@ -24,8 +25,7 @@ export const load_with_cheerio = async url => {
   else return $;
 };
 
-const MOODLE_CREDENTIALS_PATH = "moodle_creds.json";
-const moodle_login = async () => {
+export const moodle_login = async () => {
   const cookieJar = request.jar();
   await req({
     url: MOODLE_URL_LOGIN,
@@ -34,16 +34,19 @@ const moodle_login = async () => {
   })
     .then(res => {
       const $ = cheerio.load(res.body);
-      // Get the login token needed for the login POST request 😏
-      const logintoken = $('#login > input[type="hidden"]:nth-child(6)').attr(
+      // Get the login token needed for the login POST request
+      const logintoken = $('#login > input[type="hidden"]:nth-child(3)').attr(
         "value"
       );
       // Login!
-      const creds = JSON.parse(fs.readFileSync(MOODLE_CREDENTIALS_PATH));
+      const { name, password } = YAML.parse(
+        fs.readFileSync(process.env.CREDS, "utf8")
+      ).find(({ url }) => MOODLE_URL_LOGIN.match(url));
       return reqpost({
         url: MOODLE_URL_LOGIN,
         form: {
-          ...creds,
+          username: name,
+          password,
           logintoken,
           anchor: ""
         },
