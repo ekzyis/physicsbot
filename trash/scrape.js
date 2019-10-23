@@ -66,7 +66,7 @@ export const PTP2_UPDATE = bot => async () => {
       };
     })
     .get();
-  handleUpdate(bot)(PTP2_LECTURE_NAME, scrape);
+  //handleUpdate(bot)(PTP2_LECTURE_NAME, scrape);
 };
 
 export const PEP2_LECTURE_NAME = "Experimentalphysik II";
