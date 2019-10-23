@@ -79,18 +79,26 @@ export const initDatabase = bot => {
   return Promise.all(
     initDocumentProps.map(({ name, roleNameMapIdentifier, color }) => {
       return new Promise((resolve, reject) => {
-        initDocument(
+        let channel = undefined;
+        const mapEntry = bot.roleNameMap.get(roleNameMapIdentifier);
+        if (mapEntry && mapEntry.channel) channel = mapEntry.channel.id;
+        else if (process.env.NODE_ENV === "development")
+          channel = bot.config.channel.dev.id;
+        if (!channel) {
+          return reject(new Error(`No channel defined for lecture ${name}!`));
+        }
+        return initDocument(
           Lecture,
           { name },
           {
             name,
-            channel: bot.roleNameMap.get(roleNameMapIdentifier).channel.id,
+            channel,
             color
           }
         )
           .then(resolve)
-          .catch(reject);
-      });
+          .catch(log(ERROR));
+      }).catch(log(ERROR));
     })
   );
 };

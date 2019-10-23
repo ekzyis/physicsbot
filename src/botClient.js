@@ -22,6 +22,7 @@ export class BotClient {
     let config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
       process.env.NODE_ENV
     ];
+    this.config = config;
     this.creds = YAML.parse(fs.readFileSync(process.env.CREDS, "utf8"));
     let instance = genServerInstance(config, client);
     this.guild = instance.guild;
