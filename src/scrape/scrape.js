@@ -13,7 +13,8 @@ const { ERROR } = TYPE;
 export const PTP1_LECTURE_NAME = "Theoretische Physik I";
 export const PTP1_UPDATE = bot => async () => {
   const PTP1_URL_SUFFIX = "/vorlesung/20192/1058";
-  load_with_cheerio(UEBUNGEN_PHYSIK_URL + PTP1_URL_SUFFIX)
+  const url = UEBUNGEN_PHYSIK_URL + PTP1_URL_SUFFIX;
+  load_with_cheerio(url)
     .then($ => {
       const scrape = $("#infoarea-6191")
         .find("ul > li > a")
