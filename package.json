@@ -4,9 +4,8 @@
   "description": "A Discord bot intended for usage with a physics discord server",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run build && NODE_ENV=production CREDS=creds.yaml CONFIG=config.yaml TOKEN=$(cat token) COMMIT=$(git log --pretty='%h %s' -n1) node lib/index.js",
-    "dev": "npm run build && NODE_ENV=development CREDS=creds.yaml CONFIG=config.yaml TOKEN=$(cat token) COMMIT=$(git log --pretty='%h %s' -n1) node lib/index.js",
-    "build": "rm -rf lib/ && babel src/ -d lib/",
+    "start": "NODE_ENV=production CREDS=creds.yaml CONFIG=config.yaml TOKEN=$(cat token) COMMIT=$(git log --pretty='%h %s' -n1) babel-node src/index.js",
+    "dev": "NODE_ENV=development CREDS=creds.yaml CONFIG=config.yaml TOKEN=$(cat token) COMMIT=$(git log --pretty='%h %s' -n1) babel-node src/index.js",
     "test": "TEST=true CREDS=creds.yaml CONFIG=config.yaml TOKEN=$(cat token) nyc --reporter=text mocha --require @babel/register"
   },
   "repository": {
@@ -20,6 +19,7 @@
   },
   "homepage": "https://github.com/ekzyis/physicsbot#readme",
   "dependencies": {
+    "@babel/node": "^7.6.3",
     "cheerio": "^1.0.0-rc.2",
     "discord.js": "^11.4.2",
     "mongoose": "^5.5.4",
