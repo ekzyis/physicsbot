@@ -198,16 +198,16 @@ export const handleUpdate = bot => (
         log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
         // download data
         let files = [];
-        if (options.download)
+        /*if (options.download)
           files = await Promise.all(
             scrape.map(item => download(item, DB_LECTURE_NAME))
-          );
+          );*/
         // first time saving state of website
         lec.updates.push({ time: new Date(), scrape });
-        if (process.env.NODE_ENV === "development") {
+        /*if (process.env.NODE_ENV === "development") {
           let channel = bot.guild.channels.get(lec.channel);
           await createUpdateNotification(channel, lec, scrape, files);
-        }
+        }*/
         lec.save();
       }
     }
