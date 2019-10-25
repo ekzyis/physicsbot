@@ -91,9 +91,9 @@ const moodle_scraper = async suffix => {
         .filter((i, el) => {
           // filter all elements which have a PDF icon next to them
           return !!$(el)
-            .prev()
-            .attr("src")
-            .match(/core\/1571723059\/f\/pdf-24$/);
+            .parent()
+            .attr("href")
+            .match(/mod\/resource\/view\.php\?id=[0-9]+$/);
         })
         .map((i, el) => {
           // the parent is the <a> tag with the link for downloading
