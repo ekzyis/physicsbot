@@ -173,7 +173,7 @@ export const handleUpdate = bot => (
             .join("\n");
           let logMessage = `Following items have been removed for ${DB_LECTURE_NAME}:\n${removedDescription}`;
           // Write superuser a direct message since this should not happen!
-          let config = JSON.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
+          let config = YAML.parse(fs.readFileSync(process.env.CONFIG, "utf8"))[
             "development"
           ];
           let superUserRoleId = config.roles.find(r => r.name === "Superuser")
