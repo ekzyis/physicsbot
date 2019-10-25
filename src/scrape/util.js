@@ -1,6 +1,6 @@
 import cheerio from "cheerio";
 import util from "util";
-import { log, TYPE } from "../util";
+import { dbLogger, scrapeLogger, botLogger, log, TYPE } from "../util";
 import request from "request";
 import fs from "fs";
 import discord from "discord.js";
@@ -8,7 +8,7 @@ import { MOODLE_URL, MOODLE_URL_LOGIN } from "./const";
 import Lecture from "../model/Lectures";
 import YAML from "yaml";
 
-const { ERROR, SEND_MESSAGE, DB } = TYPE;
+const { SEND_MESSAGE } = TYPE;
 const req = util.promisify(request);
 const reqpost = util.promisify(request.post);
 const SCRAPE_ERROR = url => new Error(`Could not scrape website ${url}`);
@@ -18,7 +18,7 @@ export const load_with_cheerio = async (url, options = {}) => {
   let $ = await req(options)
     .then(res => cheerio.load(res.body))
     .catch(err => {
-      log(ERROR)(err);
+      scrapeLogger.error(err);
       return null;
     });
   if (!$) throw SCRAPE_ERROR(url);
@@ -54,7 +54,7 @@ const moodle_login = async () => {
         jar: cookieJar
       });
     })
-    .catch(log(ERROR));
+    .catch(scrapeLogger.error);
   return cookieJar;
 };
 
@@ -86,7 +86,7 @@ export const moodle_scraper = async suffix => {
     })
     .catch(err => {
       // log error and then rethrow to keep promise chain rejected
-      log(ERROR)(err);
+      scrapeLogger.error(err);
       throw err;
     });
 };
@@ -130,7 +130,7 @@ const download = async (item, lectureName) => {
       fs.writeFileSync(`download/${filename}`, res.body);
       return `download/${filename}`;
     })
-    .catch(log(ERROR));
+    .catch(scrapeLogger.error);
 };
 
 const createUpdateNotification = (channel, lecDocument, added, files) => {
@@ -148,8 +148,8 @@ const createUpdateNotification = (channel, lecDocument, added, files) => {
     .setColor(lecDocument.color);
   return channel
     .send(embed)
-    .then(log(SEND_MESSAGE))
-    .catch(log(ERROR))
+    .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
+    .catch(botLogger.error)
     .then(async () => {
       // create chunks of size 10
       let chunks = attachments.reduce((all, one, i) => {
@@ -162,8 +162,8 @@ const createUpdateNotification = (channel, lecDocument, added, files) => {
           .send({
             files: chunk
           })
-          .then(log(SEND_MESSAGE))
-          .catch(log(ERROR));
+          .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
+          .catch(botLogger.error);
       }
     });
 };
@@ -173,11 +173,15 @@ export const handleUpdate = bot => (
   scrape,
   options = { download: true }
 ) => {
+  scrapeLogger.info(`${DB_LECTURE_NAME} - Scraped data (${scrape.length}):`);
+  scrape.forEach(({ href, text }) => {
+    scrapeLogger.info({ href, text });
+  });
   Lecture.findOne(
     { name: DB_LECTURE_NAME },
     "name updates color channel",
     async function(err, lec) {
-      if (err) return log(ERROR)(err);
+      if (err) return scrapeLogger.error(err);
       if (lec.updates.length > 0) {
         // there is at least one element already in updates!
         let previouslyScraped = lec.updates[lec.updates.length - 1].scrape;
@@ -198,7 +202,7 @@ export const handleUpdate = bot => (
           // save new update in document
           lec.updates.push({ time: new Date(), scrape });
           lec.save();
-          log(DB)(`Updated ${DB_LECTURE_NAME}`);
+          dbLogger.info(`Updated ${DB_LECTURE_NAME}`);
         }
         if (removed.length !== 0) {
           let removedDescription = removed
@@ -215,20 +219,21 @@ export const handleUpdate = bot => (
             member.roles.some(r => r.id === superUserRoleId)
           );
           // FIXME for some reason superuser is only SOMETIMES null?
-          if (!superuser) return log(ERROR)(`Superuser not found!`);
+          if (!superuser) return scrapeLogger.error(`Superuser not found!`);
           superuser
             .createDM()
             .then(dmChannel => dmChannel.send(logMessage))
-            .catch(log(ERROR));
+            .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
+            .catch(scrapeLogger.error);
           // FIXME for some reason sometimes nothing is scraped - bad internet connection?
-          //log(DB)(logMessage);
+          //dbLogger.info(logMessage);
           // save new update in document
           //lec.updates.push({ time: new Date(), scrape });
           //lec.save();
-          //log(DB)(`Updated ${DB_LECTURE_NAME}`);
+          //dbLogger.info(`Updated ${DB_LECTURE_NAME}`);
         }
       } else {
-        log(DB)(`First time scraped data saved for ${DB_LECTURE_NAME}`);
+        dbLogger.info(`First time scraped data saved for ${DB_LECTURE_NAME}`);
         // download data
         let files = [];
         /*if (options.download)

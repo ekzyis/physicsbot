@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { log, TYPE } from "./util";
+import { dbLogger, log, TYPE } from "./util";
 import Lecture from "./model/Lectures";
 import {
   ANA1_LECTURE_NAME,
@@ -14,7 +14,7 @@ import {
 const { ERROR, DB } = TYPE;
 
 const createDocument = (Model, data) => {
-  log(DB)(`Creating new document (${Model.modelName})`);
+  dbLogger.info(`Creating new document (${Model.modelName})`);
   let model = new Model(data);
   return new Promise((resolve, reject) => {
     model.save((err, doc) => {
@@ -50,8 +50,8 @@ export const connect = ADDRESS => {
 
   const db = mongoose.connection;
 
-  db.on("error", log(ERROR));
-  db.once("open", () => log(DB)(`Database connection successful!`));
+  db.on("error", dbLogger.error);
+  db.once("open", () => dbLogger.info(`Database connection successful!`));
 
   return db;
 };
@@ -103,8 +103,8 @@ export const initDatabase = bot => {
           }
         )
           .then(resolve)
-          .catch(log(ERROR));
-      }).catch(log(ERROR));
+          .catch(dbLogger.error);
+      }).catch(dbLogger.error);
     })
   );
 };

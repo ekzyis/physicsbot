@@ -1,4 +1,4 @@
-import { log, TYPE } from "./util";
+import { botLogger, log, TYPE } from "./util";
 import { FETCH_LIMIT } from "./botClient";
 const { ERROR, WARNING, GENERAL, SEND_MESSAGE, ROLE_ADD } = TYPE;
 
@@ -33,16 +33,16 @@ export const commandHandler = bot => msg => {
     case COMMAND_STATUS:
       return command_status(bot)(msg);
     default:
-      log(WARNING)(`commandHandler called but no valid command found!`);
+      botLogger.warn(`commandHandler called but no valid command found!`);
   }
 };
 
 const command_status = bot => msg => {
   msg
     .reply(bot.status())
-    .then(log(SEND_MESSAGE))
+    .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
     .catch(msg =>
-      log(ERROR)(
+      botLogger.error(
         `Error sending reply for command ${COMMAND_RESET_ROLES}. Reason: ${msg}`
       )
     );
@@ -63,22 +63,22 @@ const command_resetRoles = bot => msg => {
                 `${removed_roles.map(role => role + "\n").join("")}`
             )
             .then(msg => {
-              log(SEND_MESSAGE)(msg);
-              log(GENERAL)("Roles have been successfully reset");
+              botLogger.info(log(SEND_MESSAGE)(msg));
+              botLogger.info("Roles have been successfully reset");
             })
             .catch(msg =>
-              log(ERROR)(
+              botLogger.error(
                 `Error sending reply for command ${COMMAND_RESET_ROLES}. Reason: ${msg}`
               )
             ),
-        err => log(ERROR)(`Error while resetting roles. Reason: ${err}`)
+        err => botLogger.error(`Error while resetting roles. Reason: ${err}`)
       )
-      .catch(log(ERROR));
+      .catch(botLogger.error);
   } else {
     return msg
       .reply("Keine ausreichenden Rechte.")
-      .then(log(SEND_MESSAGE))
-      .catch(log(ERROR));
+      .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
+      .catch(botLogger.error);
   }
 };
 
@@ -89,16 +89,17 @@ const command_resetRolesEmbed = bot => msg => {
       .resetRolesEmbed()
       .then(
         () => msg.reply(`**Rollenübersicht erfolgreich zurückgesetzt!`),
-        err => log(ERROR)(`Error while resetting roles embed. Reason: ${err}`)
+        err =>
+          botLogger.error(`Error while resetting roles embed. Reason: ${err}`)
       )
       .catch(msg => {
-        log(ERROR)(
+        botLogger.error(
           `Error sending reply for command ${COMMAND_RESET_ROLES_EMBED}. Reason: ${msg}`
         );
       })
       .then(msg => {
-        log(SEND_MESSAGE)(msg);
-        log(GENERAL)("Roles embed has been successfully reset");
+        botLogger.info(log(SEND_MESSAGE)(msg));
+        botLogger.info("Roles embed has been successfully reset");
       });
   }
 };
@@ -112,13 +113,13 @@ const command_clearChannel = bot => msg => {
   if (process.env.NODE_ENV !== "development") {
     const ERROR_MESSAGE =
       "Clearing a channel is only available in development mode!";
-    log(WARNING)(ERROR_MESSAGE);
+    botLogger.warn(ERROR_MESSAGE);
     return Promise.reject(ERROR_MESSAGE);
   }
   let guildMember = bot.guild.member(msg.author);
   if (!guildMember.hasPermission("MANAGE_GUILD")) {
     const ERROR_MESSAGE = "Not enough permissions to clear channel!";
-    log(WARNING)(ERROR_MESSAGE);
+    botLogger.warn(ERROR_MESSAGE);
     return Promise.reject(ERROR_MESSAGE);
   }
   return clearChannel(msg.channel);
@@ -137,18 +138,20 @@ export const clearChannel = async channel => {
       .catch(err => {
         // NOTE "Discord API Unknown Error" thrown here when multiple bot instances run
         // Error is thrown because the other bot already deleted it making the message "unknown".
-        log(ERROR)(err);
+        botLogger.error(err);
         return -1;
       });
     if (deleted > 0)
-      log(GENERAL)(`Deleted ${deleted} message(s) in channel ${channel.name}.`);
+      botLogger.info(
+        `Deleted ${deleted} message(s) in channel ${channel.name}.`
+      );
   } while (deleted > 0);
   return deleted;
 };
 
 const command_addRandomRoles = bot => async msg => {
   try {
-    log(GENERAL)(`Adding roles randomly to users in guild...`);
+    botLogger.info(`Adding roles randomly to users in guild...`);
     let available_roles = Array.from(bot.roleNameMap.values()).map(i => i.role);
     const CHANCE_TO_GET_ROLE = 3 / (4 * available_roles.length);
     // TODO Damn, this code is ugly. Add proper documentation and/or refactor!
@@ -163,9 +166,9 @@ const command_addRandomRoles = bot => async msg => {
             return m
               .addRole(r)
               .then(member => {
-                log(ROLE_ADD)(member, r);
+                botLogger.info(log(ROLE_ADD)(member, r));
               })
-              .catch(log(ERROR));
+              .catch(botLogger.error);
           return null;
         });
       })
@@ -176,15 +179,15 @@ const command_addRandomRoles = bot => async msg => {
     return msg
       .reply(`Rollen erfolgreich zufällig verteilt!`)
       .then(msg => {
-        log(SEND_MESSAGE)(msg);
-        log(GENERAL)(`Roles have been successfully randomly added.`);
+        botLogger.info(log(SEND_MESSAGE)(msg));
+        botLogger.info(`Roles have been successfully randomly added.`);
       })
       .catch(err =>
-        log(ERROR)(
+        botLogger.error(
           `Error sending reply for command ${COMMAND_ADD_RANDOM_ROLES}. Reason: ${err}`
         )
       );
   } catch (err) {
-    log(ERROR)(err);
+    botLogger.error(err);
   }
 };

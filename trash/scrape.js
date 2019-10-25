@@ -41,7 +41,7 @@ const moodle_login = async () => {
         jar: cookieJar
       });
     })
-    .catch(log(ERROR));
+    .catch(scrapeLogger.error);
   return cookieJar;
 };
 
@@ -52,7 +52,7 @@ export const PTP2_UPDATE = bot => async () => {
   let $ = await req(UEBUNGEN_PHYSIK_URL + PTP2_URL_SUFFIX)
     .then(res => cheerio.load(res.body))
     .catch(err => {
-      log(ERROR)(err);
+      scrapeLogger.error(err);
       return null;
     });
   // if $ is null (or undefined)
@@ -78,7 +78,7 @@ export const PEP2_UPDATE = bot => async () => {
   })
     .then(res => cheerio.load(res.body))
     .catch(err => {
-      log(ERROR)(err);
+      scrapeLogger.error(err);
       return null;
     });
   // if $ is null (or undefined)
@@ -113,7 +113,7 @@ export const ANA2_UPDATE = bot => async () => {
   let $ = await req(MATHI_UNI_HD_URL + ANA2_URL_SUFFIX)
     .then(res => cheerio.load(res.body))
     .catch(err => {
-      log(ERROR)(err);
+      scrapeLogger.error(err);
       return null;
     });
   // if $ is null (or undefined)

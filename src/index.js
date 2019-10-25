@@ -16,18 +16,19 @@ import {
   PEP3_UPDATE,
   PTP1_UPDATE
 } from "./scrape/scrape";
-
+//import  from "./util";
+import { startupLogger as logger, botLogger } from "./util";
 // prettier-ignore
-const { GENERAL, ERROR } = TYPE;
+//const { GENERAL, ERROR } = TYPE;
 const client = new discord.Client();
 
 client.on("ready", () => {
-  log(GENERAL)(
+  logger.info(
     `${client.user.tag} is now logged in! Mode: ${process.env.NODE_ENV}`
   );
   client.user
     .setActivity("LHC live stream", { type: "WATCHING" })
-    .catch(log(ERROR));
+    .catch(logger.error);
 });
 
 client.once("ready", () => {
@@ -55,10 +56,10 @@ client.once("ready", () => {
   //bot.interval(ANA2_UPDATE, 2500 * 60);
 });
 
-client.on("error", log(ERROR));
+client.on("error", botLogger.error);
 
-log(GENERAL)("Logging in...");
-client.login(process.env.TOKEN).catch(log(ERROR));
+logger.info("Logging in...");
+client.login(process.env.TOKEN).catch(logger.error);
 
 process.on("SIGINT", () => {
   client.destroy().then(() => process.exit(0));

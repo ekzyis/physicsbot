@@ -1,11 +1,11 @@
 import fs from "fs";
 import discord from "discord.js";
-import { log, TYPE } from "./util";
+import { botLogger, log, TYPE } from "./util";
 import { genRoleEmbed, genRoleNameMap, genServerInstance } from "./gen";
 import assert from "assert";
 import { connect, initDatabase } from "./db";
 import YAML from "yaml";
-const { GENERAL, ERROR, SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
+const { SEND_MESSAGE, ROLE_REMOVE, DELETE_MESSAGE } = TYPE;
 
 // using Symbol marks the variables as "private" since they are harder accessible
 const _client = Symbol("client");
@@ -62,7 +62,7 @@ export class BotClient {
 
   interval = (intervalFunction, interval) => {
     let intervalResult = setInterval(
-      () => intervalFunction(this)().catch(log(ERROR)),
+      () => intervalFunction(this)().catch(botLogger.error),
       interval
     );
     this.updateIntervals.push(intervalResult);
@@ -114,23 +114,23 @@ export class BotClient {
     // look if embed already exists
     return this[_findEmbedMessage](channel, embed)
       .then(msg => {
-        log(GENERAL)(`Found embed (${embed.title}) - id: ${msg.id}`);
+        botLogger.info(`Found embed (${embed.title}) - id: ${msg.id}`);
         return msg;
       })
       .catch(err => {
         // if not, create it
-        log(GENERAL)(err);
+        botLogger.warn(err);
         return channel
           .send(embed)
           .then(msg => {
-            log(GENERAL)(
+            botLogger.info(
               `Successfully sent embed (${embed.title}) - id: ${msg.id}`
             );
-            log(SEND_MESSAGE)(msg);
+            botLogger.info(log(SEND_MESSAGE)(msg));
             return msg;
           })
           .catch(msg => {
-            log(ERROR)(msg);
+            botLogger.error(msg);
             throw msg;
           });
       });
@@ -138,7 +138,7 @@ export class BotClient {
 
   [_findEmbedMessage] = (channel, embed) => {
     // NOTE we assume there are only FETCH_LIMIT messages in the given channel!
-    log(GENERAL)(
+    botLogger.info(
       `Looking for embed (${embed.title}) in channel ${channel.name}...`
     );
     return channel.fetchMessages({ limit: FETCH_LIMIT }).then(messages => {
@@ -158,7 +158,7 @@ export class BotClient {
       item => item.role
     );
     roles_to_remove.forEach(role =>
-      log(GENERAL)(
+      botLogger.info(
         "Resetting role " + role.name + " with id " + role.id + " ..."
       )
     );
@@ -168,21 +168,23 @@ export class BotClient {
           member
             .removeRoles(roles_to_remove)
             .then(member =>
-              roles_to_remove.forEach(role => log(ROLE_REMOVE)(member, role))
+              roles_to_remove.forEach(role =>
+                botLogger.info(log(ROLE_REMOVE)(member, role))
+              )
             )
-            .catch(log(ERROR))
+            .catch(botLogger.error)
         )
       ).then(members => {
         return resolve({ members, removed_roles: roles_to_remove });
       })
-    ).catch(log(ERROR));
+    ).catch(botLogger.error);
   };
 
   resetRolesEmbed = () => {
     return this.embeds.role.message
       .delete()
       .then(msg => {
-        log(DELETE_MESSAGE)(msg);
+        botLogger.info(log(DELETE_MESSAGE)(msg));
         this.embeds.role.message = undefined;
         return this[_initEmbed](
           this.embeds.role.channel,
@@ -193,12 +195,12 @@ export class BotClient {
         this.embeds.role.message = msg;
         return this[_addReactionsToRolesEmbed]();
       })
-      .catch(log(ERROR));
+      .catch(botLogger.error);
   };
 
   [_addReactionsToRolesEmbed] = async () => {
     for (let fn of Array.from(this.roleNameMap.values()).map(item => () => {
-      log(GENERAL)(`Reacting to roles embed with ${item.emoji}`);
+      botLogger.info(`Reacting to roles embed with ${item.emoji}`);
       return this.embeds.role.message.react(item.emoji);
     })) {
       await fn();
@@ -210,7 +212,7 @@ export class BotClient {
       .edit(this.embeds.role.embed)
       .then(msg => this[_addReactionsToRolesEmbed]())
       .then(() => {
-        log(GENERAL)(`Updated roles embed!`);
+        botLogger.info(`Updated roles embed!`);
       })
-      .catch(log(ERROR));
+      .catch(botLogger.error);
 }
