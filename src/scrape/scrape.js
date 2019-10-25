@@ -1,4 +1,4 @@
-import { log, TYPE } from "../util";
+import { scrapeLogger } from "../util";
 import puppeteer from "puppeteer";
 import { handleUpdate, load_with_cheerio, moodle_scraper } from "./util";
 import {
@@ -8,8 +8,6 @@ import {
   REQUEST,
   MOODLE_URL
 } from "./const";
-
-const { ERROR } = TYPE;
 
 export const PTP1_LECTURE_NAME = "Theoretische Physik I";
 export const PTP1_UPDATE = bot => async () => {
@@ -28,7 +26,7 @@ export const PTP1_UPDATE = bot => async () => {
         .get();
       return handleUpdate(bot)(PTP1_LECTURE_NAME, scrape, { download: false });
     })
-    .catch(log(ERROR));
+    .catch(scrapeLogger.error);
 };
 
 export const ANA1_LECTURE_NAME = "Analysis 1";

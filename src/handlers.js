@@ -1,12 +1,11 @@
-import { log, TYPE } from "./util";
+import { botLogger, log, TYPE } from "./util";
 import { commandHandler, COMMANDS } from "./command";
 const {
   REACTION_ADD,
   REACTION_REMOVE,
   ROLE_ADD,
   ROLE_REMOVE,
-  SEND_MESSAGE,
-  ERROR
+  SEND_MESSAGE
 } = TYPE;
 
 export const GREETING_EMBED_TITLE = (bot, member) =>
@@ -32,8 +31,8 @@ export const guildMemberAddHandler = bot => member => {
     };
     return bot.defaultChannel
       .send(member.toString(), embedGreeting)
-      .then(log(SEND_MESSAGE))
-      .catch(log(ERROR));
+      .then(msg => botLogger.info(log(SEND_MESSAGE)(msg)))
+      .catch(botLogger.error);
   }
 };
 
@@ -43,7 +42,7 @@ const messageReactionComposer = (LOG_REACTION, LOG_ROLE, roleFn) => bot => (
 ) => {
   if (user.bot) return;
   if (reaction.message.id === bot.embeds.role.message.id) {
-    log(LOG_REACTION)(user, reaction);
+    botLogger.info(log(LOG_REACTION)(user, reaction));
     let associatedItem = Array.from(bot.roleNameMap.values()).find(
       item => item.emoji.id === reaction.emoji.id
     );
@@ -55,11 +54,11 @@ const messageReactionComposer = (LOG_REACTION, LOG_ROLE, roleFn) => bot => (
         .then(member =>
           roleFn(member, associatedRole.id)
             .then(member => {
-              log(LOG_ROLE)(member, associatedRole);
+              botLogger.info(log(LOG_ROLE)(member, associatedRole));
             })
-            .catch(log(ERROR))
+            .catch(botLogger.error)
         )
-        .catch(log(ERROR));
+        .catch(botLogger.error);
     }
   }
 };
