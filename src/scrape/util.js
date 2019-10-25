@@ -25,7 +25,7 @@ export const load_with_cheerio = async (url, options = {}) => {
   else return $;
 };
 
-export const moodle_login = async () => {
+const moodle_login = async () => {
   const cookieJar = request.jar();
   await req({
     url: MOODLE_URL_LOGIN,
@@ -56,6 +56,39 @@ export const moodle_login = async () => {
     })
     .catch(log(ERROR));
   return cookieJar;
+};
+
+export const moodle_scraper = async suffix => {
+  const cookieJar = await moodle_login();
+  const url = MOODLE_URL + suffix;
+  return load_with_cheerio(url, { jar: cookieJar })
+    .then($ => {
+      return $("span.instancename")
+        .filter((i, el) => {
+          // filter all elements which have a PDF icon next to them
+          return !!$(el)
+            .parent()
+            .attr("href")
+            .match(/mod\/resource\/view\.php\?id=[0-9]+$/);
+        })
+        .map((i, el) => {
+          // the parent is the <a> tag with the link for downloading
+          return {
+            text: $(el)
+              .parent()
+              .text(),
+            href: $(el)
+              .parent()
+              .attr("href")
+          };
+        })
+        .get();
+    })
+    .catch(err => {
+      // log error and then rethrow to keep promise chain rejected
+      log(ERROR)(err);
+      throw err;
+    });
 };
 
 const areEqual = (item1, item2) =>
