@@ -104,7 +104,7 @@ const removedDiff = (oldScraped, newScraped) =>
     oldItem => !newScraped.some(newItem => areEqual(oldItem, newItem))
   );
 
-const download = async (item, lectureName) => {
+export const download = async (item, lectureName) => {
   let cookieJar = null;
   if (item.href.startsWith(MOODLE_URL)) {
     cookieJar = await moodle_login();
@@ -116,6 +116,9 @@ const download = async (item, lectureName) => {
     encoding: null
   })
     .then(res => {
+      let match = res.headers["content-disposition"].match(/filename=\"(.*)\"/);
+      let serverFileName = "";
+      if (match) serverFileName = match[1];
       let dateFileNameFormat = new Date()
         .toISOString()
         .replace(/\..+/, "")
@@ -128,7 +131,10 @@ const download = async (item, lectureName) => {
         fs.mkdirSync("download");
       }
       fs.writeFileSync(`download/${filename}`, res.body);
-      return `download/${filename}`;
+      return {
+        downloadName: `download/${filename}`,
+        uploadName: serverFileName
+      };
     })
     .catch(scrapeLogger.error);
 };
@@ -136,12 +142,21 @@ const download = async (item, lectureName) => {
 const createUpdateNotification = (channel, lecDocument, added, files) => {
   let title = `**${lecDocument.name}: Neue Materialien verfügbar!**`;
   let description = added.map((el, i) => `${el.text}\n${el.href}\n\n`).join("");
-  let attachments = files.map((f, i) => ({
-    name: `${lecDocument.name}_${added[i].text}${
-      added[i].text.match(/\.pdf$/) ? "" : ".pdf"
-    }`,
-    attachment: f
-  }));
+  let attachments = files.map((f, i) => {
+    // prioritize file name received by header 'content-disposition' over text value of download link.
+    let name = f.uploadName || added[i].text;
+    // if no file name was given by header 'content-disposition', try to add correct file extension
+    if (!f.uploadName) {
+      if (!name.match(/\.py$/)) {
+        if (name.match(/Python/i)) name += ".py";
+      } else if (!name.match(/\.pdf$/)) name += ".pdf";
+      name = lecDocument.name + "_" + name;
+    }
+    return {
+      name,
+      attachment: f.downloadName
+    };
+  });
   let embed = new discord.RichEmbed()
     .setTitle(title)
     .setDescription(description)
