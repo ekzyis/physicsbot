@@ -104,7 +104,7 @@ const removedDiff = (oldScraped, newScraped) =>
     oldItem => !newScraped.some(newItem => areEqual(oldItem, newItem))
   );
 
-export const download = async (item, lectureName) => {
+const download = async (item, lectureName) => {
   let cookieJar = null;
   if (item.href.startsWith(MOODLE_URL)) {
     cookieJar = await moodle_login();
