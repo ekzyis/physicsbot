@@ -52,7 +52,6 @@ export const PEP1_UPDATE = (
   options = { scraper: REQUEST }
 ) => async () => {
   const PEP1_URL_SUFFIX = "/vorlesung/20192/pep1";
-  const url = UEBUNGEN_PHYSIK_URL + PEP1_URL_SUFFIX;
   let scrape = [];
   if (options.scraper === PUPPETEER) {
     const browser = await puppeteer.launch();
@@ -69,6 +68,7 @@ export const PEP1_UPDATE = (
     );
     await browser.close();
   } else if (options.scraper === REQUEST) {
+    scrape = await uebungen_physik_scraper(PEP1_URL_SUFFIX, "#infoarea-6406");
   }
   handleUpdate(bot)(PEP1_LECTURE_NAME, scrape, { download: false });
 };
