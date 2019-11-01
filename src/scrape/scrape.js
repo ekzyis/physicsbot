@@ -47,7 +47,10 @@ export const ANA1_UPDATE = bot => async () => {
 };
 
 export const PEP1_LECTURE_NAME = "Experimentalphysik I";
-export const PEP1_UPDATE = bot => async (options = { scraper: PUPPETEER }) => {
+export const PEP1_UPDATE = (
+  bot,
+  options = { scraper: REQUEST }
+) => async () => {
   const PEP1_URL_SUFFIX = "/vorlesung/20192/pep1";
   const url = UEBUNGEN_PHYSIK_URL + PEP1_URL_SUFFIX;
   let scrape = [];
