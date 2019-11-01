@@ -4,9 +4,10 @@ import { dbLogger, scrapeLogger, botLogger, log, TYPE } from "../util";
 import request from "request";
 import fs from "fs";
 import discord from "discord.js";
-import { MOODLE_URL, MOODLE_URL_LOGIN } from "./const";
+import { MOODLE_URL, MOODLE_URL_LOGIN, UEBUNGEN_PHYSIK_URL } from "./const";
 import Lecture from "../model/Lectures";
 import YAML from "yaml";
+import { PTP1_LECTURE_NAME } from "./scrape";
 
 const { SEND_MESSAGE } = TYPE;
 const req = util.promisify(request);
@@ -56,6 +57,23 @@ const moodle_login = async () => {
     })
     .catch(scrapeLogger.error);
   return cookieJar;
+};
+
+export const uebungen_physik_scraper = async (suffix, infoareaSelector) => {
+  const url = UEBUNGEN_PHYSIK_URL + suffix;
+  return load_with_cheerio(url)
+    .then($ => {
+      return $(infoareaSelector)
+        .find("ul > li > a")
+        .map(function(i, el) {
+          return {
+            href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
+            text: $(this).text()
+          };
+        })
+        .get();
+    })
+    .catch(scrapeLogger.error);
 };
 
 export const moodle_scraper = async suffix => {

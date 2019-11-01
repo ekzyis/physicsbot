@@ -1,6 +1,6 @@
 import { scrapeLogger } from "../util";
 import puppeteer from "puppeteer";
-import { handleUpdate, load_with_cheerio, moodle_scraper } from "./util";
+import { handleUpdate, moodle_scraper, uebungen_physik_scraper } from "./util";
 import {
   HEIBOX_UNI_HD_URL,
   UEBUNGEN_PHYSIK_URL,
@@ -12,21 +12,11 @@ import {
 export const PTP1_LECTURE_NAME = "Theoretische Physik I";
 export const PTP1_UPDATE = bot => async () => {
   const PTP1_URL_SUFFIX = "/vorlesung/20192/1058";
-  const url = UEBUNGEN_PHYSIK_URL + PTP1_URL_SUFFIX;
-  load_with_cheerio(url)
-    .then($ => {
-      const scrape = $("#infoarea-6191")
-        .find("ul > li > a")
-        .map(function(i, el) {
-          return {
-            href: UEBUNGEN_PHYSIK_URL + $(this).attr("href"),
-            text: $(this).text()
-          };
-        })
-        .get();
-      return handleUpdate(bot)(PTP1_LECTURE_NAME, scrape, { download: false });
-    })
-    .catch(scrapeLogger.error);
+  const scrape = await uebungen_physik_scraper(
+    PTP1_URL_SUFFIX,
+    "#infoarea-6191"
+  );
+  handleUpdate(bot)(PTP1_LECTURE_NAME, scrape);
 };
 
 export const ANA1_LECTURE_NAME = "Analysis 1";
@@ -85,4 +75,14 @@ export const PEP3_UPDATE = bot => async () => {
   const PEP3_URL_SUFFIX = "/course/view.php?id=22982";
   const scrape = await moodle_scraper(PEP3_URL_SUFFIX);
   handleUpdate(bot)(PEP3_LECTURE_NAME, scrape);
+};
+
+export const PTP3_LECTURE_NAME = "Theoretische Physik III";
+export const PTP3_UPDATE = bot => async () => {
+  const PTP3_URL_SUFFIX = "/vorlesung/20192/ptp3";
+  const scrape = await uebungen_physik_scraper(
+    PTP3_URL_SUFFIX,
+    "#infoarea-6273"
+  );
+  handleUpdate(bot)(PTP3_LECTURE_NAME, scrape);
 };
