@@ -8,7 +8,8 @@ import {
   PEP2_LECTURE_NAME,
   PEP3_LECTURE_NAME,
   PTP1_LECTURE_NAME,
-  PTP2_LECTURE_NAME
+  PTP2_LECTURE_NAME,
+  PTP3_LECTURE_NAME
 } from "./scrape/scrape";
 
 const { ERROR, DB } = TYPE;
@@ -79,6 +80,11 @@ export const initDatabase = bot => {
       name: PEP3_LECTURE_NAME,
       roleNameMapIdentifier: "Experimentalphysik 3",
       color: "#df22d3"
+    },
+    {
+      name: PTP3_LECTURE_NAME,
+      roleNameMapIdentifier: "Theoretische Physik 3",
+      color: "#29ca62"
     }
   ];
 

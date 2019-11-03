@@ -14,7 +14,8 @@ import {
   ANA1_UPDATE,
   PEP1_UPDATE,
   PEP3_UPDATE,
-  PTP1_UPDATE
+  PTP1_UPDATE,
+  PTP3_UPDATE
 } from "./scrape/scrape";
 //import  from "./util";
 import { startupLogger as logger, botLogger } from "./util";
@@ -47,8 +48,9 @@ client.once("ready", () => {
     // FIXME puppeteer memory leak (https://github.com/ekzyis/physicsbot/issues/31)
     //bot.interval(ANA1_UPDATE, 2500 * 60);
     // FIXME puppeteer memory leak (https://github.com/ekzyis/physicsbot/issues/31)
-    //bot.interval(PEP1_UPDATE, 2500 * 60);
+    bot.interval(PEP1_UPDATE, 2500 * 60);
     bot.interval(PEP3_UPDATE, 2500 * 60);
+    bot.interval(PTP3_UPDATE, 2500 * 60);
   });
   PTP1_UPDATE(bot)();
   PEP3_UPDATE(bot)();
