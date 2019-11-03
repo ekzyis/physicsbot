@@ -23,7 +23,7 @@
     "cheerio": "^1.0.0-rc.2",
     "discord.js": "^11.4.2",
     "logging": "^3.2.0",
-    "mongoose": "^5.5.4",
+    "mongoose": "^5.7.5",
     "puppeteer": "^1.20.0",
     "request": "^2.88.0",
     "yaml": "^1.7.0"

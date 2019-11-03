@@ -52,6 +52,8 @@ client.once("ready", () => {
     bot.interval(PEP3_UPDATE, 2500 * 60);
     bot.interval(PTP3_UPDATE, 2500 * 60);
   });
+  PTP1_UPDATE(bot)();
+  PEP3_UPDATE(bot)();
   // NOTE this will retrigger without caring if previous update is finished!
   //bot.interval(PTP2_UPDATE, 2500 * 60);
   //bot.interval(PEP2_UPDATE, 2500 * 60);
