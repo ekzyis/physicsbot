@@ -39,24 +39,6 @@ client.once("ready", () => {
   bot.on("messageReactionRemove", messageReactionRemoveHandler);
   bot.on("guildMemberAdd", guildMemberAddHandler);
   bot.initEmbeds();
-  // connect to database
-  bot.connect(
-    `mongodb://localhost/physicsbot_${process.env.NODE_ENV.slice(0, 3)}`
-  );
-  bot.initDB().then(() => {
-    bot.interval(PTP1_UPDATE, 2500 * 60);
-    // FIXME puppeteer memory leak (https://github.com/ekzyis/physicsbot/issues/31)
-    //bot.interval(ANA1_UPDATE, 2500 * 60);
-    bot.interval(PEP1_UPDATE, 2500 * 60);
-    bot.interval(PEP3_UPDATE, 2500 * 60);
-    bot.interval(PTP3_UPDATE, 2500 * 60);
-  });
-  PTP1_UPDATE(bot)();
-  PEP3_UPDATE(bot)();
-  // NOTE this will retrigger without caring if previous update is finished!
-  //bot.interval(PTP2_UPDATE, 2500 * 60);
-  //bot.interval(PEP2_UPDATE, 2500 * 60);
-  //bot.interval(ANA2_UPDATE, 2500 * 60);
 });
 
 client.on("error", botLogger.error);
