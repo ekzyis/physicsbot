@@ -53,6 +53,13 @@ production:
         id: "629706460711878689"
       channel:
         id: "629704498583175178"
+    - name: "Experimentalphysik 4"
+      emoji:
+        id: "701453048240668774"
+      role:
+        id: "697188215085465730"
+      channel:
+        id: "697188021367472148"
     - name: "Theoretische Physik"
       emoji:
         id: "513462569126723587"
@@ -74,6 +81,13 @@ production:
         id: "629706063360294932"
       channel:
         id: "629704725520056340"
+    - name: "Theoretische Physik 4"
+      emoji:
+        id: "701453122374991883"
+      role:
+        id: "697188411580088370"
+      channel:
+        id: "697188949118156881"
     - name: "Analysis"
       emoji:
         id: "513462472376713250"
