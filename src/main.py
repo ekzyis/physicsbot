@@ -3,7 +3,7 @@
 """Physicsbot.
 
 Usage:
-    physicsbot run [-c <CONFIG>] --token=<TOKEN>
+    physicsbot run [-c <CONFIG>] [--token=<TOKEN>]
     physicsbot config add <NAME> --role=<ROLE> --emoji=<EMOJI> --channel=<CHANNEL>
     physicsbot config update <NAME> [--role=<ROLE>] [--emoji=<EMOJI>] [--channel=<CHANNEL>]
     physicsbot config remove <NAME>
@@ -23,5 +23,5 @@ if __name__ == "__main__":
         config = yaml.safe_load(file)
     if args['run']:
         bot = BotClient()
-        token = args['--token']
+        token = args['--token'] or config['token']
         bot.run(token)
