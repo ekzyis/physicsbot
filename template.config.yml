@@ -4,6 +4,6 @@ guild:
   overview: 'channel name in which the embed for assigning roles via reactions is posted'
 lectures:
   - name: 'Name of some lecture'
-    role: 'name of role associated with this lecture'
-    emoji: 'name of emoji associated with this lecture'
-    channel: 'channel name associated with this lecture'
+    role: 'name or id of role associated with this lecture'
+    emoji: 'name or id of emoji associated with this lecture'
+    channel: 'name or id of channel associated with this lecture'
