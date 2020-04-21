@@ -1,0 +1,6 @@
+token: 'your bot token'
+lectures:
+  - name: 'Name of some lecture'
+    role: 'name of role associated with this lecture'
+    emoji: 'name of emoji associated with this lecture'
+    channel: 'channel name associated with this lecture'
