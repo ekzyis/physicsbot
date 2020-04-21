@@ -13,9 +13,14 @@ Usage:
 from docopt import docopt
 
 from bot import BotClient
+from pathlib import Path
+import yaml
 
 if __name__ == "__main__":
     args = docopt(__doc__)
+    config_path = str(Path(__file__).parent / '../config.yml')
+    with open(config_path, 'r') as file:
+        config = yaml.safe_load(file)
     if args['run']:
         bot = BotClient()
         token = args['--token']
