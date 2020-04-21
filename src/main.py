@@ -18,7 +18,7 @@ import yaml
 
 if __name__ == "__main__":
     args = docopt(__doc__)
-    config_path = str(Path(__file__).parent / '../config.yml')
+    config_path = args['--config'] or str(Path(__file__).parent / '../config.yml')
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     if args['run']:
