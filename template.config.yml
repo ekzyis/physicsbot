@@ -1,7 +1,6 @@
 token: 'your bot token'
-guild:
-  id: 'id of the guild for which this config is written'
-  overview: 'channel name in which the embed for assigning roles via reactions is posted'
+guild: 'id of the guild for which this config is written'
+overview: 'channel name in which the embed for assigning roles via reactions is posted'
 lectures:
   - name: 'Name of some lecture'
     role: 'name or id of role associated with this lecture'
