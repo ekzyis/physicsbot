@@ -3,7 +3,7 @@
 """Physicsbot.
 
 Usage:
-    physicsbot run [-c <CONFIG>] [--token=<TOKEN>]
+    physicsbot run [--config=<CONFIG>] [--token=<TOKEN>]
     physicsbot config add <NAME> --role=<ROLE> --emoji=<EMOJI> --channel=<CHANNEL>
     physicsbot config update <NAME> [--role=<ROLE>] [--emoji=<EMOJI>] [--channel=<CHANNEL>]
     physicsbot config remove <NAME>
