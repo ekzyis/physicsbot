@@ -7,8 +7,9 @@ logging.basicConfig(level=logging.INFO)
 
 class BotClient(discord.Client):
 
-    def __init__(self, **options):
+    def __init__(self, config=None, **options):
         super().__init__(**options)
+        self.config = config
 
     async def on_ready(self):
         """Executed when bot is logged in and ready."""

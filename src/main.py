@@ -25,4 +25,4 @@ if __name__ == "__main__":
     if args['run']:
         bot = BotClient()
         token = args['--token'] or config['token']
-        bot.run(token)
+        bot.run(token, config=config)
