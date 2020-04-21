@@ -10,11 +10,12 @@ Usage:
     physicsbot config write <FILE>
 """
 
+from pathlib import Path
+
+import yaml
 from docopt import docopt
 
 from bot import BotClient
-from pathlib import Path
-import yaml
 
 if __name__ == "__main__":
     args = docopt(__doc__)
