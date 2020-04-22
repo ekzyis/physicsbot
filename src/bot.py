@@ -37,4 +37,4 @@ class BotClient(discord.Client):
             message = await get_lecture_embed_message(overview_channel, lecture)
             if message is None:
                 embed = create_lecture_embed(lecture)
-                await overview_channel.send(embed)
+                await overview_channel.send(embed=embed)
