@@ -31,9 +31,10 @@ class BotClient(discord.Client):
         """Initializes the overview channel.
         Makes sure that an embed for every lecture exists such that users can react to it and
         the role can be assigned."""
+        await self.wait_until_ready()
         overview_channel = await self.fetch_channel(self.config['overview'])
         for lecture in self.config['lectures']:
-            message = get_lecture_embed_message(overview_channel, lecture)
+            message = await get_lecture_embed_message(overview_channel, lecture)
             if message is None:
                 embed = create_lecture_embed(lecture)
-                overview_channel.send(embed)
+                await overview_channel.send(embed)
