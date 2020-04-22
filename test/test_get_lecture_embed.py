@@ -1,3 +1,4 @@
+import asyncio
 import unittest
 import warnings
 from unittest import mock
@@ -19,20 +20,20 @@ class TestGetLectureEmbed(unittest.TestCase):
     @mock.patch('discord.Embed')
     @mock.patch('discord.Message')
     @mock.patch('discord.TextChannel')
-    def test_that_it_returns_message_if_embed_exists_in_channel(self, channel, message, embed):
+    async def test_that_it_returns_message_if_embed_exists_in_channel(self, channel, message, embed):
         embed.title = 'title'
         message.embeds = [embed]
         message.id = '12345'
-        channel.history.return_value = [message]
+        channel.history.return_value = asyncio.as_completed([message])
         lecture = {'embed_title': 'title'}
-        found_message = get_lecture_embed_message(channel, lecture)
+        found_message = await get_lecture_embed_message(channel, lecture)
         self.assertEqual(found_message, message)
 
     @mock.patch('discord.Message')
     @mock.patch('discord.TextChannel')
-    def test_that_it_returns_None_if_embed_does_not_exist_in_channel_with_messages(self, channel, message):
+    async def test_that_it_returns_None_if_embed_does_not_exist_in_channel_with_messages(self, channel, message):
         message.embeds = []
-        channel.history.return_value = [message]
+        channel.history.return_value = asyncio.as_completed([message])
         lecture = {'embed_title': 'title'}
-        found_message = get_lecture_embed_message(channel, lecture)
+        found_message = await get_lecture_embed_message(channel, lecture)
         self.assertIsNone(found_message)
