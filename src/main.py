@@ -17,13 +17,21 @@ from docopt import docopt
 
 from bot import BotClient
 
+
+async def start_bot(token, config):
+    """Starts the bot and runs the guild initialisation process.
+    Consists of making sure that for every lecture, there is an embed in the overview channel.
+    """
+    bot = BotClient(config=config)
+    await bot.run(token)
+    await bot.init_overview_channel()
+
+
 if __name__ == "__main__":
     args = docopt(__doc__)
     config_path = args['--config'] or str(Path(__file__).parent / '../config.yml')
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     if args['run']:
-        bot = BotClient(config=config)
         token = args['--token'] or config['token']
-        bot.run(token)
-        bot.init_overview_channel()
+        start_bot(token, config)
