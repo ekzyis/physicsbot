@@ -26,3 +26,4 @@ if __name__ == "__main__":
         bot = BotClient(config=config)
         token = args['--token'] or config['token']
         bot.run(token)
+        bot.init_overview_channel()
