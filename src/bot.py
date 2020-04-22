@@ -2,6 +2,8 @@ import logging
 
 import discord
 
+from util import get_lecture_embed_message, create_lecture_embed
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -31,8 +33,8 @@ class BotClient(discord.Client):
         the role can be assigned."""
         overview_channel = await self.fetch_channel(self.config['overview'])
         for lecture in self.config['lectures']:
-            embed = get_lecture_embed(overview_channel, lecture)
-            if embed is None:
-                embed = create_lecture_embed()
+            message = get_lecture_embed_message(overview_channel, lecture)
+            if message is None:
+                embed = create_lecture_embed(lecture)
                 overview_channel.send(embed)
                 pass
