@@ -37,4 +37,3 @@ class BotClient(discord.Client):
             if message is None:
                 embed = create_lecture_embed(lecture)
                 overview_channel.send(embed)
-                pass
