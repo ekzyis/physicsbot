@@ -36,6 +36,3 @@ class BotClient(discord.Client):
                 embed = create_lecture_embed()
                 overview_channel.send(embed)
                 pass
-            else:
-                # update overview embed if needed
-                update_lecture_embed(embed)
