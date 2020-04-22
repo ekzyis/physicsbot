@@ -1,7 +1,8 @@
-import asyncio
-import unittest
 import warnings
 from unittest import mock
+
+import aiounittest
+from aiounittest.mock import AsyncMockIterator
 
 from src.util import get_lecture_embed_message
 
@@ -16,7 +17,7 @@ with warnings.catch_warnings():
     import aiohttp
 
 
-class TestGetLectureEmbed(unittest.TestCase):
+class TestGetLectureEmbed(aiounittest.AsyncTestCase):
     @mock.patch('discord.Embed')
     @mock.patch('discord.Message')
     @mock.patch('discord.TextChannel')
@@ -24,7 +25,7 @@ class TestGetLectureEmbed(unittest.TestCase):
         embed.title = 'title'
         message.embeds = [embed]
         message.id = '12345'
-        channel.history.return_value = asyncio.as_completed([message])
+        channel.history.return_value = AsyncMockIterator([message])
         lecture = {'embed_title': 'title'}
         found_message = await get_lecture_embed_message(channel, lecture)
         self.assertEqual(found_message, message)
@@ -33,7 +34,7 @@ class TestGetLectureEmbed(unittest.TestCase):
     @mock.patch('discord.TextChannel')
     async def test_that_it_returns_None_if_embed_does_not_exist_in_channel_with_messages(self, channel, message):
         message.embeds = []
-        channel.history.return_value = asyncio.as_completed([message])
+        channel.history.return_value = AsyncMockIterator([message])
         lecture = {'embed_title': 'title'}
         found_message = await get_lecture_embed_message(channel, lecture)
         self.assertIsNone(found_message)
