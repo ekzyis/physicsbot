@@ -27,7 +27,7 @@ async def start_bot(token, config):
     await bot.init_overview_channel()
 
 
-if __name__ == "__main__":
+def main():
     args = docopt(__doc__)
     config_path = args['--config'] or str(Path(__file__).parent / '../config.yml')
     with open(config_path, 'r') as file:
@@ -35,3 +35,7 @@ if __name__ == "__main__":
     if args['run']:
         token = args['--token'] or config['token']
         start_bot(token, config)
+
+
+if __name__ == "__main__":
+    main()
