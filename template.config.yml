@@ -2,7 +2,7 @@ token: 'your bot token'
 guild: 'id of the guild for which this config is written'
 overview: 'channel name in which the embed for assigning roles via reactions is posted'
 lectures:
-  - name: 'Name of some lecture'
+  - name: 'name of some lecture'
     embed_title: 'title of embed in overview channel'
     role: 'name or id of role associated with this lecture'
     emoji: 'name or id of emoji associated with this lecture'
