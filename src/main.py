@@ -23,6 +23,6 @@ if __name__ == "__main__":
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     if args['run']:
-        bot = BotClient()
+        bot = BotClient(config=config)
         token = args['--token'] or config['token']
-        bot.run(token, config=config)
+        bot.run(token)
