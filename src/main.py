@@ -18,13 +18,13 @@ from docopt import docopt
 from bot import BotClient
 
 
-async def start_bot(token, config):
+def start_bot(token, config):
     """Starts the bot and runs the guild initialisation process.
     Consists of making sure that for every lecture, there is an embed in the overview channel.
     """
     bot = BotClient(config=config)
-    await bot.run(token)
-    await bot.init_overview_channel()
+    bot.loop.create_task(bot.init_overview_channel())
+    bot.run(token)
 
 
 def main():
