@@ -29,7 +29,7 @@ def start_bot(token, config):
 
 def main():
     args = docopt(__doc__)
-    config_path = args['--config'] or str(Path(__file__).parent / '../test.config.yml')
+    config_path = args['--config'] or str(Path(__file__).parent / '../dev.config.yml')
     with open(config_path, 'r') as file:
         config = yaml.safe_load(file)
     if args['run']:
