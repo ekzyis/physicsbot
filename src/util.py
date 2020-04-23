@@ -38,6 +38,15 @@ async def create_lecture_embed(guild, lecture):
     )
 
 
+def needs_update(message, embed):
+    """Check if the embed of the given message needs an update. The given embed is the up-to-date version.
+    Comparison is done by checking if the embed title and description do match."""
+    if len(message.embeds) == 0:
+        return True
+    old_embed = message.embeds[0]
+    return old_embed.title != embed.title or old_embed.description != embed.description
+
+
 async def create_overview_info_embed():
     """Creates the info embed in the overview channel.
     The guild instance is needed for fetching roles and emojis."""
