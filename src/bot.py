@@ -36,6 +36,9 @@ class BotClient(discord.Client):
         """Handles users adding reactions to messages.
         If an user reacted appropriately to an lecture embed, the user is assigned the role associated with the lecture.
         """
+        if raw_reaction.user_id == self.user.id:
+            # bot should not react to reactions from itself
+            return
         # check if the reaction belongs to an lecture embed
         lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
         if lecture is not None:
@@ -49,6 +52,9 @@ class BotClient(discord.Client):
     async def on_raw_reaction_remove(self, raw_reaction):
         """Handles users removing reactions from messages.
         If an user removed his previous reaction from a lecture embed, the associated role is removed."""
+        if raw_reaction.user_id == self.user.id:
+            # bot should not react to reactions from itself
+            return
         # check if the reaction belongs to an lecture embed
         lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
         if lecture is not None:
