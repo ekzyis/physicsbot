@@ -19,7 +19,7 @@ async def remove_role_from_member(member, role_id):
 
 async def get_embed_with_title(channel, embed_title):
     """Returns the message in the given channel which has an embed with the given title if it exists else None"""
-    async for message in channel.history(limit=20):
+    async for message in channel.history(limit=100):
         for embed in message.embeds:
             if embed.title == embed_title:
                 return message
