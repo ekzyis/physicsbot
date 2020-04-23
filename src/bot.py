@@ -4,6 +4,7 @@ from collections import namedtuple
 import discord
 
 from util import get_lecture_embed_message, create_lecture_embed, add_role_to_member, remove_role_from_member
+from const import WHITE_CHECKMARK
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,7 +38,7 @@ class BotClient(discord.Client):
         lecture = self.get_lecture_of_message_id(raw_reaction.message_id)
         if lecture is not None:
             # check if reaction was the one we expect to assign the role
-            if raw_reaction.emoji.name == '\u2705':  # \u2705 is :white_check_mark:
+            if raw_reaction.emoji.name == WHITE_CHECKMARK:
                 lecture_role_id = lecture['role']
                 member = raw_reaction.member
                 await add_role_to_member(member, lecture_role_id)
