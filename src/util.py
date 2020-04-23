@@ -55,18 +55,6 @@ async def create_overview_info_embed(guild, lectures):
     Dies ist auch reversibel; das heißt ihr könnt hier auch eine Rolle durch einfaches Klicken wieder entfernen, \
     um z.B. über LA oder ANA nicht mehr informiert zu werden bzw. diese Kanäle nicht mehr zu sehen.
     """
-    # FIXME With lectures, the embed description is too long. Following error is thrown:
-    #   discord.errors.HTTPException: 400 Bad Request (error code: 50035): Invalid Form Body
-    #   In embed.description: Must be 2048 or fewer in length.
-    """
-    for lecture in lectures:
-        # TODO According to discord.py docs, I should iterate over emojis instead of using `fetch_emoji`
-        # I'm doing it anyway because I think only having to do it once on startup is not that big of an issue.
-        # https://discordpy.readthedocs.io/en/latest/api.html#discord.Guild.fetch_emoji
-        emoji = await guild.fetch_emoji(int(lecture['emoji']))
-        role = guild.get_role(int(lecture['role']))
-        desc += "{}: \t\t{}\n\n".format(role.mention, emoji)
-    """
     return Embed(
         title="Rollen",
         description=desc
