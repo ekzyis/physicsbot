@@ -30,7 +30,7 @@ class BotClient(discord.Client):
             await guild.system_channel.send(greeting)
 
     async def on_raw_reaction_add(self, raw_reaction):
-        """Handles user reactions.
+        """Handles users adding reactions to messages.
         If an user reacted appropriately to an lecture embed, the user is assigned the role associated with the lecture.
         """
         # check if the reaction belongs to an lecture embed
