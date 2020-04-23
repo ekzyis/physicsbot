@@ -4,7 +4,7 @@ from unittest import mock
 import aiounittest
 from aiounittest.mock import AsyncMockIterator
 
-from src.util import get_lecture_embed_message
+from src.util import get_embed_with_title
 
 with warnings.catch_warnings():
     """
@@ -26,8 +26,7 @@ class TestGetLectureEmbed(aiounittest.AsyncTestCase):
         message.embeds = [embed]
         message.id = '12345'
         channel.history.return_value = AsyncMockIterator([message])
-        lecture = {'embed_title': 'title'}
-        found_message = await get_lecture_embed_message(channel, lecture)
+        found_message = await get_embed_with_title(channel, 'title')
         self.assertEqual(found_message, message)
 
     @mock.patch('discord.Message')
@@ -35,6 +34,5 @@ class TestGetLectureEmbed(aiounittest.AsyncTestCase):
     async def test_that_it_returns_None_if_embed_does_not_exist_in_channel_with_messages(self, channel, message):
         message.embeds = []
         channel.history.return_value = AsyncMockIterator([message])
-        lecture = {'embed_title': 'title'}
-        found_message = await get_lecture_embed_message(channel, lecture)
+        found_message = await get_embed_with_title(channel, 'title')
         self.assertIsNone(found_message)
