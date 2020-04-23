@@ -121,6 +121,9 @@ class BotClient(discord.Client):
         if message is None:
             await channel.send(embed=embed)
             self.logger.info('Created overview embed!')
+        elif needs_update(message, embed):
+            await message.edit(embed=embed)
+            self.logger.info('Updated overview embed')
         return message
 
     async def init_overview_channel(self):
