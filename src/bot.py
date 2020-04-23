@@ -64,6 +64,16 @@ class BotClient(discord.Client):
                 return tuples.lecture
         return None
 
+    @staticmethod
+    async def _init_lecture_embed(channel, lecture):
+        """Creates and returns the message for this lecture in the given channel."""
+        message = await get_lecture_embed_message(channel, lecture)
+        if message is None:
+            embed = create_lecture_embed(lecture)
+            message = await channel.send(embed=embed)
+            await message.add_reaction(WHITE_CHECKMARK)
+        return message
+
     async def init_overview_channel(self):
         """Initializes the overview channel.
         Makes sure that an embed for every lecture exists such that users can react to it and
@@ -72,9 +82,5 @@ class BotClient(discord.Client):
         await self.wait_until_ready()
         overview_channel = await self.fetch_channel(self.config['overview'])
         for lecture in self.config['lectures']:
-            message = await get_lecture_embed_message(overview_channel, lecture)
-            if message is None:
-                embed = create_lecture_embed(lecture)
-                message = await overview_channel.send(embed=embed)
-                await message.add_reaction(WHITE_CHECKMARK)
+            message = await self._init_lecture_embed(overview_channel, lecture)
             self.lecture_message_tuples.append(lecture_tuple(lecture=lecture, message_id=message.id))
