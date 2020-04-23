@@ -101,7 +101,7 @@ class BotClient(discord.Client):
             await message.add_reaction(WHITE_CHECKMARK)
             self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
         # check if message needs update because of config change
-        elif await needs_update(message, embed):
+        elif needs_update(message, embed):
             await message.edit(embed=embed)
             self.logger.info('Updated embed for lecture %s' % lecture['embed_title'])
         return message
