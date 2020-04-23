@@ -35,7 +35,7 @@ class BotClient(discord.Client):
         If an user reacted appropriately to an lecture embed, the user is assigned the role associated with the lecture.
         """
         # check if the reaction belongs to an lecture embed
-        lecture = self.get_lecture_of_message_id(raw_reaction.message_id)
+        lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
         if lecture is not None:
             # check if reaction was the one we expect to assign the role
             if raw_reaction.emoji.name == WHITE_CHECKMARK:
@@ -48,7 +48,7 @@ class BotClient(discord.Client):
         """Handles users removing reactions from messages.
         If an user removed his previous reaction from a lecture embed, the associated role is removed."""
         # check if the reaction belongs to an lecture embed
-        lecture = self.get_lecture_of_message_id(raw_reaction.message_id)
+        lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
         if lecture is not None:
             # check if reaction was the one we expect to assign the role
             if raw_reaction.emoji.name == '\u2705':  # \u2705 is :white_check_mark:
@@ -57,7 +57,7 @@ class BotClient(discord.Client):
                 member = guild.get_member(raw_reaction.user_id)
                 await remove_role_from_member(member, lecture_role_id)
 
-    def get_lecture_of_message_id(self, message_id):
+    def _get_lecture_of_message_id(self, message_id):
         """Returns the lecture associated with this message if there is one. Else returns None."""
         for tuples in self.lecture_message_tuples:
             if tuples.message_id == message_id:
