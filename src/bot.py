@@ -1,4 +1,5 @@
 import logging
+import re
 from collections import namedtuple
 
 import discord
@@ -90,16 +91,28 @@ class BotClient(discord.Client):
                 return tuples.lecture
         return None
 
+    async def _needs_update(self, message, lecture):
+        if len(message.embeds) == 0:
+            return True
+        embed = message.embeds[0]
+        guild = await self._guild()
+        role = guild.get_role(int(lecture['role']))
+        return embed.title != lecture['embed_title'] or not re.search(role.mention, embed.description)
+
     async def _init_lecture_embed(self, channel, lecture):
         """Returns the message for this lecture in the given channel.
         If it does not exist yet, it will be created."""
         message = await get_embed_with_title(channel, lecture['embed_title'])
+        guild = await self._guild()
+        embed = await create_lecture_embed(guild, lecture)
         if message is None:
-            guild = await self._guild()
-            embed = await create_lecture_embed(guild, lecture)
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECKMARK)
             self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
+        # check if message needs update because of config change
+        elif await self._needs_update(message, lecture):
+            await message.edit(embed=embed)
+            self.logger.info('Updated embed for lecture %s' % lecture['embed_title'])
         return message
 
     async def _guild(self):
