@@ -4,7 +4,8 @@ from collections import namedtuple
 import discord
 
 from const import WHITE_CHECKMARK
-from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member
+from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member, \
+    create_overview_info_embed
 
 logging.basicConfig(level=logging.INFO)
 
@@ -75,6 +76,16 @@ class BotClient(discord.Client):
             await message.add_reaction(WHITE_CHECKMARK)
         return message
 
+    @staticmethod
+    async def _init_overview_embed(channel):
+        """Creates the overview embed in the given channel.
+        The overview embed lists all available lectures and has some user information in it."""
+        embed = create_overview_info_embed()
+        message = await get_embed_with_title(channel, embed.title)
+        if message is None:
+            await channel.send(embed=embed)
+        return message
+
     async def init_overview_channel(self):
         """Initializes the overview channel.
         Makes sure that an embed for every lecture exists such that users can react to it and
@@ -82,6 +93,7 @@ class BotClient(discord.Client):
         lecture_tuple = namedtuple('LectureMessage', 'lecture message_id')
         await self.wait_until_ready()
         overview_channel = await self.fetch_channel(self.config['overview'])
+        await self._init_overview_embed(overview_channel)
         for lecture in self.config['lectures']:
             message = await self._init_lecture_embed(overview_channel, lecture)
             self.lecture_message_tuples.append(lecture_tuple(lecture=lecture, message_id=message.id))

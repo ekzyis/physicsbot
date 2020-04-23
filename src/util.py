@@ -29,3 +29,10 @@ def create_lecture_embed(lecture):
     return Embed(
         title=lecture['embed_title']
     )
+
+
+def create_overview_info_embed():
+    """Creates the info embed in the overview channel."""
+    return Embed(
+        title="Rollen"
+    )
