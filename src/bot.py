@@ -76,4 +76,5 @@ class BotClient(discord.Client):
             if message is None:
                 embed = create_lecture_embed(lecture)
                 message = await overview_channel.send(embed=embed)
+                await message.add_reaction(WHITE_CHECKMARK)
             self.lecture_message_tuples.append(lecture_tuple(lecture=lecture, message_id=message.id))
