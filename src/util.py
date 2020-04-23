@@ -1,5 +1,7 @@
 from discord import Embed
 
+from const import WHITE_CHECKMARK
+
 
 async def add_role_to_member(member, role_id):
     """Adds the role given by its id to the member.
@@ -24,11 +26,14 @@ async def get_embed_with_title(channel, embed_title):
     return None
 
 
-def create_lecture_embed(guild, lecture):
+async def create_lecture_embed(guild, lecture):
     """Creates the embed for the given lecture."""
     role = guild.get_role(int(lecture['role']))
-    desc = "{}".format(role.mention)
+    desc = "{}\n".format(role.mention)
+    desc += "Du brauchst unbedingt diese Rolle? Dann gib mir hier ein {}!".format(WHITE_CHECKMARK)
     return Embed(
+        # the embed title must be assigned since that's how we will find it in `get_embed_with_title`
+        title=lecture['embed_title'],
         description=desc
     )
 

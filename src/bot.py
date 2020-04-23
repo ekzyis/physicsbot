@@ -72,7 +72,7 @@ class BotClient(discord.Client):
         message = await get_embed_with_title(channel, lecture['embed_title'])
         if message is None:
             guild = await self._guild()
-            embed = create_lecture_embed(guild, lecture)
+            embed = await create_lecture_embed(guild, lecture)
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECKMARK)
         return message
