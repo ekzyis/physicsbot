@@ -25,6 +25,7 @@ async def get_lecture_embed_message(channel, lecture):
 
 
 def create_lecture_embed(lecture):
+    """Creates the embed for the given lecture."""
     return Embed(
         title=lecture['embed_title']
     )
