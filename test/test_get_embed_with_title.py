@@ -4,6 +4,8 @@ from unittest import mock
 import aiounittest
 from aiounittest.mock import AsyncMockIterator
 
+# noinspection PyUnresolvedReferences
+import test.context
 from src.util import get_embed_with_title
 
 with warnings.catch_warnings():
