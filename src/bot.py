@@ -1,3 +1,4 @@
+import logging
 from collections import namedtuple
 
 import discord
@@ -16,10 +17,11 @@ class BotClient(discord.Client):
         self.config = config
         self.lecture_message_tuples = []
         self.guild = None
+        self.logger = logging.getLogger('bot')
 
     async def on_ready(self):
         """Executed when bot is logged in and ready."""
-        print('Logged in as %s with id %s' % (self.user.name, self.user.id))
+        self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
 
     @staticmethod
     async def on_member_join(member):
