@@ -1,18 +1,17 @@
-import logging
 from collections import namedtuple
 
 import discord
 
 from const import WHITE_CHECKMARK
+from log import init_logger
 from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member, \
     create_overview_info_embed
-
-logging.basicConfig(level=logging.INFO)
 
 
 class BotClient(discord.Client):
 
     def __init__(self, config=None, **options):
+        init_logger()
         super().__init__(**options)
         self.config = config
         self.lecture_message_tuples = []
