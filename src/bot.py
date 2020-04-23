@@ -4,7 +4,7 @@ from collections import namedtuple
 import discord
 
 from const import WHITE_CHECKMARK
-from util import get_lecture_embed_message, create_lecture_embed, add_role_to_member, remove_role_from_member
+from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member
 
 logging.basicConfig(level=logging.INFO)
 
@@ -68,7 +68,7 @@ class BotClient(discord.Client):
     async def _init_lecture_embed(channel, lecture):
         """Returns the message for this lecture in the given channel.
         If it does not exist yet, it will be created."""
-        message = await get_lecture_embed_message(channel, lecture)
+        message = await get_embed_with_title(channel, lecture['embed_title'])
         if message is None:
             embed = create_lecture_embed(lecture)
             message = await channel.send(embed=embed)

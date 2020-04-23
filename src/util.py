@@ -15,11 +15,11 @@ async def remove_role_from_member(member, role_id):
     await member.remove_roles(role)
 
 
-async def get_lecture_embed_message(channel, lecture):
-    """Returns the message with the lecture embed if it exists in channel else None."""
+async def get_embed_with_title(channel, embed_title):
+    """Returns the message in the given channel which has an embed with the given title if it exists else None"""
     async for message in channel.history(limit=20):
         for embed in message.embeds:
-            if embed.title == lecture['embed_title']:
+            if embed.title == embed_title:
                 return message
     return None
 
