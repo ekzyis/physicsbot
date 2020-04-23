@@ -7,5 +7,7 @@ WORKDIR /physicsbot
 COPY . .
 # install python modules
 RUN pip install -r requirements.txt
-# run bot with development config
-CMD ["python", "/physicsbot/src/main.py", "run", "--config", "dev.config.yml"]
+
+ENTRYPOINT ["python", "/physicsbot/src/main.py"]
+# default arguments: run bot in development mode
+CMD ["run", "--config", "dev.config.yml"]
