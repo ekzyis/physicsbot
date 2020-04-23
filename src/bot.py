@@ -23,15 +23,18 @@ class BotClient(discord.Client):
         """Executed when bot is logged in and ready."""
         self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
 
-    @staticmethod
-    async def on_member_join(member):
+    async def on_member_join(self, member):
         """Greets new member."""
         guild = member.guild
+        self.logger.info('User %s has joined guild %s' % (member.user.name, member.guild))
         if guild.system_channel is not None:
             greeting = discord.Embed(
                 title="{}, willkommen auf {}!".format(str(member), str(guild))
             )
             await guild.system_channel.send(greeting)
+            self.logger.info('Greeting sent!')
+        else:
+            self.logger.warning('System channel not found!')
 
     async def on_raw_reaction_add(self, raw_reaction):
         """Handles users adding reactions to messages.
@@ -40,14 +43,21 @@ class BotClient(discord.Client):
         if raw_reaction.user_id == self.user.id:
             # bot should not react to reactions from itself
             return
+        member = raw_reaction.member
+        emoji = raw_reaction.emoji.name
+        message_id = raw_reaction.message_id
+        # TODO populate logging info with actual message?
+        self.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
         # check if the reaction belongs to an lecture embed
-        lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
+        lecture = self._get_lecture_of_message_id(message_id)
         if lecture is not None:
+            self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
             # check if reaction was the one we expect to assign the role
-            if raw_reaction.emoji.name == WHITE_CHECKMARK:
+            if emoji == WHITE_CHECKMARK:
+                self.logger.info('Reaction is %s. Adding role...' % WHITE_CHECKMARK)
                 lecture_role_id = lecture['role']
-                member = raw_reaction.member
                 await add_role_to_member(member, lecture_role_id)
+                self.logger.info("Role added!")
 
     # TODO this code is very similar to the one in `on_raw_reaction_add`
     async def on_raw_reaction_remove(self, raw_reaction):
@@ -56,15 +66,22 @@ class BotClient(discord.Client):
         if raw_reaction.user_id == self.user.id:
             # bot should not react to reactions from itself
             return
+        guild = self.get_guild(raw_reaction.guild_id)
+        member = guild.get_member(raw_reaction.user_id)
+        emoji = raw_reaction.emoji.name
+        message_id = raw_reaction.message_id
+        # TODO populate logging info with actual message?
+        self.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
         # check if the reaction belongs to an lecture embed
-        lecture = self._get_lecture_of_message_id(raw_reaction.message_id)
+        lecture = self._get_lecture_of_message_id(message_id)
         if lecture is not None:
+            self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
             # check if reaction was the one we expect to assign the role
-            if raw_reaction.emoji.name == '\u2705':  # \u2705 is :white_check_mark:
+            if emoji == '\u2705':  # \u2705 is :white_check_mark:
+                self.logger.info('Reaction was %s. Removing role...' % WHITE_CHECKMARK)
                 lecture_role_id = lecture['role']
-                guild = self.get_guild(raw_reaction.guild_id)
-                member = guild.get_member(raw_reaction.user_id)
                 await remove_role_from_member(member, lecture_role_id)
+                self.logger.info("Role removed!")
 
     def _get_lecture_of_message_id(self, message_id):
         """Returns the lecture associated with this message if there is one. Else returns None."""
@@ -82,6 +99,7 @@ class BotClient(discord.Client):
             embed = await create_lecture_embed(guild, lecture)
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECKMARK)
+            self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
         return message
 
     async def _guild(self):
@@ -99,6 +117,7 @@ class BotClient(discord.Client):
         message = await get_embed_with_title(channel, embed.title)
         if message is None:
             await channel.send(embed=embed)
+            self.logger.info('Created overview embed!')
         return message
 
     async def init_overview_channel(self):
@@ -112,3 +131,4 @@ class BotClient(discord.Client):
         for lecture in self.config['lectures']:
             message = await self._init_lecture_embed(overview_channel, lecture)
             self.lecture_message_tuples.append(lecture_tuple(lecture=lecture, message_id=message.id))
+            self.logger.info('Message with id %s holds the embed for lecture %s' % (message.id, lecture['embed_title']))
