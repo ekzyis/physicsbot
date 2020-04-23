@@ -3,3 +3,4 @@
 !test/
 !requirements.txt
 !*config.yml
+!logs
