@@ -16,6 +16,7 @@ class BotClient(discord.Client):
         super().__init__(**options)
         self.config = config
         self.lecture_message_tuples = []
+        self.guild = None
 
     async def on_ready(self):
         """Executed when bot is logged in and ready."""
@@ -76,11 +77,18 @@ class BotClient(discord.Client):
             await message.add_reaction(WHITE_CHECKMARK)
         return message
 
-    @staticmethod
-    async def _init_overview_embed(channel):
+    async def _guild(self):
+        """Returns the guild instance for which the config of this bot instance is written for.
+        Also caches the result so we won't have to fetch again."""
+        if self.guild is None:
+            self.guild = self.get_guild(int(self.config['guild']))
+        return self.guild
+
+    async def _init_overview_embed(self, channel):
         """Creates the overview embed in the given channel.
         The overview embed lists all available lectures and has some user information in it."""
-        embed = create_overview_info_embed()
+        guild = await self._guild()
+        embed = await create_overview_info_embed(guild, self.config['lectures'])
         message = await get_embed_with_title(channel, embed.title)
         if message is None:
             await channel.send(embed=embed)
