@@ -3,8 +3,8 @@ from collections import namedtuple
 
 import discord
 
-from util import get_lecture_embed_message, create_lecture_embed, add_role_to_member, remove_role_from_member
 from const import WHITE_CHECKMARK
+from util import get_lecture_embed_message, create_lecture_embed, add_role_to_member, remove_role_from_member
 
 logging.basicConfig(level=logging.INFO)
 
