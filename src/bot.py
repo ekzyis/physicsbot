@@ -66,13 +66,13 @@ class BotClient(discord.Client):
                 return tuples.lecture
         return None
 
-    @staticmethod
-    async def _init_lecture_embed(channel, lecture):
+    async def _init_lecture_embed(self, channel, lecture):
         """Returns the message for this lecture in the given channel.
         If it does not exist yet, it will be created."""
         message = await get_embed_with_title(channel, lecture['embed_title'])
         if message is None:
-            embed = create_lecture_embed(lecture)
+            guild = await self._guild()
+            embed = create_lecture_embed(guild, lecture)
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECKMARK)
         return message

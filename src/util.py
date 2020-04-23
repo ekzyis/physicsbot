@@ -24,10 +24,12 @@ async def get_embed_with_title(channel, embed_title):
     return None
 
 
-def create_lecture_embed(lecture):
+def create_lecture_embed(guild, lecture):
     """Creates the embed for the given lecture."""
+    role = guild.get_role(int(lecture['role']))
+    desc = "{}".format(role.mention)
     return Embed(
-        title=lecture['embed_title']
+        description=desc
     )
 
 
