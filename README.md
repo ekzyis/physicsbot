@@ -8,7 +8,7 @@
 docker build -t physicsbot .
 ```
 
-2. Run docker image with logs mounted;
+2. Run docker image with logs mounted:
 
 ```
 docker run \
