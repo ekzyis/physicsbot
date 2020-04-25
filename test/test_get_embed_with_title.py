@@ -26,7 +26,6 @@ class TestGetLectureEmbed(aiounittest.AsyncTestCase):
     async def test_that_it_returns_message_if_embed_exists_in_channel(self, channel, message, embed):
         embed.title = 'title'
         message.embeds = [embed]
-        message.id = '12345'
         channel.history.return_value = AsyncMockIterator([message])
         found_message = await get_embed_with_title(channel, 'title')
         self.assertEqual(found_message, message)
