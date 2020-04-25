@@ -1,6 +1,8 @@
 import unittest
 from unittest import mock
 
+# noinspection PyUnresolvedReferences
+import test.context
 from src.util import needs_update
 
 
