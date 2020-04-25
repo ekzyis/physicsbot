@@ -31,5 +31,6 @@ class TestGreetsMember(aiounittest.AsyncTestCase):
     async def test_greets_member_raises_runtime_warning_if_guild_has_no_system_channel(self, member, guild):
         guild.system_channel = None
         member.guild = guild
+        # TODO when you figured out testing logging, add here test for warning log
         with self.assertRaises(RuntimeWarning):
             await self.bot.on_member_join(member)
