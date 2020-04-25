@@ -11,8 +11,9 @@ from src.bot import BotClient
 
 class TestGreetsMember(aiounittest.AsyncTestCase):
 
-    def setUp(self):
-        self.bot = BotClient()
+    @classmethod
+    def setUpClass(cls):
+        cls.bot = BotClient()
 
     @mock.patch('discord.Guild')
     @mock.patch('discord.Member')
