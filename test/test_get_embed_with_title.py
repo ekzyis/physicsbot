@@ -30,6 +30,20 @@ class TestGetLectureEmbed(aiounittest.AsyncTestCase):
         found_message = await get_embed_with_title(channel, 'title')
         self.assertEqual(found_message, message)
 
+    @mock.patch('discord.Embed')
+    @mock.patch('discord.Message')
+    @mock.patch('discord.Message')
+    @mock.patch('discord.TextChannel')
+    async def test_that_it_returns_message_if_embed_exists_in_channel_with_multiple_messages(
+            self, channel, message_without_embed, message_with_embed, embed
+    ):
+        message_without_embed.embeds = []
+        embed.title = 'title'
+        message_with_embed.embeds = [embed]
+        channel.history.return_value = AsyncMockIterator([message_without_embed, message_with_embed])
+        found_message = await get_embed_with_title(channel, 'title')
+        self.assertEqual(found_message, message_with_embed)
+
     @mock.patch('discord.Message')
     @mock.patch('discord.TextChannel')
     async def test_that_it_returns_None_if_embed_does_not_exist_in_channel_with_messages(self, channel, message):
