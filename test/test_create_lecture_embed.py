@@ -7,8 +7,8 @@ from src.util import create_lecture_embed
 
 
 class TestCreateLectureEmbed(unittest.TestCase):
-    @mock.patch('discord.Guild')
     @mock.patch('discord.Role')
+    @mock.patch('discord.Guild')
     def test_create_lecture_embed_returns_correct_embed(self, guild, role):
         lecture = {'role': '12345', 'embed_title': 'title'}
         role.mention = 'ROLE'
