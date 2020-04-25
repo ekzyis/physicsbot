@@ -10,22 +10,22 @@ class MakeFileHandler(logging.FileHandler):
         super().__init__(filename, mode, encoding, delay)
 
 
-def init_bot_logger():
+def init_bot_logger(path='logs/physicsbot.log'):
     bot_logger = logging.getLogger('bot')
     bot_logger.setLevel(logging.DEBUG)
     # TODO cmd option to clear log on startup?
-    bot_file_handler = MakeFileHandler(filename='logs/physicsbot.log', encoding='utf-8', mode='a')
+    bot_file_handler = MakeFileHandler(filename=path, encoding='utf-8', mode='a')
     bot_file_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s: %(message)s'))
     bot_logger.addHandler(bot_file_handler)
     # also log to console
     bot_logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
-def init_discord_logger():
+def init_discord_logger(path='logs/discord.log'):
     d_logger = logging.getLogger('discord')
     d_logger.setLevel(logging.DEBUG)
     # TODO cmd option to clear log on startup?
-    d_handler = MakeFileHandler(filename='logs/discord.log', encoding='utf-8', mode='a')
+    d_handler = MakeFileHandler(filename=path, encoding='utf-8', mode='a')
     d_handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     d_logger.addHandler(d_handler)
 
