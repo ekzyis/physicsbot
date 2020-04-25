@@ -34,7 +34,9 @@ class BotClient(discord.Client):
             await guild.system_channel.send(greeting)
             self.logger.info('Greeting sent!')
         else:
+            # logging + raising: is this good style?
             self.logger.warning('System channel not found!')
+            raise RuntimeWarning('System channel not found!')
 
     async def on_raw_reaction_add(self, raw_reaction):
         """Handles users adding reactions to messages.

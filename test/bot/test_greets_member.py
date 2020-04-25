@@ -25,3 +25,11 @@ class TestGreetsMember(aiounittest.AsyncTestCase):
         # first argument of first call
         embed = guild.system_channel.send.call_args[0][0]
         self.assertIsInstance(embed, Embed)
+
+    @mock.patch('discord.Guild')
+    @mock.patch('discord.Member')
+    async def test_greets_member_raises_runtime_warning_if_guild_has_no_system_channel(self, member, guild):
+        guild.system_channel = None
+        member.guild = guild
+        with self.assertRaises(RuntimeWarning):
+            await self.bot.on_member_join(member)
