@@ -49,3 +49,11 @@ class TestNeedsUpdate(unittest.TestCase):
         new_embed.description = 'description'
         message.embeds = [old_embed]
         self.assertFalse(needs_update(message, new_embed))
+
+    @mock.patch('discord.Embed')
+    @mock.patch('discord.Embed')
+    @mock.patch('discord.Message')
+    def test_raises_runtime_warning_when_message_contains_more_than_1_embed(self, message, embed1, embed2):
+        message.embeds = [embed1, embed2]
+        with self.assertRaises(RuntimeWarning):
+            needs_update(message, embed1)

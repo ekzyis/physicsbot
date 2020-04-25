@@ -43,6 +43,8 @@ def needs_update(message, embed):
     Comparison is done by checking if the embed title and description do match."""
     if len(message.embeds) == 0:
         return True
+    if len(message.embeds) > 1:
+        raise RuntimeWarning("Called needs_update with message which contains multiple embeds.")
     old_embed = message.embeds[0]
     return old_embed.title != embed.title or old_embed.description != embed.description
 
