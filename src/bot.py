@@ -95,7 +95,7 @@ class BotClient(discord.Client):
         If it does not exist yet, it will be created."""
         message = await get_embed_with_title(channel, lecture['embed_title'])
         guild = await self._guild()
-        embed = await create_lecture_embed(guild, lecture)
+        embed = create_lecture_embed(guild, lecture)
         if message is None:
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECKMARK)
