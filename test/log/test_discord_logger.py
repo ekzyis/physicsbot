@@ -8,7 +8,7 @@ from testfixtures import OutputCapture, compare, Comparison
 from src.log import init_discord_logger
 
 
-class TestBotLogger(unittest.TestCase):
+class TestDiscordLogger(unittest.TestCase):
 
     def setUp(self):
         self.log_path = 'test/discord.log'
