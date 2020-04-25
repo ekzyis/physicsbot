@@ -1,13 +1,12 @@
+import unittest
 from unittest import mock
-
-import aiounittest
 
 # noinspection PyUnresolvedReferences
 import test.context
 from src.util import create_lecture_embed
 
 
-class TestCreateLectureEmbed(aiounittest.AsyncTestCase):
+class TestCreateLectureEmbed(unittest.TestCase):
     @mock.patch('discord.Guild')
     @mock.patch('discord.Role')
     def test_create_lecture_embed_returns_correct_embed(self, guild, role):
