@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import unittest
 
@@ -20,6 +21,10 @@ class TestBotLogger(unittest.TestCase):
     def tearDown(self):
         self.logger.handlers = self.orig_handlers
         self.logger.level = self.level
+        try:
+            os.remove(self.log_path)
+        except FileNotFoundError:
+            pass
 
     @unittest.skip(reason='Should be a false negative. Why is warning. error and critical captured?')
     def test_discord_logger_prints_not_to_console(self):
