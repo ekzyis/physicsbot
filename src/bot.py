@@ -3,7 +3,7 @@ from collections import namedtuple
 
 import discord
 
-from const import WHITE_CHECKMARK
+from const import WHITE_CHECK_MARK
 from log import init_logger
 from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member, \
     create_overview_info_embed, needs_update
@@ -55,8 +55,8 @@ class BotClient(discord.Client):
         if lecture is not None:
             self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
             # check if reaction was the one we expect to assign the role
-            if emoji == WHITE_CHECKMARK:
-                self.logger.info('Reaction is %s. Adding role...' % WHITE_CHECKMARK)
+            if emoji == WHITE_CHECK_MARK:
+                self.logger.info('Reaction is %s. Adding role...' % WHITE_CHECK_MARK)
                 lecture_role_id = lecture['role']
                 await add_role_to_member(member, lecture_role_id)
                 self.logger.info("Role added!")
@@ -80,7 +80,7 @@ class BotClient(discord.Client):
             self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
             # check if reaction was the one we expect to assign the role
             if emoji == '\u2705':  # \u2705 is :white_check_mark:
-                self.logger.info('Reaction was %s. Removing role...' % WHITE_CHECKMARK)
+                self.logger.info('Reaction was %s. Removing role...' % WHITE_CHECK_MARK)
                 lecture_role_id = lecture['role']
                 await remove_role_from_member(member, lecture_role_id)
                 self.logger.info("Role removed!")
@@ -100,7 +100,7 @@ class BotClient(discord.Client):
         embed = create_lecture_embed(guild, lecture)
         if message is None:
             message = await channel.send(embed=embed)
-            await message.add_reaction(WHITE_CHECKMARK)
+            await message.add_reaction(WHITE_CHECK_MARK)
             self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
         # check if message needs update because of config change
         elif needs_update(message, embed):
