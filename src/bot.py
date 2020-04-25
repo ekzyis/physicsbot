@@ -116,7 +116,7 @@ class BotClient(discord.Client):
     async def _init_overview_embed(self, channel):
         """Creates the overview embed in the given channel.
         The overview embed lists all available lectures and has some user information in it."""
-        embed = await create_overview_info_embed()
+        embed = create_overview_info_embed()
         message = await get_embed_with_title(channel, embed.title)
         if message is None:
             await channel.send(embed=embed)

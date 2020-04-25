@@ -49,7 +49,7 @@ def needs_update(message, embed):
     return old_embed.title != embed.title or old_embed.description != embed.description
 
 
-async def create_overview_info_embed():
+def create_overview_info_embed():
     """Creates the info embed in the overview channel.
     The guild instance is needed for fetching roles and emojis."""
     # create embed description
