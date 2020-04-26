@@ -15,7 +15,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.Client')
     def setUpClass(cls, client):
         """
-        According to https://stackoverflow.com/a/39307310, this doesn't not work because when importing,
+        According to https://stackoverflow.com/a/39307310, this does not work because when importing,
         the definition of BotClient including the inheritance is executed.
         """
         user = mock.Mock()
