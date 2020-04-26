@@ -4,11 +4,12 @@ from collections import namedtuple
 import discord
 
 from const import WHITE_CHECK_MARK
+from event.on_member_join import on_member_join
+from event.on_raw_reaction_add import on_raw_reaction_add
 from log import init_logger
 from util import get_embed_with_title, create_lecture_embed, remove_role_from_member, \
     create_overview_info_embed, needs_update
-from event.on_member_join import on_member_join
-from event.on_raw_reaction_add import on_raw_reaction_add
+
 
 class BotClient(discord.Client):
 

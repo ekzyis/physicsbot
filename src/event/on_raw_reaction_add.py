@@ -4,6 +4,7 @@ from util import add_role_to_member
 
 def on_raw_reaction_add(bot):
     """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
+
     async def handler(raw_reaction):
         """If an user reacted appropriately to an lecture embed, the user is assigned the role associated
         with the lecture.
