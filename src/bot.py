@@ -5,9 +5,10 @@ import discord
 
 from const import WHITE_CHECK_MARK
 from log import init_logger
-from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member, \
+from util import get_embed_with_title, create_lecture_embed, remove_role_from_member, \
     create_overview_info_embed, needs_update
 from event.on_member_join import on_member_join
+from event.on_raw_reaction_add import on_raw_reaction_add
 
 class BotClient(discord.Client):
 
@@ -27,27 +28,7 @@ class BotClient(discord.Client):
         await on_member_join(self)(member)
 
     async def on_raw_reaction_add(self, raw_reaction):
-        """Handles users adding reactions to messages.
-        If an user reacted appropriately to an lecture embed, the user is assigned the role associated with the lecture.
-        """
-        if raw_reaction.user_id == self.user.id:
-            # bot should not react to reactions from itself
-            return
-        member = raw_reaction.member
-        emoji = raw_reaction.emoji.name
-        message_id = raw_reaction.message_id
-        # TODO populate logging info with actual message?
-        self.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
-        # check if the reaction belongs to an lecture embed
-        lecture = self._get_lecture_of_message_id(message_id)
-        if lecture is not None:
-            self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
-            # check if reaction was the one we expect to assign the role
-            if emoji == WHITE_CHECK_MARK:
-                self.logger.info('Reaction is %s. Adding role...' % WHITE_CHECK_MARK)
-                lecture_role_id = lecture['role']
-                await add_role_to_member(member, lecture_role_id)
-                self.logger.info("Role added!")
+        await on_raw_reaction_add(self)(raw_reaction)
 
     # TODO this code is very similar to the one in `on_raw_reaction_add`
     async def on_raw_reaction_remove(self, raw_reaction):

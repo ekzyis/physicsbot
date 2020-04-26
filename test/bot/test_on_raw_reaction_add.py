@@ -7,6 +7,7 @@ from aiounittest import futurized
 import test.context
 from src.bot import BotClient
 from src.const import WHITE_CHECK_MARK
+from src.event.on_raw_reaction_add import on_raw_reaction_add
 
 
 class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
@@ -43,5 +44,5 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         reaction.member = member
         reaction.emoji = emoji
         reaction.message_id = '5678'
-        await self.bot.on_raw_reaction_add(reaction)
+        await on_raw_reaction_add(self.bot)(reaction)
         member.add_roles.assert_called_once()
