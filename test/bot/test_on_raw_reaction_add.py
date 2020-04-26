@@ -24,12 +24,19 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     async def test_on_raw_reaction_add_adds_role_when_reacted_with_white_check_mark_on_lecture_embed(
             self, reaction, emoji, member, role
     ):
+        # setup the lecture mock we will receive when calling `get_lecture_of_message_id`
         lecture_mock = mock.MagicMock()
+        # when calling lecture['role'], we want to get the "role id"
         lecture_mock.__getitem__.return_value = '1234'
+        # `get_lecture_of_message_id` should return the mocked lecture
         self.bot.get_lecture_of_message_id.return_value = lecture_mock
+        # member#add_roles should be awaitable
         member.add_roles = mock.Mock(futurized(None))
+        # guild#get_role should return the role we want to add to the member
         member.guild.get_role.return_value = role
+        # user reacted with WHITE_CHECK_MARCK
         emoji.name = WHITE_CHECK_MARK
+        # configure the reaction we will pass to `on_raw_reaction_add`
         reaction.member = member
         reaction.emoji = emoji
         reaction.message_id = '5678'
