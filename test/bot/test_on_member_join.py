@@ -10,7 +10,7 @@ from src.bot import BotClient
 from src.event.on_member_join import on_member_join
 
 
-class TestGreetsMember(aiounittest.AsyncTestCase):
+class TestOnMemberJoin(aiounittest.AsyncTestCase):
 
     @classmethod
     def setUpClass(cls):
@@ -18,7 +18,7 @@ class TestGreetsMember(aiounittest.AsyncTestCase):
 
     @mock.patch('discord.Guild')
     @mock.patch('discord.Member')
-    async def test_greets_member_with_embed_if_guild_has_system_channel(self, member, guild):
+    async def test_on_member_join_greets_member_with_embed_if_guild_has_system_channel(self, member, guild):
         guild.system_channel.send = mock.Mock(futurized(None))
         member.guild = guild
         # could also do `self.bot.on_member_join(member)` here but I want to stay consistent across tests.
@@ -30,7 +30,7 @@ class TestGreetsMember(aiounittest.AsyncTestCase):
 
     @mock.patch('discord.Guild')
     @mock.patch('discord.Member')
-    async def test_greets_member_raises_runtime_warning_if_guild_has_no_system_channel(self, member, guild):
+    async def test_on_member_join_raises_runtime_warning_if_guild_has_no_system_channel(self, member, guild):
         guild.system_channel = None
         member.guild = guild
         # TODO when you figured out testing logging, add here test for warning log
