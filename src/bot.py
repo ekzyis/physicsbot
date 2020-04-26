@@ -7,7 +7,7 @@ from const import WHITE_CHECK_MARK
 from log import init_logger
 from util import get_embed_with_title, create_lecture_embed, add_role_to_member, remove_role_from_member, \
     create_overview_info_embed, needs_update
-
+from event.on_member_join import on_member_join
 
 class BotClient(discord.Client):
 
@@ -24,19 +24,7 @@ class BotClient(discord.Client):
         self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
 
     async def on_member_join(self, member):
-        """Greets new member."""
-        guild = member.guild
-        self.logger.info('User %s has joined guild %s' % (member.user.name, member.guild))
-        if guild.system_channel is not None:
-            greeting = discord.Embed(
-                title="{}, willkommen auf {}!".format(str(member), str(guild))
-            )
-            await guild.system_channel.send(greeting)
-            self.logger.info('Greeting sent!')
-        else:
-            # logging + raising: is this good style?
-            self.logger.warning('System channel not found!')
-            raise RuntimeWarning('System channel not found!')
+        await on_member_join(self)(member)
 
     async def on_raw_reaction_add(self, raw_reaction):
         """Handles users adding reactions to messages.
