@@ -3,6 +3,7 @@ import discord
 
 def on_member_join(bot):
     """Higher order function which returns the handler for the 'on_member_join' event."""
+
     async def handler(member):
         """Greets new member."""
         guild = member.guild
@@ -17,4 +18,5 @@ def on_member_join(bot):
             # logging + raising: is this good style?
             bot.logger.warning('System channel not found!')
             raise RuntimeWarning('System channel not found!')
+
     return handler
