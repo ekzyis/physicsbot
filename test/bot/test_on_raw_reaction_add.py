@@ -50,3 +50,34 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         member.guild.get_role.assert_called_once_with(1234)
         # assert that we added the role to the member
         member.add_roles.assert_called_once_with(role)
+
+    @mock.patch('discord.Role')
+    @mock.patch('discord.Member')
+    @mock.patch('discord.Emoji')
+    @mock.patch('discord.RawReactionActionEvent')
+    async def test_on_raw_reaction_add_does_not_add_role_when_not_reacted_with_white_check_mark_on_lecture_embed(
+            self, reaction, emoji, member, role
+    ):
+        lecture_mock = mock.MagicMock()
+        lecture_mock.__getitem__.return_value = '1234'
+        self.bot.get_lecture_of_message_id.return_value = lecture_mock
+        """make member#add_roles awaitable again even though we are expecting that this function will not be called.
+        The reason for this that we don't want to couple our test to tightly with the code; expecting more from the
+        SUT (system under test) than we are testing.
+        We will later assert that it was not called but don't want to throw an error during testing just because it
+        is not awaitable. The actual reason to fail the test should be that it was called!
+        """
+        member.add_roles = mock.Mock(futurized(None))
+        # same reasoning as with member#add_roles
+        member.get_guild.return_value = role
+        # user reacted with something else than WHITE_CHECK_MARK
+        emoji.name = WHITE_CHECK_MARK + "xx"  # TODO Create another actual emoji unicode character for usage here
+        # "populate" the reaction with the mocks we just setup
+        reaction.member = member
+        reaction.member = member
+        reaction.emoji = emoji
+        reaction.message_id = '5678'
+        reaction.user_id = '11111'  # not equal to bot.user.id
+        await on_raw_reaction_add(self.bot)(reaction)
+        # assert that we did not call member#add_role
+        member.add_roles.assert_not_called()
