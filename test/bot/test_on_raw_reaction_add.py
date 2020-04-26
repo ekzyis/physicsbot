@@ -29,5 +29,6 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         reaction.member = member
         reaction.emoji = emoji
         reaction.message_id = '5678'
+        reaction.user_id = '11111'  # not equal to bot.user.id
         await on_raw_reaction_add(self.bot)(reaction)
         member.add_roles.assert_called_once()
