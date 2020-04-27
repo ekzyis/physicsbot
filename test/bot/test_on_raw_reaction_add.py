@@ -22,7 +22,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.Emoji')
     @mock.patch('discord.RawReactionActionEvent')
     def setUp(self, reaction, emoji, member, role):
-        # setup the lecture mock we will receive when calling `get_lecture_of_message_id`
+        # setup the lecture mock we will receive when calling bot#get_lecture_of_message_id
         lecture_mock = mock.MagicMock()
         # when calling lecture['role'], we want to get the "role id"
         lecture_mock.__getitem__.return_value = '1234'
