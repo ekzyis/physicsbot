@@ -45,7 +45,7 @@ class BotClient(discord.Client):
         # TODO populate logging info with actual message?
         self.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
         # check if the reaction belongs to an lecture embed
-        lecture = self._get_lecture_of_message_id(message_id)
+        lecture = self.get_lecture_of_message_id(message_id)
         if lecture is not None:
             self.logger.info('Message is embed of lecture %s' % lecture['embed_title'])
             # check if reaction was the one we expect to assign the role
@@ -55,7 +55,7 @@ class BotClient(discord.Client):
                 await remove_role_from_member(member, lecture_role_id)
                 self.logger.info("Role removed!")
 
-    def _get_lecture_of_message_id(self, message_id):
+    def get_lecture_of_message_id(self, message_id):
         """Returns the lecture associated with this message if there is one. Else returns None."""
         for tuples in self.lecture_message_tuples:
             if tuples.message_id == message_id:
