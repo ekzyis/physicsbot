@@ -11,10 +11,10 @@ from src.event.on_raw_reaction_add import on_raw_reaction_add
 
 class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
 
-    @mock.patch('discord.Role')
-    @mock.patch('discord.Member')
-    @mock.patch('discord.Emoji')
-    @mock.patch('discord.RawReactionActionEvent')
+    @mock.patch('discord.Role', autospec=True)
+    @mock.patch('discord.Member', autospec=True)
+    @mock.patch('discord.Emoji', autospec=True)
+    @mock.patch('discord.RawReactionActionEvent', autospec=True)
     @mock.patch('src.bot.BotClient', autospec=True)
     def setUp(self, bot, reaction, emoji, member, role):
         """Since we use `autospec` to make sure that we use the actual bot API, we run into the problem
