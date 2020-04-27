@@ -11,17 +11,14 @@ from src.event.on_raw_reaction_add import on_raw_reaction_add
 
 class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
 
-    @classmethod
-    @mock.patch('src.bot.BotClient')
-    def setUpClass(cls, bot):
-        bot.user.id = '00000'
-        cls.bot = bot
-
     @mock.patch('discord.Role')
     @mock.patch('discord.Member')
     @mock.patch('discord.Emoji')
     @mock.patch('discord.RawReactionActionEvent')
-    def setUp(self, reaction, emoji, member, role):
+    @mock.patch('src.bot.BotClient')
+    def setUp(self, bot, reaction, emoji, member, role):
+        bot.user.id = '00000'
+        self.bot = bot
         # setup the lecture mock we will receive when calling bot#get_lecture_of_message_id
         lecture_mock = mock.MagicMock()
         # when calling lecture['role'], we want to get the "role id"
