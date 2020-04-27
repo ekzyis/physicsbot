@@ -15,7 +15,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.Member')
     @mock.patch('discord.Emoji')
     @mock.patch('discord.RawReactionActionEvent')
-    @mock.patch('src.bot.BotClient')
+    @mock.patch('src.bot.BotClient', autospec=True)
     def setUp(self, bot, reaction, emoji, member, role):
         bot.user.id = '00000'
         self.bot = bot
