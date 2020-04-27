@@ -18,7 +18,7 @@ def on_raw_reaction_remove(bot):
         message_id = raw_reaction.message_id
         # TODO populate logging info with actual message?
         bot.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
-        # check if reaction was the one we expect to assign the role
+        # check if reaction was the one we expect to remove the role
         if emoji == '\u2705':  # \u2705 is :white_check_mark:
             # check if the reaction belongs to an lecture embed
             lecture = bot.get_lecture_of_message_id(message_id)
