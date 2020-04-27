@@ -69,7 +69,7 @@ class TestOnRawReactionRemove(aiounittest.AsyncTestCase):
         lecture_mock.__getitem__.assert_called_with('role')
         # assert that we got the role from the guild with its id as integer
         member.guild.get_role.assert_called_once_with(1234)
-        # assert that we added the role to the member
+        # assert that we removed the role from the member
         member.remove_roles.assert_called_once_with(role)
 
     def test_on_raw_reaction_remove_does_not_remove_role_when_removed_reaction_from_lecture_embed_was_not_white_check_mark(self):
