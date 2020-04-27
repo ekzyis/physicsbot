@@ -6,15 +6,15 @@ from discord import Embed
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.bot import BotClient
 from src.event.on_member_join import on_member_join
 
 
 class TestOnMemberJoin(aiounittest.AsyncTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.bot = BotClient()
+    @mock.patch('src.bot.BotClient', autospec=True)
+    def setUp(self, bot):
+        bot.logger = mock.Mock()
+        self.bot = bot
 
     @mock.patch('discord.Guild')
     @mock.patch('discord.Member')
