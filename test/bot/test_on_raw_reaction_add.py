@@ -28,7 +28,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         lecture_mock = mock.MagicMock()
         # when calling lecture['role'], we want to get the "role id"
         lecture_mock.__getitem__.return_value = '1234'
-        # `get_lecture_of_message_id` should return the mocked lecture
+        # bot#get_lecture_of_message_id should return the mocked lecture
         self.bot.get_lecture_of_message_id.return_value = lecture_mock
         # member#add_roles should be awaitable
         member.add_roles = mock.Mock(futurized(None))
@@ -36,12 +36,14 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         member.guild.get_role.return_value = role
         # user reacted with WHITE_CHECK_MARCK
         emoji.name = WHITE_CHECK_MARK
-        # configure the reaction we will pass to `on_raw_reaction_add`
+        # "populate" the reaction we will pass to bot#on_raw_reaction_add
         reaction.member = member
         reaction.emoji = emoji
         reaction.message_id = '5678'
         reaction.user_id = '11111'  # not equal to bot.user.id
+
         await on_raw_reaction_add(self.bot)(reaction)
+
         # assert that we tried to find the lecture via the message id
         self.bot.get_lecture_of_message_id.assert_called_once_with('5678')
         # assert that we accessed the role in the found lecture
@@ -72,12 +74,14 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         member.get_guild.return_value = role
         # user reacted with something else than WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK + "xx"  # TODO Create another actual emoji unicode character for usage here
-        # "populate" the reaction with the mocks we just setup
+        # reaction "population"
         reaction.member = member
         reaction.member = member
         reaction.emoji = emoji
         reaction.message_id = '5678'
         reaction.user_id = '11111'  # not equal to bot.user.id
+
         await on_raw_reaction_add(self.bot)(reaction)
+
         # assert that we did not call member#add_role
         member.add_roles.assert_not_called()
