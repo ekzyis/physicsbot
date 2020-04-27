@@ -89,7 +89,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         # assert that we did not call member#add_role
         member.add_roles.assert_not_called()
 
-    async def test_on_raw_reaction_ignores_reaction_from_bot(self):
+    async def test_on_raw_reaction_add_ignores_reaction_from_bot(self):
         reaction, emoji, member, role, lecture_mock = \
             (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
         # the reaction was from the bot itself
