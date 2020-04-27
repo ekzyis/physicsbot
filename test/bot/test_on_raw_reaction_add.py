@@ -38,7 +38,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         is not awaitable. The actual reason to fail the test should be that it was or was not called!
         """
         member.add_roles = mock.Mock(futurized(None))
-        # guild#get_role should return the mocked role
+        # member.guild#get_role should return the mocked role
         member.guild.get_role.return_value = role
         # add mocks to reaction
         reaction.member = member
