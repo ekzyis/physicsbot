@@ -42,7 +42,7 @@ class TestOnRawReactionRemove(aiounittest.AsyncTestCase):
         # bot#get_guild will be called with the guild id of reaction and should return our mocked guild
         self.bot.get_guild.return_value = guild
         reaction.guild_id = 99999
-        # add mocks to reaction
+        # add mock to reaction
         reaction.emoji = emoji
         # add mocks to instance so we can access them in the test cases
         self.reaction = reaction
