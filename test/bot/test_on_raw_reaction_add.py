@@ -53,7 +53,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     async def test_on_raw_reaction_add_adds_role_when_reacted_with_white_check_mark_on_lecture_embed(self):
         reaction, emoji, member, role, lecture_mock = \
             (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
-        # user reacted with WHITE_CHECK_MARCK
+        # user reacted with WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK
         # user reacted to message with message id 5678
         reaction.message_id = '5678'
