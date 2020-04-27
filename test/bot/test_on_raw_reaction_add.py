@@ -29,10 +29,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         lecture_mock = mock.MagicMock()
         # when calling lecture['role'], we want to get the "role id"
         lecture_mock.__getitem__.return_value = '1234'
-        # bot#_get_lecture_of_message_id should return the mocked lecture
-        # TODO in bot.py, the method is prefixed with underscore.
-        #  Tests pass for this method but this will probably fail in production!
-        #  Make sure that mock throws error when accessing non-existing attribute.
+        # bot#get_lecture_of_message_id should return the mocked lecture
         self.bot.get_lecture_of_message_id.return_value = lecture_mock
         """member#add_roles should always be awaitable even though we are not always expecting that this function will
         be called. The reason for this that we don't want to couple our test to tightly with the code; expecting more
