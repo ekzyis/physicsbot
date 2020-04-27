@@ -38,7 +38,7 @@ def create_lecture_embed(guild, lecture):
     )
 
 
-def needs_update(message, embed):
+def embed_in_message_needs_update(message, embed):
     """Check if the embed of the given message needs an update. The given embed is the up-to-date version.
     Comparison is done by checking if the embed title and description do match."""
     if len(message.embeds) == 0:

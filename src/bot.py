@@ -8,7 +8,7 @@ from event.on_member_join import on_member_join
 from event.on_raw_reaction_add import on_raw_reaction_add
 from event.on_raw_reaction_remove import on_raw_reaction_remove
 from log import init_logger
-from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, needs_update
+from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, embed_in_message_needs_update
 
 
 class BotClient(discord.Client):
@@ -52,7 +52,7 @@ class BotClient(discord.Client):
             await message.add_reaction(WHITE_CHECK_MARK)
             self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
         # check if message needs update because of config change
-        elif needs_update(message, embed):
+        elif embed_in_message_needs_update(message, embed):
             await message.edit(embed=embed)
             self.logger.info('Updated embed for lecture %s' % lecture['embed_title'])
         return message
@@ -72,7 +72,7 @@ class BotClient(discord.Client):
         if message is None:
             await channel.send(embed=embed)
             self.logger.info('Created overview embed!')
-        elif needs_update(message, embed):
+        elif embed_in_message_needs_update(message, embed):
             await message.edit(embed=embed)
             self.logger.info('Updated overview embed')
         return message

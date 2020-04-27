@@ -3,7 +3,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util.embed import needs_update
+from src.util.embed import embed_in_message_needs_update
 
 
 class TestNeedsUpdate(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestNeedsUpdate(unittest.TestCase):
     @mock.patch('discord.Message')
     def test_needs_update_returns_true_when_message_has_no_embed(self, message, embed):
         message.embeds = []
-        self.assertTrue(needs_update(message, embed))
+        self.assertTrue(embed_in_message_needs_update(message, embed))
 
     @mock.patch('discord.Embed')
     @mock.patch('discord.Embed')
@@ -24,7 +24,7 @@ class TestNeedsUpdate(unittest.TestCase):
         new_embed.title = 'new_title'
         new_embed.description = 'description'
         message.embeds = [old_embed]
-        self.assertTrue(needs_update(message, new_embed))
+        self.assertTrue(embed_in_message_needs_update(message, new_embed))
 
     @mock.patch('discord.Embed')
     @mock.patch('discord.Embed')
@@ -37,7 +37,7 @@ class TestNeedsUpdate(unittest.TestCase):
         new_embed.title = 'title'
         new_embed.description = 'new_description'
         message.embeds = [old_embed]
-        self.assertTrue(needs_update(message, new_embed))
+        self.assertTrue(embed_in_message_needs_update(message, new_embed))
 
     @mock.patch('discord.Embed')
     @mock.patch('discord.Embed')
@@ -50,7 +50,7 @@ class TestNeedsUpdate(unittest.TestCase):
         new_embed.title = 'title'
         new_embed.description = 'description'
         message.embeds = [old_embed]
-        self.assertFalse(needs_update(message, new_embed))
+        self.assertFalse(embed_in_message_needs_update(message, new_embed))
 
     @mock.patch('discord.Embed')
     @mock.patch('discord.Embed')
@@ -58,4 +58,4 @@ class TestNeedsUpdate(unittest.TestCase):
     def test_raises_runtime_warning_when_message_contains_more_than_1_embed(self, message, embed1, embed2):
         message.embeds = [embed1, embed2]
         with self.assertRaises(RuntimeWarning):
-            needs_update(message, embed1)
+            embed_in_message_needs_update(message, embed1)
