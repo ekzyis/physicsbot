@@ -3,7 +3,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util import needs_update
+from src.util.embed import needs_update
 
 
 class TestNeedsUpdate(unittest.TestCase):

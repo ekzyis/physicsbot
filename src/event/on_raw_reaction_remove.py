@@ -1,5 +1,5 @@
 from const import WHITE_CHECK_MARK
-from util import remove_role_from_member
+from util.member import remove_role_from_member
 
 
 def on_raw_reaction_remove(bot):

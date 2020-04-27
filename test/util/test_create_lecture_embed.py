@@ -5,7 +5,7 @@ import discord
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util import create_lecture_embed
+from util.embed import create_lecture_embed
 
 
 class TestCreateLectureEmbed(unittest.TestCase):

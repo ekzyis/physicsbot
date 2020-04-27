@@ -5,7 +5,7 @@ from aiounittest import futurized
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util import remove_role_from_member
+from src.util.member import remove_role_from_member
 
 
 class TestRemoveRoleFromMember(aiounittest.AsyncTestCase):

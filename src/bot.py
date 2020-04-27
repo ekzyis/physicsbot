@@ -8,7 +8,7 @@ from event.on_member_join import on_member_join
 from event.on_raw_reaction_add import on_raw_reaction_add
 from event.on_raw_reaction_remove import on_raw_reaction_remove
 from log import init_logger
-from util import get_embed_with_title, create_lecture_embed, create_overview_info_embed, needs_update
+from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, needs_update
 
 
 class BotClient(discord.Client):

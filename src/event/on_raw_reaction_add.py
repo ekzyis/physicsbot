@@ -1,5 +1,5 @@
 from const import WHITE_CHECK_MARK
-from util import add_role_to_member
+from util.member import add_role_to_member
 
 
 def on_raw_reaction_add(bot):

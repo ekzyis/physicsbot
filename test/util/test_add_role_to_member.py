@@ -5,7 +5,7 @@ from aiounittest import futurized
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util import add_role_to_member
+from src.util.member import add_role_to_member
 
 
 class TestAddRoleToMember(aiounittest.AsyncTestCase):

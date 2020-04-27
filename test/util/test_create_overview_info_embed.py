@@ -4,7 +4,7 @@ import discord
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.util import create_overview_info_embed
+from util.embed import create_overview_info_embed
 
 
 class TestCreateOverviewInfoEmbed(unittest.TestCase):
