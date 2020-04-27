@@ -68,26 +68,14 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         # assert that we added the role to the member
         member.add_roles.assert_called_once_with(role)
 
-    @mock.patch('discord.Role')
-    @mock.patch('discord.Member')
-    @mock.patch('discord.Emoji')
-    @mock.patch('discord.RawReactionActionEvent')
-    async def test_on_raw_reaction_add_does_not_add_role_when_not_reacted_with_white_check_mark_on_lecture_embed(
-            self, reaction, emoji, member, role
-    ):
-        lecture_mock = mock.MagicMock()
-        lecture_mock.__getitem__.return_value = '1234'
-        self.bot.get_lecture_of_message_id.return_value = lecture_mock
-        member.add_roles = mock.Mock(futurized(None))
-        # same reasoning as with member#add_roles
-        member.get_guild.return_value = role
+    async def test_on_raw_reaction_add_does_not_add_role_when_not_reacted_with_white_check_mark_on_lecture_embed(self):
+        reaction, emoji, member, role, lecture_mock = \
+            (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
         # user reacted with something else than WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK + "xx"  # TODO Create another actual emoji unicode character for usage here
-        # reaction "population"
-        reaction.member = member
-        reaction.member = member
-        reaction.emoji = emoji
+        # user reacted to message with message id 5678
         reaction.message_id = '5678'
+        # it was an actual user which reacted, not our bot
         reaction.user_id = '11111'  # not equal to bot.user.id
 
         await on_raw_reaction_add(self.bot)(reaction)
