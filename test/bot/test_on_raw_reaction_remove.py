@@ -1,9 +1,11 @@
 from unittest import mock
 
 import aiounittest
+from aiounittest import futurized
 
 # noinspection PyUnresolvedReferences
 import test.context
+from src.const import WHITE_CHECK_MARK
 from src.event.on_raw_reaction_remove import on_raw_reaction_remove
 
 
@@ -12,13 +14,63 @@ class TestOnRawReactionRemove(aiounittest.AsyncTestCase):
     @mock.patch('discord.Role', autospec=True)
     @mock.patch('discord.Member', autospec=True)
     @mock.patch('discord.Emoji', autospec=True)
+    @mock.patch('discord.Guild', autospec=True)
     @mock.patch('discord.RawReactionActionEvent', autospec=True)
     @mock.patch('src.bot.BotClient', autospec=True)
-    def setUp(self, bot, reaction, emoji, member, role):
-        pass
+    def setUp(self, bot, reaction, guild, emoji, member, role):
+        bot.logger = mock.Mock()
+        bot.user.id = '00000'
+        self.bot = bot
+        # setup the lecture mock we will receive when calling bot#get_lecture_of_message_id
+        lecture_mock = mock.MagicMock()
+        # when calling lecture['role'], we want to get the "role id"
+        lecture_mock.__getitem__.return_value = '1234'
+        # bot#get_lecture_of_message_id should return the mocked lecture
+        self.bot.get_lecture_of_message_id.return_value = lecture_mock
+        """member#remove_roles should always be awaitable even though we are not always expecting that this function will
+        be called. The reason for this that we don't want to couple our test to tightly with the code; expecting more
+        from the SUT (system under test) than we are testing.
+        We assert that it was or was not alled but don't want to throw an error during testing just because it
+        is not awaitable. The actual reason to fail the test should be that it was or was not called!
+        """
+        member.remove_roles = mock.Mock(futurized(None))
+        # member.guild#get_role should return the mocked role
+        member.guild.get_role.return_value = role
+        # since in event "REACTION_REMOVE", the member is not added to the reaction, we get the member through the guild
+        # See https://discordpy.readthedocs.io/en/latest/api.html#discord.RawReactionActionEvent
+        guild.get_member.return_value = member
+        # bot#get_guild will be called with the guild id of reaction and should return our mocked guild
+        self.bot.get_guild.return_value = guild
+        reaction.guild_id = 99999
+        # add mocks to reaction
+        reaction.emoji = emoji
+        # add mocks to instance so we can access them in the test cases
+        self.reaction = reaction
+        self.emoji = emoji
+        self.member = member
+        self.role = role
+        self.lecture_mock = lecture_mock
 
-    def test_on_raw_reaction_remove_removes_role_when_removed_white_check_mark_reaction_from_lecture_embed(self):
-        pass
+    async def test_on_raw_reaction_remove_removes_role_when_removed_white_check_mark_reaction_from_lecture_embed(self):
+        reaction, emoji, member, role, lecture_mock = \
+            (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
+        # user removed reaction WHITE_CHECK_MARK
+        emoji.name = WHITE_CHECK_MARK
+        # user reacted to message with message id 5678
+        reaction.message_id = '5678'
+        # it was an actual user which reacted, not our bot
+        reaction.user_id = '11111'  # not equal to bot.user.id
+
+        await on_raw_reaction_remove(self.bot)(reaction)
+
+        # assert that we tried to find the lecture via the message id
+        self.bot.get_lecture_of_message_id.assert_called_once_with('5678')
+        # assert that we accessed the role in the found lecture
+        lecture_mock.__getitem__.assert_called_with('role')
+        # assert that we got the role from the guild with its id as integer
+        member.guild.get_role.assert_called_once_with(1234)
+        # assert that we added the role to the member
+        member.remove_roles.assert_called_once_with(role)
 
     def test_on_raw_reaction_remove_does_not_remove_role_when_removed_reaction_from_lecture_embed_was_not_white_check_mark(self):
         pass
