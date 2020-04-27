@@ -32,3 +32,11 @@ class TestPopulateLecturesInConfig(unittest.TestCase):
         self.assertEqual(lecture.emoji, None)
         self.assertEqual(lecture.embed_title, 'title')
         self.assertEqual(lecture.channel, None)
+
+    def test_populate_lectures_in_config_raises_key_error_when_mandatory_key_not_set(self):
+        with self.assertRaises(KeyError):
+            populate_lectures_in_config([{'role': '1234', 'embed_title': 'title'}])
+        with self.assertRaises(KeyError):
+            populate_lectures_in_config([{'name': 'NAME', 'embed_title': 'title'}])
+        with self.assertRaises(KeyError):
+            populate_lectures_in_config([{'name': 'NAME', 'role': '1234'}])
