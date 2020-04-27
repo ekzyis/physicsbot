@@ -17,6 +17,12 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.RawReactionActionEvent')
     @mock.patch('src.bot.BotClient', autospec=True)
     def setUp(self, bot, reaction, emoji, member, role):
+        """Since we use `autospec` to make sure that we use the actual bot API, we run into the problem
+        that accessing instance attributes now leads to errors because "`autospec` can't know about
+        any dynamically created attributes and restricts the api to visible attributes".
+        ( See https://docs.python.org/3/library/unittest.mock.html#auto-speccing )
+        We therefore mock the instance variables we will need when testing the SUT."""
+        bot.logger = mock.Mock()
         bot.user.id = '00000'
         self.bot = bot
         # setup the lecture mock we will receive when calling bot#get_lecture_of_message_id
