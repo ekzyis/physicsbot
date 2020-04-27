@@ -23,11 +23,11 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         lecture_mock = mock.MagicMock()
         # when calling lecture['role'], we want to get the "role id"
         lecture_mock.__getitem__.return_value = '1234'
-        # bot#get_lecture_of_message_id should return the mocked lecture
+        # bot#_get_lecture_of_message_id should return the mocked lecture
         # TODO in bot.py, the method is prefixed with underscore.
         #  Tests pass for this method but this will probably fail in production!
         #  Make sure that mock throws error when accessing non-existing attribute.
-        self.bot.get_lecture_of_message_id.return_value = lecture_mock
+        self.bot._get_lecture_of_message_id.return_value = lecture_mock
         """member#add_roles should always be awaitable even though we are not always expecting that this function will
         be called. The reason for this that we don't want to couple our test to tightly with the code; expecting more
         from the SUT (system under test) than we are testing.
@@ -60,7 +60,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         await on_raw_reaction_add(self.bot)(reaction)
 
         # assert that we tried to find the lecture via the message id
-        self.bot.get_lecture_of_message_id.assert_called_once_with('5678')
+        self.bot._get_lecture_of_message_id.assert_called_once_with('5678')
         # assert that we accessed the role in the found lecture
         lecture_mock.__getitem__.assert_called_with('role')
         # assert that we got the role from the guild with its id as integer
@@ -96,7 +96,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         await on_raw_reaction_add(self.bot)(reaction)
 
         # assert that none of the following methods were called:
-        self.bot.get_lecture_of_message_id.assert_not_called()
+        self.bot._get_lecture_of_message_id.assert_not_called()
         lecture_mock.__getitem__.assert_not_called()
         member.guild.get_role.assert_not_called()
         member.add_roles.assert_not_called()
