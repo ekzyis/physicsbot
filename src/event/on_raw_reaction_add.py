@@ -17,10 +17,10 @@ def on_raw_reaction_add(bot):
         message_id = raw_reaction.message_id
         # TODO populate logging info with actual message?
         bot.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
-        # check if the reaction belongs to an lecture embed
-        lecture = bot.get_lecture_of_message_id(message_id)
         # check if reaction was the one we expect to for role assignment
         if emoji == WHITE_CHECK_MARK:
+            # check if the reaction belongs to an lecture embed
+            lecture = bot.get_lecture_of_message_id(message_id)
             if lecture is not None:
                 bot.logger.info('Reaction was added to embed of lecture %s' % lecture['embed_title'])
                 lecture_role_id = lecture['role']
