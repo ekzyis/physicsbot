@@ -52,7 +52,7 @@ class TestOnRawReactionRemove(aiounittest.AsyncTestCase):
         self.lecture = lecture
 
     async def test_on_raw_reaction_remove_removes_role_when_removed_white_check_mark_reaction_from_lecture_embed(self):
-        reaction, emoji, member, role = (self.reaction, self.emoji, self.member, self.role)
+        reaction, emoji, member, role = self.reaction, self.emoji, self.member, self.role
         # user removed reaction WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK
         # user reacted to message with message id 5678

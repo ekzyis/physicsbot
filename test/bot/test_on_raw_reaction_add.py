@@ -52,7 +52,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         self.lecture = lecture
 
     async def test_on_raw_reaction_add_adds_role_when_reacted_with_white_check_mark_on_lecture_embed(self):
-        reaction, emoji, member, role = (self.reaction, self.emoji, self.member, self.role)
+        reaction, emoji, member, role = self.reaction, self.emoji, self.member, self.role
         # user reacted with WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK
         # user reacted to message with message id 5678
@@ -70,7 +70,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         member.add_roles.assert_called_once_with(role)
 
     async def test_on_raw_reaction_add_does_not_add_role_when_not_reacted_with_white_check_mark_on_lecture_embed(self):
-        reaction, emoji, member, role = (self.reaction, self.emoji, self.member, self.role)
+        reaction, emoji, member, role = self.reaction, self.emoji, self.member, self.role
         # user reacted with something else than WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK + "xx"  # TODO Create another actual emoji unicode character for usage here
         # user reacted to message with message id 5678
