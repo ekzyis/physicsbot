@@ -1,13 +1,15 @@
-from typing import Callable, Coroutine
+from typing import Callable, Coroutine, TYPE_CHECKING
 
 import discord
 
-from bot import BotClient
 from const import WHITE_CHECK_MARK
 from util.member import add_role_to_member
 
+if TYPE_CHECKING:
+    from bot import BotClient
 
-def on_raw_reaction_add(bot: BotClient) -> Callable[[discord.RawReactionActionEvent], Coroutine]:
+
+def on_raw_reaction_add(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
     """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
 
     async def handler(raw_reaction: discord.RawReactionActionEvent) -> None:

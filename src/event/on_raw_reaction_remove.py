@@ -1,14 +1,16 @@
-from typing import Callable, Coroutine, Optional
+from typing import Callable, Coroutine, Optional, TYPE_CHECKING
 
 import discord
 
-from bot import BotClient
 from const import WHITE_CHECK_MARK
 from util.lecture import Lecture
 from util.member import remove_role_from_member
 
+if TYPE_CHECKING:
+    from bot import BotClient
 
-def on_raw_reaction_remove(bot: BotClient) -> Callable[[discord.RawReactionActionEvent], Coroutine]:
+
+def on_raw_reaction_remove(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
     """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
 
     # TODO this code is very similar to the one in `on_raw_reaction_add`

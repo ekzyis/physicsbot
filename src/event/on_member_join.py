@@ -1,11 +1,12 @@
-from typing import Coroutine, Callable
+from typing import Coroutine, Callable, TYPE_CHECKING
 
 import discord
 
-from bot import BotClient
+if TYPE_CHECKING:
+    from bot import BotClient
 
 
-def on_member_join(bot: BotClient) -> Callable[[discord.Member], Coroutine]:
+def on_member_join(bot: 'BotClient') -> Callable[[discord.Member], Coroutine]:
     """Higher order function which returns the handler for the 'on_member_join' event."""
 
     async def handler(member: discord.Member) -> None:
