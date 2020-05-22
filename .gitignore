@@ -1,8 +1,5 @@
-.idea
-exclude/
+venv
+__pycache__
+*config.yml
 *.log
-lib/
-node_modules/
-.nyc_output
-creds.yaml
-token
+.coverage
