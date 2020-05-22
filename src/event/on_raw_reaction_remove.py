@@ -1,4 +1,4 @@
-from typing import Callable, Coroutine
+from typing import Callable, Coroutine, Optional
 
 import discord
 
@@ -27,7 +27,7 @@ def on_raw_reaction_remove(bot: BotClient) -> Callable[[discord.RawReactionActio
         # check if reaction was the one we expect to remove the role
         if emoji == WHITE_CHECK_MARK:  # \u2705 is :white_check_mark:
             # check if the reaction belongs to an lecture embed
-            lecture: Lecture = bot.get_lecture_of_message_id(message_id)
+            lecture: Optional[Lecture] = bot.get_lecture_of_message_id(message_id)
             if lecture is not None:
                 bot.logger.info('Reaction was removed from embed of lecture %s' % lecture['embed_title'])
                 lecture_role_id: str = lecture['role']
