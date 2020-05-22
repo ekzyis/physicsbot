@@ -27,8 +27,8 @@ def on_raw_reaction_add(bot: BotClient) -> Callable[[discord.RawReactionActionEv
             # check if the reaction belongs to an lecture embed
             lecture = bot.get_lecture_of_message_id(message_id)
             if lecture is not None:
-                bot.logger.info('Reaction was added to embed of lecture %s' % lecture['embed_title'])
-                lecture_role_id = lecture['role']
+                bot.logger.info('Reaction was added to embed of lecture %s' % lecture.embed_title)
+                lecture_role_id = lecture.role
                 await add_role_to_member(member, lecture_role_id)
                 bot.logger.info("Role added!")
 
