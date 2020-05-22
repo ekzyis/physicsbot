@@ -15,8 +15,9 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.Member', autospec=True)
     @mock.patch('discord.Emoji', autospec=True)
     @mock.patch('discord.RawReactionActionEvent', autospec=True)
+    @mock.patch('src.util.lecture.Lecture', autospec=True)
     @mock.patch('src.bot.BotClient', autospec=True)
-    def setUp(self, bot, reaction, emoji, member, role):
+    def setUp(self, bot, lecture, reaction, emoji, member, role):
         """Since we use `autospec` to make sure that we use the actual bot API, we run into the problem
         that accessing instance attributes now leads to errors because "`autospec` can't know about
         any dynamically created attributes and restricts the api to visible attributes".
@@ -26,11 +27,11 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         bot.user.id = '00000'
         self.bot = bot
         # setup the lecture mock we will receive when calling bot#get_lecture_of_message_id
-        lecture_mock = mock.MagicMock()
-        # when calling lecture['role'], we want to get the "role id"
-        lecture_mock.__getitem__.return_value = '1234'
+        # when calling lecture.role, we want to get the "role id"
+        lecture.role = '1234'
+        lecture.embed_title = 'title'  # not needed to test behaviour but to fix unimportant AttributeError during test
         # bot#get_lecture_of_message_id should return the mocked lecture
-        self.bot.get_lecture_of_message_id.return_value = lecture_mock
+        self.bot.get_lecture_of_message_id.return_value = lecture
         """member#add_roles should always be awaitable even though we are not always expecting that this function will
         be called. The reason for this that we don't want to couple our test to tightly with the code; expecting more
         from the SUT (system under test) than we are testing.
@@ -48,11 +49,11 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         self.emoji = emoji
         self.member = member
         self.role = role
-        self.lecture_mock = lecture_mock
+        self.lecture = lecture
 
     async def test_on_raw_reaction_add_adds_role_when_reacted_with_white_check_mark_on_lecture_embed(self):
-        reaction, emoji, member, role, lecture_mock = \
-            (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
+        reaction, emoji, member, role, lecture = \
+            (self.reaction, self.emoji, self.member, self.role, self.lecture)
         # user reacted with WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK
         # user reacted to message with message id 5678
@@ -64,16 +65,14 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
 
         # assert that we tried to find the lecture via the message id
         self.bot.get_lecture_of_message_id.assert_called_once_with('5678')
-        # assert that we accessed the role in the found lecture
-        lecture_mock.__getitem__.assert_called_with('role')
         # assert that we got the role from the guild with its id as integer
         member.guild.get_role.assert_called_once_with(1234)
         # assert that we added the role to the member
         member.add_roles.assert_called_once_with(role)
 
     async def test_on_raw_reaction_add_does_not_add_role_when_not_reacted_with_white_check_mark_on_lecture_embed(self):
-        reaction, emoji, member, role, lecture_mock = \
-            (self.reaction, self.emoji, self.member, self.role, self.lecture_mock)
+        reaction, emoji, member, role, lecture = \
+            (self.reaction, self.emoji, self.member, self.role, self.lecture)
         # user reacted with something else than WHITE_CHECK_MARK
         emoji.name = WHITE_CHECK_MARK + "xx"  # TODO Create another actual emoji unicode character for usage here
         # user reacted to message with message id 5678
@@ -87,7 +86,7 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
         member.add_roles.assert_not_called()
 
     async def test_on_raw_reaction_add_ignores_reaction_from_bot(self):
-        reaction, emoji, member, lecture_mock = self.reaction, self.emoji, self.member, self.lecture_mock
+        reaction, emoji, member, lecture = self.reaction, self.emoji, self.member, self.lecture
         # the reaction was from the bot itself
         reaction.user_id = self.bot.user.id
         # assume reaction was WHITE_CHECK_MARK
@@ -99,6 +98,5 @@ class TestOnRawReactionAdd(aiounittest.AsyncTestCase):
 
         # assert that none of the following methods were called:
         self.bot.get_lecture_of_message_id.assert_not_called()
-        lecture_mock.__getitem__.assert_not_called()
         member.guild.get_role.assert_not_called()
         member.add_roles.assert_not_called()
