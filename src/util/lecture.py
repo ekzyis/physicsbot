@@ -12,6 +12,12 @@ class Lecture:
     channel: str  # id of channel this lecture is associated with
 
 
+@dataclass
+class LectureMessage:
+    message_id: int  # the id of the message
+    lecture: Lecture  # the associated lecture
+
+
 def populate_lectures_in_config(config_lectures):
     """This function "populates" the lectures list in the configuration into a list of actual
     Lecture objects with which we can work in a more handy way.
