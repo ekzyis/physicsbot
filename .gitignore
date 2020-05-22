@@ -3,3 +3,4 @@ __pycache__
 *config.yml
 *.log
 .coverage
+.mypy_cache

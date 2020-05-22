@@ -5,12 +5,13 @@ import sys
 
 class MakeFileHandler(logging.FileHandler):
     """FileHandler class to automatically create folders needed for logs."""
-    def __init__(self, filename, mode='a', encoding='utf-8', delay=0):
+
+    def __init__(self, filename: str, mode: str = 'a', encoding: str = 'utf-8', delay: bool = False):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         super().__init__(filename, mode, encoding, delay)
 
 
-def init_bot_logger(path='logs/physicsbot.log'):
+def init_bot_logger(path: str = 'logs/physicsbot.log') -> None:
     bot_logger = logging.getLogger('bot')
     bot_logger.setLevel(logging.DEBUG)
     # TODO cmd option to clear log on startup?
@@ -21,7 +22,7 @@ def init_bot_logger(path='logs/physicsbot.log'):
     bot_logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
-def init_discord_logger(path='logs/discord.log'):
+def init_discord_logger(path: str = 'logs/discord.log') -> None:
     d_logger = logging.getLogger('discord')
     d_logger.setLevel(logging.DEBUG)
     # TODO cmd option to clear log on startup?
@@ -30,7 +31,7 @@ def init_discord_logger(path='logs/discord.log'):
     d_logger.addHandler(d_handler)
 
 
-def init_logger():
+def init_logger() -> None:
     """Initializes the discord logger and other loggers."""
     init_discord_logger()
     init_bot_logger()

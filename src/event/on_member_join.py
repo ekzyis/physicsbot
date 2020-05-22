@@ -1,12 +1,17 @@
+from typing import Coroutine, Callable, TYPE_CHECKING
+
 import discord
 
+if TYPE_CHECKING:
+    from bot import BotClient
 
-def on_member_join(bot):
+
+def on_member_join(bot: 'BotClient') -> Callable[[discord.Member], Coroutine]:
     """Higher order function which returns the handler for the 'on_member_join' event."""
 
-    async def handler(member):
+    async def handler(member: discord.Member) -> None:
         """Greets new member."""
-        guild = member.guild
+        guild: discord.Guild = member.guild
         bot.logger.info('User %s has joined guild %s' % (member.user.name, member.guild))
         if guild.system_channel is not None:
             greeting = discord.Embed(

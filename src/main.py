@@ -11,6 +11,7 @@ Usage:
 """
 
 from pathlib import Path
+from typing import Dict, Any
 
 import yaml
 from docopt import docopt
@@ -18,7 +19,7 @@ from docopt import docopt
 from bot import BotClient
 
 
-def start_bot(token, config):
+def start_bot(token: str, config: Dict[str, Any]) -> None:
     """Starts the bot and runs the guild initialisation process.
     Consists of making sure that for every lecture, there is an embed in the overview channel.
     """
@@ -27,13 +28,13 @@ def start_bot(token, config):
     bot.run(token)
 
 
-def main():
+def main() -> None:
     args = docopt(__doc__)
-    config_path = args['--config'] or str(Path(__file__).parent / '../dev.config.yml')
+    config_path: str = args['--config'] or str(Path(__file__).parent / '../dev.config.yml')
     with open(config_path, 'r') as file:
-        config = yaml.safe_load(file)
+        config: Dict[str, Any] = yaml.safe_load(file)
     if args['run']:
-        token = args['--token'] or config['token']
+        token: str = args['--token'] or config['token']
         start_bot(token, config)
 
 
