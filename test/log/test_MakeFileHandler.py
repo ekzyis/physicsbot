@@ -1,4 +1,5 @@
 import os
+import shutil
 import unittest
 
 from src.log import MakeFileHandler
@@ -16,8 +17,9 @@ def remove_paths(*paths):
 class TestMakeFileHandler(unittest.TestCase):
 
     def setUp(self):
-        self.test_path1 = 'test1/test.log'
-        self.test_path2 = 'test1/test2/test.log'
+        self.test_dir = 'test1'
+        self.test_path1 = self.test_dir + '/test.log'
+        self.test_path2 = self.test_dir + '/test2/test.log'
         remove_paths(self.test_path1, self.test_path2)
         self.handler = None
 
@@ -39,6 +41,6 @@ class TestMakeFileHandler(unittest.TestCase):
         self.assertIsInstance(self.handler, logging.FileHandler)
 
     def tearDown(self):
-        remove_paths(self.test_path1, self.test_path2)
+        shutil.rmtree(self.test_dir)
         self.handler.close()
         self.handler = None
