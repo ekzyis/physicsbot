@@ -1,20 +1,25 @@
+from typing import Callable, Coroutine
+
+import discord
+
+from bot import BotClient
 from const import WHITE_CHECK_MARK
 from util.member import add_role_to_member
 
 
-def on_raw_reaction_add(bot):
+def on_raw_reaction_add(bot: BotClient) -> Callable[[discord.RawReactionActionEvent], Coroutine]:
     """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
 
-    async def handler(raw_reaction):
+    async def handler(raw_reaction: discord.RawReactionActionEvent) -> None:
         """If an user reacted appropriately to an lecture embed, the user is assigned the role associated
         with the lecture.
         """
         if raw_reaction.user_id == bot.user.id:
             # bot should not react to reactions from itself
             return
-        member = raw_reaction.member
-        emoji = raw_reaction.emoji.name
-        message_id = raw_reaction.message_id
+        member: discord.Member = raw_reaction.member
+        emoji: discord.Emoji = raw_reaction.emoji.name
+        message_id: int = raw_reaction.message_id
         # TODO populate logging info with actual message?
         bot.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
         # check if reaction was the one we expect to for role assignment
