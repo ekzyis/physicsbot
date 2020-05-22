@@ -28,12 +28,12 @@ def create_overview_info_embed():
 
 def create_lecture_embed(guild, lecture):
     """Creates the embed for the given lecture."""
-    role = guild.get_role(int(lecture['role']))
+    role = guild.get_role(int(lecture.role))
     desc = "{}\n".format(role.mention)
     desc += "Du brauchst unbedingt diese Rolle? Dann gib mir hier ein {}!".format(WHITE_CHECK_MARK)
     return Embed(
         # the embed title must be assigned since that's how we will find it in `get_embed_with_title`
-        title=lecture['embed_title'],
+        title=lecture.embed_title,
         description=desc
     )
 

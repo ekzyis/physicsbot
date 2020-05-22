@@ -8,7 +8,9 @@ from event.on_member_join import on_member_join
 from event.on_raw_reaction_add import on_raw_reaction_add
 from event.on_raw_reaction_remove import on_raw_reaction_remove
 from log import init_logger
-from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, embed_in_message_needs_update
+from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, \
+    embed_in_message_needs_update
+from util.lecture import populate_lectures_in_config
 
 
 class BotClient(discord.Client):
@@ -17,6 +19,7 @@ class BotClient(discord.Client):
         init_logger()
         super().__init__(**options)
         self.config = config
+        self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
         self.lecture_message_tuples = []
         self.guild = None
         self.logger = logging.getLogger('bot')
@@ -44,17 +47,17 @@ class BotClient(discord.Client):
     async def _init_lecture_embed(self, channel, lecture):
         """Returns the message for this lecture in the given channel.
         If it does not exist yet, it will be created."""
-        message = await get_embed_with_title(channel, lecture['embed_title'])
+        message = await get_embed_with_title(channel, lecture.embed_title)
         guild = await self._guild()
         embed = create_lecture_embed(guild, lecture)
         if message is None:
             message = await channel.send(embed=embed)
             await message.add_reaction(WHITE_CHECK_MARK)
-            self.logger.info('Created embed for lecture %s!' % lecture['embed_title'])
+            self.logger.info('Created embed for lecture %s!' % lecture.embed_title)
         # check if message needs update because of config change
         elif embed_in_message_needs_update(message, embed):
             await message.edit(embed=embed)
-            self.logger.info('Updated embed for lecture %s' % lecture['embed_title'])
+            self.logger.info('Updated embed for lecture %s' % lecture.embed_title)
         return message
 
     async def _guild(self):
@@ -88,4 +91,4 @@ class BotClient(discord.Client):
         for lecture in self.config['lectures']:
             message = await self._init_lecture_embed(overview_channel, lecture)
             self.lecture_message_tuples.append(lecture_tuple(lecture=lecture, message_id=message.id))
-            self.logger.info('Message with id %s holds the embed for lecture %s' % (message.id, lecture['embed_title']))
+            self.logger.info('Message with id %s holds the embed for lecture %s' % (message.id, lecture.embed_title))
