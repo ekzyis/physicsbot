@@ -22,14 +22,13 @@ class BotClient(discord.ext.commands.Bot):
 
     def __init__(self, config: Dict[str, Any], **options: Any):
         init_logger()
-        super().__init__(**options)
+        super().__init__(**options, command_prefix='!')
         self.config = config
         self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
         self.lecture_messages: List[LectureMessage] = []
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
         self._reaction_messages = []  # TODO load reaction messages from disk
-        self.command_prefix = '!'
         self.add_command(add_reactionmessage)
         self.add_command(remove_reactionmessage)
 
