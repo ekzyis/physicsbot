@@ -8,7 +8,7 @@ from command.reactionmessage import reactionmessage_add, ReactionMessage
 
 
 class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
-    """Test class for the function which is called by the discord API when a command is recognized.
+    """Test class for the function which is called when command `!reactionmessage add` is recognized.
 
     This does not test the following things:
         - converters
