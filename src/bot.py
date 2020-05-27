@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Any, List, Optional
 
 import discord
+import discord.ext
 
 from command.reactionmessage import ReactionMessage, add_reactionmessage, remove_reactionmessage
 from const import WHITE_CHECK_MARK
@@ -14,7 +15,7 @@ from util.embed import create_overview_info_embed, create_lecture_embed, get_emb
 from util.lecture import populate_lectures_in_config, LectureMessage, Lecture
 
 
-class BotClient(discord.Client):
+class BotClient(discord.ext.commands.Bot):
 
     def __init__(self, config: Dict[str, Any], **options: Any):
         init_logger()
