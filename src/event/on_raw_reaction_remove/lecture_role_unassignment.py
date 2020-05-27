@@ -3,6 +3,7 @@ from typing import Callable, Coroutine, Optional, TYPE_CHECKING
 import discord
 
 from const import WHITE_CHECK_MARK
+from event.util import on_raw_reaction_remove_arg_parser
 from util.lecture import Lecture
 from util.member import remove_role_from_member
 
@@ -20,12 +21,7 @@ def lecture_role_unassignment(bot: 'BotClient') -> Callable[[discord.RawReaction
         if raw_reaction.user_id == bot.user.id:
             # bot should not react to reactions from itself
             return
-        guild: discord.Guild = bot.get_guild(raw_reaction.guild_id)
-        member: discord.Member = guild.get_member(raw_reaction.user_id)
-        emoji: discord.Emoji = raw_reaction.emoji.name
-        message_id: int = raw_reaction.message_id
-        # TODO populate logging info with actual message?
-        bot.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
+        member, emoji, message_id = on_raw_reaction_remove_arg_parser(raw_reaction, bot)
         # check if reaction was the one we expect to remove the role
         if emoji == WHITE_CHECK_MARK:  # \u2705 is :white_check_mark:
             # check if the reaction belongs to an lecture embed

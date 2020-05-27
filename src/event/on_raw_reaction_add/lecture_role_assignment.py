@@ -3,6 +3,7 @@ from typing import Callable, Coroutine, TYPE_CHECKING, Optional
 import discord
 
 from const import WHITE_CHECK_MARK
+from event.util import on_raw_reaction_add_arg_parser
 from util.lecture import Lecture
 from util.member import add_role_to_member
 
@@ -20,11 +21,7 @@ def lecture_role_assignment(bot: 'BotClient') -> Callable[[discord.RawReactionAc
         if raw_reaction.user_id == bot.user.id:
             # bot should not react to reactions from itself
             return
-        member: discord.Member = raw_reaction.member
-        emoji: discord.Emoji = raw_reaction.emoji.name
-        message_id: int = raw_reaction.message_id
-        # TODO populate logging info with actual message?
-        bot.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
+        member, emoji, message_id = on_raw_reaction_add_arg_parser(raw_reaction)
         # check if reaction was the one we expect to for role assignment
         if emoji == WHITE_CHECK_MARK:
             # check if the reaction belongs to an lecture embed
