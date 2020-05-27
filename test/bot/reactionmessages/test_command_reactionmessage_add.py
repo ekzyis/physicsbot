@@ -38,7 +38,7 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.Emoji', autospec=True)
     @mock.patch('discord.Role', autospec=True)
     @mock.patch('discord.Message', autospec=True)
-    async def test_command_reactionmessage_informs_user_if_successful(self, message, role, emoji):
+    async def test_command_reactionmessage_add_informs_user_if_successful(self, message, role, emoji):
         ctx, bot = self.ctx, self.bot
         ctx.channel.send.return_value = mock.Mock(futurized(None))
         await reactionmessage_add(ctx, message, role, emoji)
