@@ -9,6 +9,14 @@ from command.reactionmessage import add_reactionmessage, ReactionMessage
 
 
 class TestCommandAddReactionMessage(aiounittest.AsyncTestCase):
+    """Test class for the function which is called by the discord API when a command is recognized.
+
+    This does not test the following things:
+        - converters
+        - permissions
+        - if the command is recognized
+        - error handling
+    """
 
     @mock.patch('discord.Emoji', autospec=True)
     @mock.patch('discord.Role', autospec=True)
