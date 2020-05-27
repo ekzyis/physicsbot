@@ -30,6 +30,13 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
         rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
         bot.remove_reactionmessage.assert_called_with(rm)
 
+    async def test_command_reactionmessage_remove_informs_user_if_successful(self, ctx, bot, message,
+                                                                             role,
+                                                                             emoji):
+        ctx.bot = bot
+        await reactionmessage_remove(ctx, message, role, emoji)
+        ctx.channel.send.assert_called_once()
+
     async def test_command_reactionmessage_remove_replies_with_error_if_ReactionMessage_does_not_exit(self, ctx, bot,
                                                                                                       message, role,
                                                                                                       emoji):
