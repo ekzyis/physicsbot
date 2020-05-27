@@ -43,7 +43,7 @@ async def add_reactionmessage(ctx, message: MessageConverter, role: RoleConverte
     emoji: str
     bot: 'BotClient' = ctx.bot
     rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
-    bot.add_reaction_message(rm)
+    bot.add_reactionmessage(rm)
 
 
 @reactionmessage.command(name="remove")
@@ -55,4 +55,4 @@ async def remove_reactionmessage(ctx, message: MessageConverter, role: RoleConve
     emoji: str
     bot: 'BotClient' = ctx.bot
     rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
-    bot.remove_reaction_message(rm)
+    bot.remove_reactionmessage(rm)
