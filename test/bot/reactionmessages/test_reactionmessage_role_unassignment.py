@@ -10,14 +10,15 @@ from event.on_raw_reaction_remove.reactionmessage_role_unassignment import react
 class TestReactionMessageRoleUnAssignment(aiounittest.AsyncTestCase):
 
     @mock.patch('discord.Role', autospec=True)
+    @mock.patch('discord.Guild', autospec=True)
     @mock.patch('discord.Member', autospec=True)
     @mock.patch('discord.Emoji', autospec=True)
     @mock.patch('discord.RawReactionActionEvent', autospec=True)
     @mock.patch('src.bot.BotClient', autospec=True)
-    def setUp(self, bot, reaction, emoji, member, role):
+    def setUp(self, bot, reaction, emoji, member, guild, role):
         bot.user.id = '00000'
-        guild = mock.Mock()
         guild.get_member.return_value = member
+        guild.get_role.return_value = role
         bot.get_guild.return_value = guild
         reaction.emoji = emoji
         reaction.message_id = '1234'
