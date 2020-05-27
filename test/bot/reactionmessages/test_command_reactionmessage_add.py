@@ -32,7 +32,7 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
                                                                                     emoji):
         ctx, bot = self.ctx, self.bot
         await reactionmessage_add(ctx, message, role, emoji)
-        rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+        rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji)
         bot.add_reactionmessage.assert_called_with(rm)
 
     @mock.patch('discord.Emoji', autospec=True)

@@ -15,8 +15,9 @@ if TYPE_CHECKING:
 class ReactionMessage:
     """Data container class for Reaction Messages"""
     mid: int  # message id of the reaction message
-    role: discord.Role  # which role should be assigned when reacted to this message with the emoji
-    emoji: str  # the emoji with which the user needs to react to be assigned the role
+    rid: int  # id of role which should be assigned when reacted to this message with the emoji
+    rname: str  # name of role
+    ename: str  # the emoji name with which the user needs to react to be assigned the role
 
 
 @commands.group(name="rm", invoke_without_command=True)
@@ -36,13 +37,13 @@ class UnicodeEmojiConverter(EmojiConverter):
 
 @reactionmessage.command(name="add")
 @commands.has_permissions(manage_roles=True)
-async def reactionmessage_add(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
+async def reactionmessage_add(ctx, message: MessageConverter, role: RoleConverter, emoji_name: UnicodeEmojiConverter):
     """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
     message: discord.Message
     role: discord.Role
-    emoji: str
+    emoji_name: str
     bot: 'BotClient' = ctx.bot
-    rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+    rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
     bot.add_reactionmessage(rm)
     author = ctx.message.author
     desc = "{}, Handler hinzugefügt!".format(author.mention)
@@ -55,13 +56,14 @@ async def reactionmessage_add(ctx, message: MessageConverter, role: RoleConverte
 
 @reactionmessage.command(name="remove")
 @commands.has_permissions(manage_roles=True)
-async def reactionmessage_remove(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
+async def reactionmessage_remove(ctx, message: MessageConverter, role: RoleConverter,
+                                 emoji_name: UnicodeEmojiConverter):
     """Remove a reaction message from the bot instance; disabling role assignment via reactions to the message."""
     message: discord.Message
     role: discord.Role
-    emoji: str
+    emoji_name: str
     bot: 'BotClient' = ctx.bot
-    rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+    rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
     author = ctx.message.author
     try:
         bot.remove_reactionmessage(rm)

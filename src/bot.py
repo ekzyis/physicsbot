@@ -114,20 +114,20 @@ class BotClient(discord.ext.commands.Bot):
         """Add the ReactionMessage to the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.append(rm)
         self.logger.info(
-            "Added reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.role, rm.emoji))
+            "Added reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.rname, rm.ename))
         self.save_reactionmessages()
 
     def remove_reactionmessage(self, rm: ReactionMessage):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.remove(rm)
         self.logger.info(
-            "Removed reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.role.mention, rm.emoji))
+            "Removed reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.rname, rm.ename))
         self.save_reactionmessages()
 
-    def get_reactionmessage(self, message_id: int, emoji: str):
-        """Return the ReactionMessage instance which has the same message id and emoji."""
+    def get_reactionmessage(self, message_id: int, ename: str):
+        """Return the ReactionMessage instance which has the same message id and emoji name."""
         for rm in self._reaction_messages:
-            if rm.mid == message_id and rm.emoji == emoji:
+            if rm.mid == message_id and rm.ename == ename:
                 return rm
         return None
 

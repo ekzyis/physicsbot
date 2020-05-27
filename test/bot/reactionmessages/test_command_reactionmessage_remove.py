@@ -31,7 +31,7 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
     async def test_command_reactionmessage_remove_removes_ReactionMessage_to_bot_instance(self, message, role, emoji):
         ctx, bot = self.ctx, self.bot
         await reactionmessage_remove(ctx, message, role, emoji)
-        rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+        rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji)
         bot.remove_reactionmessage.assert_called_with(rm)
 
     @mock.patch('discord.Emoji', autospec=True)
@@ -53,6 +53,6 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
         ctx.bot = bot
         bot.remove_reactionmessage.side_effect = mock.Mock(side_effect=ValueError)
         await reactionmessage_remove(ctx, message, role, emoji)
-        rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+        rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji)
         bot.remove_reactionmessage.assert_called_with(rm)
         ctx.channel.send.assert_called_once()
