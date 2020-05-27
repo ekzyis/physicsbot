@@ -19,7 +19,7 @@ class ReactionMessage:
     emoji: str  # the emoji with which the user needs to react to be assigned the role
 
 
-@commands.group(name="reactionmessage", invoke_without_command=True)
+@commands.group(name="rm", invoke_without_command=True)
 async def reactionmessage(ctx):
     pass
 
