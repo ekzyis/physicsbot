@@ -111,11 +111,11 @@ class BotClient(discord.ext.commands.Bot):
 
     def add_reactionmessage(self, rm: ReactionMessage):
         """Add the ReactionMessage to the list of reaction messages which will be searched on user reactions."""
-        self._reaction_messages.append(rm)
+        return self._reaction_messages.append(rm)
 
     def remove_reactionmessage(self, rm: ReactionMessage):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
-        self._reaction_messages.remove(rm)
+        return self._reaction_messages.remove(rm)
 
     def get_reactionmessage(self, message_id: int, emoji: str):
         """Return the ReactionMessage instance which has the same message id and emoji."""
