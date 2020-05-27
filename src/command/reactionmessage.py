@@ -43,7 +43,7 @@ async def reactionmessage_add(ctx, message: MessageConverter, role: RoleConverte
     emoji: str
     bot: 'BotClient' = ctx.bot
     rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
-    await bot.add_reactionmessage(rm)
+    bot.add_reactionmessage(rm)
     author = ctx.message.author
     desc = "{}, Handler hinzugefügt!".format(author.mention)
     embed = discord.Embed(

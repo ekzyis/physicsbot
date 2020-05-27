@@ -22,7 +22,6 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
     @mock.patch('discord.ext.commands.Context')
     def setUp(self, ctx, bot):
         ctx.bot = bot
-        bot.add_reactionmessage = mock.Mock(futurized(None))
         ctx.channel.send = mock.Mock(futurized(None))
         self.ctx, self.bot = ctx, bot
 
