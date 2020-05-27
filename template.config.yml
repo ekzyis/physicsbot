@@ -1,6 +1,8 @@
 token: 'your bot token'
 guild: 'id of the guild for which this config is written'
 overview: 'channel name in which the embed for assigning roles via reactions is posted'
+# file path for storing reaction message handlers
+rm: 'rm-template.yml'
 lectures:
   - name: 'name of some lecture'
     embed_title: 'title of embed in overview channel'
