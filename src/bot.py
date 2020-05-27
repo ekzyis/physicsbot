@@ -29,6 +29,7 @@ class BotClient(discord.ext.commands.Bot):
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
         self._reaction_messages = []  # TODO load reaction messages from disk
+        self.command_prefix = '!'
         self.add_command(add_reactionmessage)
         self.add_command(remove_reactionmessage)
 
