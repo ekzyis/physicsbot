@@ -1,6 +1,7 @@
 from unittest import mock
 
 import aiounittest
+from aiounittest import futurized
 
 # noinspection PyUnresolvedReferences
 import test.context
@@ -11,7 +12,7 @@ from command.reactionmessage import ReactionMessage, reactionmessage_remove
 @mock.patch('discord.Role', autospec=True)
 @mock.patch('discord.Message', autospec=True)
 @mock.patch('src.bot.BotClient', autospec=True)
-@mock.patch('discord.ext.commands.Context', autospec=True)
+@mock.patch('discord.ext.commands.Context')
 class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
     """Test class for the function which is called when command `!reactionmessage add` is recognized.
 
@@ -33,7 +34,9 @@ class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
                                                                                                       message, role,
                                                                                                       emoji):
         ctx.bot = bot
+        ctx.channel.send = mock.Mock(futurized(None))
         bot.remove_reactionmessage.side_effect = mock.Mock(side_effect=ValueError)
         await reactionmessage_remove(ctx, message, role, emoji)
         rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
         bot.remove_reactionmessage.assert_called_with(rm)
+        ctx.channel.send.assert_called_once()
