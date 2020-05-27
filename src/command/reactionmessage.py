@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import discord
@@ -8,16 +9,12 @@ if TYPE_CHECKING:
     from bot import BotClient
 
 
+@dataclass
 class ReactionMessage:
-    def __init__(self, mid: int, role, emoji):
-        self.mid = mid
-        self.role = role
-        self.emoji = emoji
-
-    def __eq__(self, other):
-        return self.mid == other.mid \
-               and self.role.id == other.role.id \
-               and self.emoji.id == other.emoji.id
+    """Data container class for Reaction Messages"""
+    mid: int  # message id of the reaction message
+    role: discord.Role  # which role should be assigned when reacted to this message with the emoji
+    emoji: discord.Emoji  # the emoji with which the user needs to react to be assigned the role
 
 
 @commands.group(name="reactionmessage", invoke_without_command=True)
