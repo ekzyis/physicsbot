@@ -1,6 +1,5 @@
 from unittest import mock
 
-# noinspection PyUnresolvedReferences
 import aiounittest
 
 # noinspection PyUnresolvedReferences
