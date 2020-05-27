@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Optional
 
 import discord
 import discord.ext
+import yaml
 
 from command.reactionmessage import ReactionMessage, reactionmessage_add, reactionmessage_remove, reactionmessage
 from const import WHITE_CHECK_MARK
@@ -28,7 +29,8 @@ class BotClient(discord.ext.commands.Bot):
         self.lecture_messages: List[LectureMessage] = []
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
-        self._reaction_messages = []  # TODO load reaction messages from disk
+        self._reaction_messages = []
+        self.load_reactionmessages()
         self.add_command(reactionmessage)
         self.add_command(reactionmessage_add)
         self.add_command(reactionmessage_remove)
@@ -111,11 +113,17 @@ class BotClient(discord.ext.commands.Bot):
 
     def add_reactionmessage(self, rm: ReactionMessage):
         """Add the ReactionMessage to the list of reaction messages which will be searched on user reactions."""
-        return self._reaction_messages.append(rm)
+        self._reaction_messages.append(rm)
+        self.logger.info(
+            "Added reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.role, rm.emoji))
+        self.save_reactionmessages()
 
     def remove_reactionmessage(self, rm: ReactionMessage):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
-        return self._reaction_messages.remove(rm)
+        self._reaction_messages.remove(rm)
+        self.logger.info(
+            "Removed reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.role.mention, rm.emoji))
+        self.save_reactionmessages()
 
     def get_reactionmessage(self, message_id: int, emoji: str):
         """Return the ReactionMessage instance which has the same message id and emoji."""
@@ -123,3 +131,20 @@ class BotClient(discord.ext.commands.Bot):
             if rm.mid == message_id and rm.emoji == emoji:
                 return rm
         return None
+
+    async def load_reactionmessages(self):
+        """Load reaction messages from file."""
+        rm_file_path = self.config['rm']
+        with open(rm_file_path, 'r') as rm_file:
+            rm_file_content = yaml.safe_load(rm_file)
+        guild = await self._guild()
+        for raw_rm in rm_file_content:
+            role = guild.get_role(int(raw_rm.role))
+            rm = ReactionMessage(raw_rm.mid, role, raw_rm.emoji)
+            self.add_reactionmessage(rm)
+
+    def save_reactionmessages(self):
+        """Save reaction messages to file for retrieval on next start."""
+        rm_file_path = self.config['rm']
+        with open(rm_file_path, 'w') as rm_file:
+            yaml.dump(self._reaction_messages, rm_file)
