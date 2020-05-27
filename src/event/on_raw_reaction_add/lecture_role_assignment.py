@@ -10,8 +10,8 @@ if TYPE_CHECKING:
     from bot import BotClient
 
 
-def on_raw_reaction_add(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
-    """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
+def lecture_role_assignment(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
+    """Return the handler for the 'on_raw_reaction_add' event for lecture roles assignment."""
 
     async def handler(raw_reaction: discord.RawReactionActionEvent) -> None:
         """If an user reacted appropriately to an lecture embed, the user is assigned the role associated

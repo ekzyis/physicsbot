@@ -4,9 +4,9 @@ from typing import Dict, Any, List, Optional
 import discord
 
 from const import WHITE_CHECK_MARK
-from event.on_member_join import on_member_join
-from event.on_raw_reaction_add import on_raw_reaction_add
-from event.on_raw_reaction_remove import on_raw_reaction_remove
+from event.on_member_join.greet_member import greet_member
+from event.on_raw_reaction_add.lecture_role_assignment import lecture_role_assignment
+from event.on_raw_reaction_remove.lecture_role_unassignment import lecture_role_unassignment
 from log import init_logger
 from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, \
     embed_in_message_needs_update
@@ -29,13 +29,13 @@ class BotClient(discord.Client):
         self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
 
     async def on_member_join(self, member: discord.Member) -> None:
-        await on_member_join(self)(member)
+        await greet_member(self)(member)
 
     async def on_raw_reaction_add(self, raw_reaction: discord.RawReactionActionEvent) -> None:
-        await on_raw_reaction_add(self)(raw_reaction)
+        await lecture_role_assignment(self)(raw_reaction)
 
     async def on_raw_reaction_remove(self, raw_reaction: discord.RawReactionActionEvent) -> None:
-        await on_raw_reaction_remove(self)(raw_reaction)
+        await lecture_role_unassignment(self)(raw_reaction)
 
     def get_lecture_of_message_id(self, message_id: int) -> Optional[Lecture]:
         """Returns the lecture associated with this message if there is one. Else returns None."""

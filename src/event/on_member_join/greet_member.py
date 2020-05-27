@@ -6,8 +6,8 @@ if TYPE_CHECKING:
     from bot import BotClient
 
 
-def on_member_join(bot: 'BotClient') -> Callable[[discord.Member], Coroutine]:
-    """Higher order function which returns the handler for the 'on_member_join' event."""
+def greet_member(bot: 'BotClient') -> Callable[[discord.Member], Coroutine]:
+    """Return the handler for the 'on_member_join' event to greet members."""
 
     async def handler(member: discord.Member) -> None:
         """Greets new member."""

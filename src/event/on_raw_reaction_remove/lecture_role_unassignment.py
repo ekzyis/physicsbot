@@ -10,8 +10,8 @@ if TYPE_CHECKING:
     from bot import BotClient
 
 
-def on_raw_reaction_remove(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
-    """Higher order  function which returns the handler for the 'on_raw_reaction_add' event."""
+def lecture_role_unassignment(bot: 'BotClient') -> Callable[[discord.RawReactionActionEvent], Coroutine]:
+    """Return the handler for the 'on_raw_reaction_remove' event for lecture roles unassignment."""
 
     # TODO this code is very similar to the one in `on_raw_reaction_add`
     async def handler(raw_reaction: discord.RawReactionActionEvent) -> None:
