@@ -65,7 +65,7 @@ async def reactionmessage_remove(ctx, message: MessageConverter, role: RoleConve
     author = ctx.message.author
     try:
         bot.remove_reactionmessage(rm)
-        desc = "{}, Handler entfernt!"
+        desc = "{}, Handler entfernt!".format(author.mention)
         embed = discord.Embed(
             description=desc,
             color=discord.Color.green()
