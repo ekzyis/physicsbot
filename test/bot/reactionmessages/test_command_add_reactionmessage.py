@@ -5,7 +5,7 @@ from unittest import mock
 import test.context
 
 
-class TestAddReactionMessage(unittest.TestCase):
+class TestCommandAddReactionMessage(unittest.TestCase):
 
     @mock.patch('discord.Emoji', autospec=True)
     @mock.patch('discord.Role', autospec=True)
