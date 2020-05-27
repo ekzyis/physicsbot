@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import discord
 
-from event.util import on_raw_reaction_add_arg_parser
+from event.util import on_raw_reaction_remove_arg_parser
 
 if TYPE_CHECKING:
     from bot import BotClient
@@ -17,7 +17,7 @@ def reactionmessage_role_unassignment(bot: 'BotClient'):
         if raw_reaction.user_id == bot.user.id:
             # bot should not react to reactions from itself
             return
-        member, emoji, message_id = on_raw_reaction_add_arg_parser(raw_reaction)
+        member, emoji, message_id = on_raw_reaction_remove_arg_parser(raw_reaction, bot)
         # check if there is a reaction message with this message id and emoji
         rm = bot.get_reactionmessage(message_id, emoji)
         if rm is None:
