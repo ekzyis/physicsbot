@@ -8,7 +8,9 @@ from command.reactionmessage import ReactionMessage, add_reactionmessage, remove
 from const import WHITE_CHECK_MARK
 from event.on_member_join.greet_member import greet_member
 from event.on_raw_reaction_add.lecture_role_assignment import lecture_role_assignment
+from event.on_raw_reaction_add.reactionmessage_role_assignment import reactionmessage_role_assignment
 from event.on_raw_reaction_remove.lecture_role_unassignment import lecture_role_unassignment
+from event.on_raw_reaction_remove.reactionmessage_role_unassignment import reactionmessage_role_unassignment
 from event.util import on_raw_reaction_remove_arg_parser, on_raw_reaction_add_arg_parser
 from log import init_logger
 from util.embed import create_overview_info_embed, create_lecture_embed, get_embed_with_title, \
@@ -42,12 +44,14 @@ class BotClient(discord.ext.commands.Bot):
         # TODO populate logging info with actual message?
         self.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
         await lecture_role_assignment(self)(raw_reaction)
+        await reactionmessage_role_assignment(self)(raw_reaction)
 
     async def on_raw_reaction_remove(self, raw_reaction: discord.RawReactionActionEvent) -> None:
         member, emoji, message_id = on_raw_reaction_remove_arg_parser(raw_reaction, self)
         # TODO populate logging info with actual message?
         self.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
         await lecture_role_unassignment(self)(raw_reaction)
+        await reactionmessage_role_unassignment(self)(raw_reaction)
 
     def get_lecture_of_message_id(self, message_id: int) -> Optional[Lecture]:
         """Returns the lecture associated with this message if there is one. Else returns None."""
@@ -111,3 +115,10 @@ class BotClient(discord.ext.commands.Bot):
     def remove_reactionmessage(self, rm: ReactionMessage):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.remove(rm)
+
+    def get_reactionmessage(self, message_id: int, emoji: discord.Emoji):
+        """Return the ReactionMessage instance which has the same message id and emoji."""
+        for rm in self._reaction_messages:
+            if rm.mid == message_id and rm.emoji == emoji:
+                return rm
+        return None
