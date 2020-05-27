@@ -134,13 +134,16 @@ class BotClient(discord.ext.commands.Bot):
     async def load_reactionmessages(self):
         """Load reaction messages from file."""
         rm_file_path = self.config['rm']
-        with open(rm_file_path, 'r') as rm_file:
-            rm_file_content = yaml.safe_load(rm_file)
-        guild = await self._guild()
-        for raw_rm in rm_file_content:
-            role = guild.get_role(int(raw_rm.role))
-            rm = ReactionMessage(raw_rm.mid, role, raw_rm.emoji)
-            self.add_reactionmessage(rm)
+        try:
+            with open(rm_file_path, 'r') as rm_file:
+                rm_file_content = yaml.safe_load(rm_file)
+            guild = await self._guild()
+            for raw_rm in rm_file_content:
+                role = guild.get_role(int(raw_rm.role))
+                rm = ReactionMessage(raw_rm.mid, role, raw_rm.emoji)
+                self.add_reactionmessage(rm)
+        except FileNotFoundError:
+            pass
 
     def save_reactionmessages(self):
         """Save reaction messages to file for retrieval on next start."""
