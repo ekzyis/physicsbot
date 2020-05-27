@@ -117,7 +117,7 @@ class BotClient(discord.ext.commands.Bot):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.remove(rm)
 
-    def get_reactionmessage(self, message_id: int, emoji: discord.Emoji):
+    def get_reactionmessage(self, message_id: int, emoji: str):
         """Return the ReactionMessage instance which has the same message id and emoji."""
         for rm in self._reaction_messages:
             if rm.mid == message_id and rm.emoji == emoji:
