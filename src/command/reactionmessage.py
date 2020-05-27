@@ -36,7 +36,7 @@ class UnicodeEmojiConverter(EmojiConverter):
 
 @reactionmessage.command(name="add")
 @commands.has_permissions(manage_roles=True)
-async def add_reactionmessage(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
+async def reactionmessage_add(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
     """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
     message: discord.Message
     role: discord.Role
@@ -48,7 +48,7 @@ async def add_reactionmessage(ctx, message: MessageConverter, role: RoleConverte
 
 @reactionmessage.command(name="remove")
 @commands.has_permissions(manage_roles=True)
-async def remove_reactionmessage(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
+async def reactionmessage_remove(ctx, message: MessageConverter, role: RoleConverter, emoji: UnicodeEmojiConverter):
     """Remove a reaction message from the bot instance; disabling role assignment via reactions to the message."""
     message: discord.Message
     role: discord.Role

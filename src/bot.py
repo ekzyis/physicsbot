@@ -4,7 +4,7 @@ from typing import Dict, Any, List, Optional
 import discord
 import discord.ext
 
-from command.reactionmessage import ReactionMessage, add_reactionmessage, remove_reactionmessage, reactionmessage
+from command.reactionmessage import ReactionMessage, reactionmessage_add, reactionmessage_remove, reactionmessage
 from const import WHITE_CHECK_MARK
 from event.on_member_join.greet_member import greet_member
 from event.on_raw_reaction_add.lecture_role_assignment import lecture_role_assignment
@@ -30,8 +30,8 @@ class BotClient(discord.ext.commands.Bot):
         self.logger: logging.Logger = logging.getLogger('bot')
         self._reaction_messages = []  # TODO load reaction messages from disk
         self.add_command(reactionmessage)
-        self.add_command(add_reactionmessage)
-        self.add_command(remove_reactionmessage)
+        self.add_command(reactionmessage_add)
+        self.add_command(reactionmessage_remove)
 
     async def on_ready(self) -> None:
         """Executed when bot is logged in and ready."""

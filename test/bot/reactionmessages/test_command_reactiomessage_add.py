@@ -4,10 +4,10 @@ import aiounittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from command.reactionmessage import add_reactionmessage, ReactionMessage
+from command.reactionmessage import reactionmessage_add, ReactionMessage
 
 
-class TestCommandAddReactionMessage(aiounittest.AsyncTestCase):
+class TestCommandReactionMessageAdd(aiounittest.AsyncTestCase):
     """Test class for the function which is called by the discord API when a command is recognized.
 
     This does not test the following things:
@@ -22,9 +22,9 @@ class TestCommandAddReactionMessage(aiounittest.AsyncTestCase):
     @mock.patch('discord.Message', autospec=True)
     @mock.patch('src.bot.BotClient', autospec=True)
     @mock.patch('discord.ext.commands.Context', autospec=True)
-    async def test_command_add_reactionmessage_adds_ReactionMessage_to_bot_instance(self, ctx, bot, message, role,
+    async def test_command_reactionmessage_add_adds_ReactionMessage_to_bot_instance(self, ctx, bot, message, role,
                                                                                     emoji):
         ctx.bot = bot
-        await add_reactionmessage(ctx, message, role, emoji)
+        await reactionmessage_add(ctx, message, role, emoji)
         rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
         bot.add_reactionmessage.assert_called_with(rm)
