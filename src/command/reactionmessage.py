@@ -62,14 +62,19 @@ async def reactionmessage_remove(ctx, message: MessageConverter, role: RoleConve
     emoji: str
     bot: 'BotClient' = ctx.bot
     rm = ReactionMessage(mid=message.id, role=role, emoji=emoji)
+    author = ctx.message.author
     try:
         bot.remove_reactionmessage(rm)
+        desc = "{}, Handler entfernt!"
+        embed = discord.Embed(
+            description=desc,
+            color=discord.Color.green()
+        )
     except ValueError:
         # no ReactionMessage found!
-        author = ctx.message.author
         desc = "{}, konnte Handler nicht entfernen, da es noch keinen für diese Nachricht gibt.".format(author.mention)
         embed = discord.Embed(
             description=desc,
             color=discord.Color.red()
         )
-        await ctx.channel.send(embed=embed)
+    await ctx.channel.send(embed=embed)
