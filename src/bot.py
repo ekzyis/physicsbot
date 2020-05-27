@@ -136,11 +136,8 @@ class BotClient(discord.ext.commands.Bot):
         rm_file_path = self.config['rm']
         try:
             with open(rm_file_path, 'r') as rm_file:
-                rm_file_content = yaml.safe_load(rm_file)
-            guild = await self._guild()
-            for raw_rm in rm_file_content:
-                role = guild.get_role(int(raw_rm.role))
-                rm = ReactionMessage(raw_rm.mid, role, raw_rm.emoji)
+                rm_list = yaml.load(rm_file, Loader=yaml.Loader)
+            for rm in rm_list:
                 self.add_reactionmessage(rm)
         except FileNotFoundError:
             pass
