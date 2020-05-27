@@ -30,7 +30,6 @@ class BotClient(discord.ext.commands.Bot):
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
         self._reaction_messages = []
-        self.load_reactionmessages()
         self.add_command(reactionmessage)
         self.add_command(reactionmessage_add)
         self.add_command(reactionmessage_remove)

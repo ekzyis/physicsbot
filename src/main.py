@@ -25,6 +25,7 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
     """
     bot = BotClient(config=config)
     bot.loop.create_task(bot.init_overview_channel())
+    bot.loop.create_task(bot.load_reactionmessages())
     bot.run(token)
 
 
