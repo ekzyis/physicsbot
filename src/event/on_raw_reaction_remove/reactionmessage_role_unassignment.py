@@ -27,5 +27,6 @@ def reactionmessage_role_unassignment(bot: 'BotClient'):
         guild_id = raw_reaction.guild_id
         role = bot.get_guild(guild_id).get_role(rm.rid)
         await member.remove_roles(role)
+        bot.logger.info("Removed role {} from {}!".format(role, member))
 
     return handler

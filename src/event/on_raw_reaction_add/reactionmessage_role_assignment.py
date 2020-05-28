@@ -26,5 +26,6 @@ def reactionmessage_role_assignment(bot: 'BotClient'):
         guild_id = raw_reaction.guild_id
         role = bot.get_guild(guild_id).get_role(rm.rid)
         await member.add_roles(role)
+        bot.logger.info("Added role {} to {}!".format(role, member))
 
     return handler
