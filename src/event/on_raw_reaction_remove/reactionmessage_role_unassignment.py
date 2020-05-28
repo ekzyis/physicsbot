@@ -23,7 +23,7 @@ def reactionmessage_role_unassignment(bot: 'BotClient'):
         if rm is None:
             # message is not a reaction message. abort.
             return
-        # assign the role of the reaction message to the user
+        # Remove the role of the reaction message from the user
         guild_id = raw_reaction.guild_id
         role = bot.get_guild(guild_id).get_role(rm.rid)
         await member.remove_roles(role)
