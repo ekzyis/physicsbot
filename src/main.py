@@ -26,7 +26,7 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
     bot = BotClient(config=config)
     # TODO Refactor lecture code into separate module!
     #   https://github.com/ekzyis/physicsbot/issues/51
-    if config['lectures']:
+    if 'lectures' in config:
         bot.loop.create_task(bot.init_overview_channel())
     bot.loop.create_task(bot.load_reactionmessages())
     bot.run(token)

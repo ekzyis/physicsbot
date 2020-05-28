@@ -27,7 +27,7 @@ class BotClient(discord.ext.commands.Bot):
         self.config = config
         # TODO Refactor lecture code into separate module!
         #   https://github.com/ekzyis/physicsbot/issues/51
-        self.module_lecture = bool(self.config['lectures'])
+        self.module_lecture = 'lectures' in self.config
         if self.module_lecture:
             self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
             self.lecture_messages: List[LectureMessage] = []
