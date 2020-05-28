@@ -25,12 +25,16 @@ class BotClient(discord.ext.commands.Bot):
         init_logger()
         super().__init__(**options, command_prefix='!')
         self.config = config
+        # TODO Refactor lecture code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         self.module_lecture = bool(self.config['lectures'])
         if self.module_lecture:
             self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
             self.lecture_messages: List[LectureMessage] = []
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
+        # TODO Refactor reactionmessage code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         self._reaction_messages = []
         self.add_command(reactionmessage)
         self.add_command(reactionmessage_add)
@@ -41,24 +45,36 @@ class BotClient(discord.ext.commands.Bot):
         self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
 
     async def on_member_join(self, member: discord.Member) -> None:
+        # TODO Refactor greeting code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         await greet_member(self)(member)
 
     async def on_raw_reaction_add(self, raw_reaction: discord.RawReactionActionEvent) -> None:
         member, emoji, message_id = on_raw_reaction_add_arg_parser(raw_reaction)
         # TODO populate logging info with actual message?
         self.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
+        # TODO Refactor lecture code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         if self.module_lecture:
             await lecture_role_assignment(self)(raw_reaction)
+        # TODO Refactor reactionmessage code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         await reactionmessage_role_assignment(self)(raw_reaction)
 
     async def on_raw_reaction_remove(self, raw_reaction: discord.RawReactionActionEvent) -> None:
         member, emoji, message_id = on_raw_reaction_remove_arg_parser(raw_reaction, self)
         # TODO populate logging info with actual message?
         self.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
+        # TODO Refactor lecture code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         if self.module_lecture:
             await lecture_role_unassignment(self)(raw_reaction)
+        # TODO Refactor reactionmessage code into separate module!
+        #   https://github.com/ekzyis/physicsbot/issues/51
         await reactionmessage_role_unassignment(self)(raw_reaction)
 
+    # TODO Refactor lecture code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     def get_lecture_of_message_id(self, message_id: int) -> Optional[Lecture]:
         """Returns the lecture associated with this message if there is one. Else returns None."""
         for lecture_message in self.lecture_messages:
@@ -66,6 +82,8 @@ class BotClient(discord.ext.commands.Bot):
                 return lecture_message.lecture
         return None
 
+    # TODO Refactor lecture code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     async def _init_lecture_embed(self, channel: discord.TextChannel, lecture: Lecture) -> discord.Message:
         """Returns the message for this lecture in the given channel.
         If it does not exist yet, it will be created."""
@@ -89,6 +107,8 @@ class BotClient(discord.ext.commands.Bot):
             self.guild = self.get_guild(int(self.config['guild']))
         return self.guild
 
+    # TODO Refactor lecture code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     async def _init_overview_embed(self, channel: discord.TextChannel) -> discord.Message:
         """Creates the overview embed in the given channel.
         The overview embed lists all available lectures and has some user information in it."""
@@ -102,6 +122,8 @@ class BotClient(discord.ext.commands.Bot):
             self.logger.info('Updated overview embed')
         return message
 
+    # TODO Refactor lecture code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     async def init_overview_channel(self) -> None:
         """Initializes the overview channel.
         Makes sure that an embed for every lecture exists such that users can react to it and
@@ -114,6 +136,8 @@ class BotClient(discord.ext.commands.Bot):
             self.lecture_messages.append(LectureMessage(lecture=lecture, message_id=message.id))
             self.logger.info('Message with id %s holds the embed for lecture %s' % (message.id, lecture.embed_title))
 
+    # TODO Refactor reactionmessage code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     def add_reactionmessage(self, rm: ReactionMessage):
         """Add the ReactionMessage to the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.append(rm)
@@ -121,6 +145,8 @@ class BotClient(discord.ext.commands.Bot):
             "Added reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.rname, rm.ename))
         self.save_reactionmessages()
 
+    # TODO Refactor reactionmessage code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     def remove_reactionmessage(self, rm: ReactionMessage):
         """Remove the ReactionMessage from the list of reaction messages which will be searched on user reactions."""
         self._reaction_messages.remove(rm)
@@ -128,6 +154,8 @@ class BotClient(discord.ext.commands.Bot):
             "Removed reaction message with message id {}, role {}, emoji {}".format(rm.mid, rm.rname, rm.ename))
         self.save_reactionmessages()
 
+    # TODO Refactor reactionmessage code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     def get_reactionmessage(self, message_id: int, ename: str):
         """Return the ReactionMessage instance which has the same message id and emoji name."""
         for rm in self._reaction_messages:
@@ -135,6 +163,8 @@ class BotClient(discord.ext.commands.Bot):
                 return rm
         return None
 
+    # TODO Refactor reactionmessage code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     async def load_reactionmessages(self):
         """Load reaction messages from file."""
         rm_file_path = self.config['rm']
@@ -146,6 +176,8 @@ class BotClient(discord.ext.commands.Bot):
         except FileNotFoundError:
             pass
 
+    # TODO Refactor reactionmessage code into separate module!
+    #   https://github.com/ekzyis/physicsbot/issues/51
     def save_reactionmessages(self):
         """Save reaction messages to file for retrieval on next start."""
         rm_file_path = self.config['rm']
