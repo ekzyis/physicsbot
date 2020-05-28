@@ -25,8 +25,10 @@ class BotClient(discord.ext.commands.Bot):
         init_logger()
         super().__init__(**options, command_prefix='!')
         self.config = config
-        self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
-        self.lecture_messages: List[LectureMessage] = []
+        self.module_lecture = bool(self.config['lectures'])
+        if self.module_lecture:
+            self.config['lectures'] = populate_lectures_in_config(self.config['lectures'])
+            self.lecture_messages: List[LectureMessage] = []
         self.guild: Optional[discord.Guild] = None
         self.logger: logging.Logger = logging.getLogger('bot')
         self._reaction_messages = []
@@ -45,14 +47,16 @@ class BotClient(discord.ext.commands.Bot):
         member, emoji, message_id = on_raw_reaction_add_arg_parser(raw_reaction)
         # TODO populate logging info with actual message?
         self.logger.info('User %s has reacted with %s to message with id %s' % (member, emoji, message_id))
-        await lecture_role_assignment(self)(raw_reaction)
+        if self.module_lecture:
+            await lecture_role_assignment(self)(raw_reaction)
         await reactionmessage_role_assignment(self)(raw_reaction)
 
     async def on_raw_reaction_remove(self, raw_reaction: discord.RawReactionActionEvent) -> None:
         member, emoji, message_id = on_raw_reaction_remove_arg_parser(raw_reaction, self)
         # TODO populate logging info with actual message?
         self.logger.info('User %s has removed reaction %s from message with id %s' % (member, emoji, message_id))
-        await lecture_role_unassignment(self)(raw_reaction)
+        if self.module_lecture:
+            await lecture_role_unassignment(self)(raw_reaction)
         await reactionmessage_role_unassignment(self)(raw_reaction)
 
     def get_lecture_of_message_id(self, message_id: int) -> Optional[Lecture]:

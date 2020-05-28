@@ -24,7 +24,8 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
     Consists of making sure that for every lecture, there is an embed in the overview channel.
     """
     bot = BotClient(config=config)
-    bot.loop.create_task(bot.init_overview_channel())
+    if config['lectures']:
+        bot.loop.create_task(bot.init_overview_channel())
     bot.loop.create_task(bot.load_reactionmessages())
     bot.run(token)
 
