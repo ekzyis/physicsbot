@@ -4,3 +4,4 @@
 !requirements.txt
 !*config.yml
 !logs
+!rm-*.yml
