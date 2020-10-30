@@ -10,6 +10,7 @@ Usage:
     physicsbot config write <FILE>
 """
 
+import discord
 from pathlib import Path
 from typing import Dict, Any
 
@@ -23,7 +24,9 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
     """Starts the bot and runs the guild initialisation process.
     Consists of making sure that for every lecture, there is an embed in the overview channel.
     """
-    bot = BotClient(config=config)
+    intents = discord.Intents.default()
+    intents.members = True
+    bot = BotClient(config=config, intents=intents)
     bot.loop.create_task(bot.init_overview_channel())
     bot.run(token)
 
