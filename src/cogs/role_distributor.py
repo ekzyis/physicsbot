@@ -58,7 +58,8 @@ class RoleDistributor(commands.Cog):
         pass
 
     @roledist.command('attach',
-                      help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI>')
+                      help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI> \n\
+(use shift while copying message ids to include channel id)')
     @commands.has_permissions(manage_roles=True)
     async def attach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
