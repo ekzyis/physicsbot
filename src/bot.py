@@ -4,8 +4,6 @@ from typing import Dict, Any
 import discord
 from discord.ext.commands import Bot
 
-from log import init_logger
-
 
 class BotClient(Bot):
 
@@ -13,7 +11,6 @@ class BotClient(Bot):
         super().__init__(**options, command_prefix="!?!")
         self.config = config
         self.guild: discord.Guild = self.get_guild(int(self.config['guild']))
-        init_logger()
         self.logger: logging.Logger = logging.getLogger('bot')
 
         self.load_extension('cogs.role_distributor')
