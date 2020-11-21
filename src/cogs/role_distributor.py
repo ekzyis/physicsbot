@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from typing import List
 
 import discord
 import yaml
 from discord.ext import commands
-from discord.ext.commands import Bot, RoleConverter, MessageConverter
+from discord.ext.commands import Bot as DiscordBot, RoleConverter, MessageConverter
 
 from converter.unicode import UnicodeEmojiConverter
 
@@ -18,24 +19,24 @@ class ReactionMessage:
 
 
 class RoleDistributor(commands.Cog):
-    def __init__(self, bot):
-        self.bot: Bot = bot
+    def __init__(self, bot: DiscordBot):
+        self.bot: DiscordBot = bot
         self.path = 'role-dist.yml'
         self.reaction_messages = self.load_from_file()
 
-    def add(self, rm: ReactionMessage):
+    def add(self, rm: ReactionMessage) -> None:
         self.reaction_messages.append(rm)
         self.save_to_file()
 
-    def remove(self, rm: ReactionMessage):
+    def remove(self, rm: ReactionMessage) -> None:
         self.reaction_messages.remove(rm)
         self.save_to_file()
 
-    def save_to_file(self):
+    def save_to_file(self) -> None:
         with open(self.path, 'w') as file:
             yaml.dump(self.reaction_messages, file)
 
-    def load_from_file(self):
+    def load_from_file(self) -> List[ReactionMessage]:
         try:
             with open(self.path, 'r') as file:
                 return yaml.load(file, Loader=yaml.Loader)
@@ -43,27 +44,29 @@ class RoleDistributor(commands.Cog):
             return []
 
     @commands.group()
-    async def roledist(self, ctx):
+    async def roledist(self, ctx: discord.Context) -> None:
         pass
 
     @roledist.command('attach')
     @commands.has_permissions(manage_roles=True)
-    async def attach(self, ctx, message: MessageConverter, role: RoleConverter, emoji_name: UnicodeEmojiConverter):
+    async def attach(self, ctx: discord.Context, message: MessageConverter, role: RoleConverter,
+                     emoji_name: UnicodeEmojiConverter) -> None:
         """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
-        message: discord.Message
-        role: discord.Role
-        emoji_name: str
+        message: discord.Message  # type: ignore
+        role: discord.Role  # type: ignore
+        emoji_name: str  # type: ignore
         rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
         self.add(rm)
         await message.add_reaction(emoji_name)
 
     @roledist.command('detach')
     @commands.has_permissions(manage_roles=True)
-    async def detach(self, ctx, message: MessageConverter, role: RoleConverter, emoji_name: UnicodeEmojiConverter):
-        message: discord.Message
-        role: discord.Role
-        emoji_name: str
-        bot: Bot = ctx.bot
+    async def detach(self, ctx: discord.Context, message: MessageConverter, role: RoleConverter,
+                     emoji_name: UnicodeEmojiConverter) -> None:
+        message: discord.Message  # type: ignore
+        role: discord.Role  # type: ignore
+        emoji_name: str  # type: ignore
+        bot: DiscordBot = ctx.bot
         rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
         try:
             self.remove(rm)
@@ -73,7 +76,7 @@ class RoleDistributor(commands.Cog):
 
     @roledist.command('status')
     @commands.has_permissions(manage_roles=True)
-    async def status(self, ctx):
+    async def status(self, ctx: discord.Context) -> None:
         embed_title = "Status of Role Distributor"
         if len(self.reaction_messages) == 0:
             desc = "No listeners attached."
@@ -89,7 +92,7 @@ class RoleDistributor(commands.Cog):
         await ctx.channel.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
         mid = payload.message_id
         for rm in self.reaction_messages:
             if rm.mid == mid and rm.ename == payload.emoji.name:
@@ -99,7 +102,7 @@ class RoleDistributor(commands.Cog):
                 break
 
     @commands.Cog.listener()
-    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent):
+    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent) -> None:
         mid: discord.Message = payload.message_id
         for rm in self.reaction_messages:
             if rm.mid == mid and rm.ename == payload.emoji.name:
@@ -110,5 +113,5 @@ class RoleDistributor(commands.Cog):
                 break
 
 
-def setup(bot: Bot):
+def setup(bot: DiscordBot) -> None:
     bot.add_cog(RoleDistributor(bot))

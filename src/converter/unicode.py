@@ -1,5 +1,6 @@
 import re
 
+import discord
 from discord.ext.commands import EmojiConverter
 
 
@@ -12,7 +13,7 @@ def is_unicode_emoji(x: str) -> bool:
 
 
 class UnicodeEmojiConverter(EmojiConverter):
-    async def convert(self, ctx, argument):
+    async def convert(self, ctx: discord.Context, argument: str) -> str:
         if is_unicode_emoji(argument):
             result = argument
         else:
