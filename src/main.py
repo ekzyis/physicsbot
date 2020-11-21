@@ -16,9 +16,6 @@ from bot import BotClient
 
 
 def start_bot(token: str, config: Dict[str, Any]) -> None:
-    """Starts the bot and runs the guild initialisation process.
-    Consists of making sure that for every lecture, there is an embed in the overview channel.
-    """
     intents = discord.Intents.default()
     intents.members = True
     bot = BotClient(config=config, intents=intents)
