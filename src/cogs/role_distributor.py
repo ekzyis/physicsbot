@@ -8,6 +8,7 @@ import yaml
 from discord.ext import commands
 from discord.ext.commands import Context, Bot as DiscordBot, RoleConverter, MessageConverter
 
+from cogs.base import BaseCog
 from converter.unicode import UnicodeEmojiConverter
 
 
@@ -20,7 +21,7 @@ class ReactionMessage:
     ename: str  # the emoji name with which the user needs to react to be assigned the role
 
 
-class RoleDistributor(commands.Cog):
+class RoleDistributor(BaseCog):
     def __init__(self, bot: DiscordBot):
         self.bot: DiscordBot = bot
 
@@ -58,7 +59,8 @@ class RoleDistributor(commands.Cog):
         pass
 
     @roledist.command('attach',
-                      help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI>')
+                      help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI> \n\
+(use shift while copying message ids to include channel id)')
     @commands.has_permissions(manage_roles=True)
     async def attach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
@@ -125,12 +127,6 @@ class RoleDistributor(commands.Cog):
                 member = await guild.fetch_member(payload.user_id)
                 await member.remove_roles(role)
                 break
-
-    async def cog_command_error(self, ctx: Context, error: commands.CommandError):
-        embed = discord.Embed(color=0xff0000)
-        embed.add_field(name="Error", value=str(error), inline=False)
-        embed.add_field(name="Usage", value=ctx.command.help.replace('Usage: ', ''), inline=False)
-        await ctx.channel.send(embed=embed)
 
 
 def setup(bot: DiscordBot) -> None:
