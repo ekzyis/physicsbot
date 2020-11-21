@@ -36,8 +36,11 @@ class RoleDistributor(commands.Cog):
             yaml.dump(self.reaction_messages, file)
 
     def load_from_file(self):
-        with open(self.path, 'r') as file:
-            return yaml.load(file, Loader=yaml.Loader)
+        try:
+            with open(self.path, 'r') as file:
+                return yaml.load(file, Loader=yaml.Loader)
+        except FileNotFoundError:
+            return []
 
     @commands.group()
     async def roledist(self, ctx):
