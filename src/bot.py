@@ -1,4 +1,5 @@
 import logging
+import sys
 from typing import Dict, Any
 
 import discord
@@ -11,7 +12,10 @@ class BotClient(Bot):
         super().__init__(**options, command_prefix="!?!")
         self.config = config
         self.guild: discord.Guild = self.get_guild(int(self.config['guild']))
+
         self.logger: logging.Logger = logging.getLogger('bot')
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
         self.load_extension('cogs.role_distributor')
 
