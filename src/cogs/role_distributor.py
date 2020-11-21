@@ -48,6 +48,9 @@ class RoleDistributor(BaseCog):
         try:
             with open(self.path, 'r') as file:
                 data = yaml.load(file, Loader=yaml.Loader)
+                if data is None:
+                    self.logger.info('Could not load reaction messages from {}. File is empty.'.format(self.path))
+                    return []
                 self.logger.info('Loaded {} reaction message(s) from {}.'.format(len(data), self.path))
                 return data
         except FileNotFoundError:
