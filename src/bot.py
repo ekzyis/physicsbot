@@ -2,12 +2,12 @@ import logging
 from typing import Dict, Any
 
 import discord
-import discord.ext
+from discord.ext.commands import Bot
 
 from log import init_logger
 
 
-class BotClient(discord.ext.commands.Bot):
+class BotClient(Bot):
 
     def __init__(self, config: Dict[str, Any], **options: Any):
         super().__init__(**options, command_prefix="!")
