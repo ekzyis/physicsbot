@@ -22,11 +22,6 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
     intents = discord.Intents.default()
     intents.members = True
     bot = BotClient(config=config, intents=intents)
-    # TODO Refactor lecture code into separate module!
-    #   https://github.com/ekzyis/physicsbot/issues/51
-    if 'lectures' in config:
-        bot.loop.create_task(bot.init_overview_channel())
-    bot.loop.create_task(bot.load_reactionmessages())
     bot.run(token)
 
 
