@@ -4,7 +4,6 @@ from typing import Dict, Any
 import discord
 import discord.ext
 
-from cogs.greetings import Greetings
 from log import init_logger
 
 
@@ -16,8 +15,6 @@ class BotClient(discord.ext.commands.Bot):
         self.guild: discord.Guild = self.get_guild(int(self.config['guild']))
         init_logger()
         self.logger: logging.Logger = logging.getLogger('bot')
-
-        self.add_cog(Greetings(self))
 
     async def on_ready(self) -> None:
         """Executed when bot is logged in and ready."""
