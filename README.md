@@ -17,13 +17,3 @@ docker run \
   --name physicbot \
   physicsbot
 ```
-
-If you need to run a different config:
-
-```
-docker run \
-  --detach \
-  -v ~/logs:/physicsbot/logs \
-  --name physicsbot-hd \
-  physicsbot run --config hd.config.yml
-```
