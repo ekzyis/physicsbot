@@ -67,6 +67,27 @@ class RoleDistributor(commands.Cog):
         )
         await ctx.channel.send(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+        mid = payload.message_id
+        for rm in self.reaction_messages:
+            if rm.mid == mid and rm.ename == payload.emoji.name:
+                guild = self.bot.get_guild(payload.guild_id)
+                role = guild.get_role(rm.rid)
+                await payload.member.add_roles(role)
+                break
+
+    @commands.Cog.listener()
+    async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent):
+        mid: discord.Message = payload.message_id
+        for rm in self.reaction_messages:
+            if rm.mid == mid and rm.ename == payload.emoji.name:
+                guild = self.bot.get_guild(payload.guild_id)
+                role = guild.get_role(rm.rid)
+                member = await guild.fetch_member(payload.user_id)
+                await member.remove_roles(role)
+                break
+
 
 def setup(bot: Bot):
     bot.add_cog(RoleDistributor(bot))
