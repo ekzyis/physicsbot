@@ -16,6 +16,7 @@ class BotClient(Bot):
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
         self.load_extension('cogs.role_distributor')
+        self.load_extension('cogs.send')
 
     async def on_ready(self) -> None:
         """Executed when bot is logged in and ready."""
