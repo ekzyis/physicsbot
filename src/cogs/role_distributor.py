@@ -47,7 +47,8 @@ class RoleDistributor(commands.Cog):
     async def roledist(self, ctx: Context) -> None:
         pass
 
-    @roledist.command('attach')
+    @roledist.command('attach',
+                      help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI>')
     @commands.has_permissions(manage_roles=True)
     async def attach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
@@ -59,7 +60,8 @@ class RoleDistributor(commands.Cog):
         self.add(rm)
         await message.add_reaction(emoji_name)
 
-    @roledist.command('detach')
+    @roledist.command('detach',
+                      help='Usage: !?!roledist detach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI>')
     @commands.has_permissions(manage_roles=True)
     async def detach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
@@ -74,7 +76,8 @@ class RoleDistributor(commands.Cog):
         except ValueError:
             await ctx.channel.send('Could not detach listener because none is attached.')
 
-    @roledist.command('status')
+    @roledist.command('status',
+                      help='Usage: !?!roledist status')
     @commands.has_permissions(manage_roles=True)
     async def status(self, ctx: Context) -> None:
         embed_title = "Status of Role Distributor"
@@ -112,6 +115,12 @@ class RoleDistributor(commands.Cog):
                 member = await guild.fetch_member(payload.user_id)
                 await member.remove_roles(role)
                 break
+
+    async def cog_command_error(self, ctx: Context, error: commands.CommandError):
+        embed = discord.Embed(color=0xff0000)
+        embed.add_field(name="Error", value=str(error), inline=False)
+        embed.add_field(name="Usage", value=ctx.command.help.replace('Usage: ', ''), inline=False)
+        await ctx.channel.send(embed=embed)
 
 
 def setup(bot: DiscordBot) -> None:
