@@ -102,7 +102,7 @@ class RoleDistributor(BaseCog):
             desc = "{} listener(s) attached:".format(len(self.reaction_messages))
             desc += "\n"
             desc += "\n".join(
-                ["mid: {}, role: {}, emoji: {}".format(rm.mid, rm.rname, rm.ename) for rm in self.reaction_messages])
+                ["{} <@&{}> {}".format(rm.mid, rm.rid, rm.ename) for rm in self.reaction_messages])
         embed = discord.Embed(
             title=embed_title,
             description=desc,
