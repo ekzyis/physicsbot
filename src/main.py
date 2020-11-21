@@ -5,10 +5,10 @@ Usage:
     physicsbot run [--config=<CONFIG>] [--token=<TOKEN>]
 """
 
-import discord
 from pathlib import Path
 from typing import Dict, Any
 
+import discord
 import yaml
 from docopt import docopt
 
