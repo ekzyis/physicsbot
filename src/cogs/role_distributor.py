@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 import discord
+import yaml
 from discord.ext import commands
 from discord.ext.commands import Bot, RoleConverter, MessageConverter
 
@@ -19,7 +20,24 @@ class ReactionMessage:
 class RoleDistributor(commands.Cog):
     def __init__(self, bot):
         self.bot: Bot = bot
-        self.reaction_messages: [ReactionMessage] = []
+        self.path = 'role-dist.yml'
+        self.reaction_messages = self.load_from_file()
+
+    def add(self, rm: ReactionMessage):
+        self.reaction_messages.append(rm)
+        self.save_to_file()
+
+    def remove(self, rm: ReactionMessage):
+        self.reaction_messages.remove(rm)
+        self.save_to_file()
+
+    def save_to_file(self):
+        with open(self.path, 'w') as file:
+            yaml.dump(self.reaction_messages, file)
+
+    def load_from_file(self):
+        with open(self.path, 'r') as file:
+            return yaml.load(file, Loader=yaml.Loader)
 
     @commands.group()
     async def roledist(self, ctx):
@@ -33,7 +51,7 @@ class RoleDistributor(commands.Cog):
         role: discord.Role
         emoji_name: str
         rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
-        self.reaction_messages.append(rm)
+        self.add(rm)
         await message.add_reaction(emoji_name)
 
     @roledist.command('detach')
@@ -45,7 +63,7 @@ class RoleDistributor(commands.Cog):
         bot: Bot = ctx.bot
         rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
         try:
-            self.reaction_messages.remove(rm)
+            self.remove(rm)
             await message.remove_reaction(emoji_name, bot.user)
         except ValueError:
             await ctx.channel.send('Could not detach listener because none is attached.')
