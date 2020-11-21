@@ -10,7 +10,7 @@ from log import init_logger
 class BotClient(Bot):
 
     def __init__(self, config: Dict[str, Any], **options: Any):
-        super().__init__(**options, command_prefix="!")
+        super().__init__(**options, command_prefix="!?!")
         self.config = config
         self.guild: discord.Guild = self.get_guild(int(self.config['guild']))
         init_logger()
