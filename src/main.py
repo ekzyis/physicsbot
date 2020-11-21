@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 
-"""Physicsbot.
-
+"""
 Usage:
     physicsbot run [--config=<CONFIG>] [--token=<TOKEN>]
-    physicsbot config add <NAME> --role=<ROLE> --emoji=<EMOJI> --channel=<CHANNEL>
-    physicsbot config update <NAME> [--role=<ROLE>] [--emoji=<EMOJI>] [--channel=<CHANNEL>]
-    physicsbot config remove <NAME>
-    physicsbot config write <FILE>
 """
 
 import discord
