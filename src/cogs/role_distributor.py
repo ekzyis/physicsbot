@@ -50,6 +50,23 @@ class RoleDistributor(commands.Cog):
         except ValueError:
             await ctx.channel.send('Could not detach listener because none is attached.')
 
+    @roledist.command('status')
+    @commands.has_permissions(manage_roles=True)
+    async def status(self, ctx):
+        embed_title = "Status of Role Distributor"
+        if len(self.reaction_messages) == 0:
+            desc = "No listeners attached."
+        else:
+            desc = "{} listener(s) attached:".format(len(self.reaction_messages))
+            desc += "\n"
+            desc += "\n".join(
+                ["mid: {}, role: {}, emoji: {}".format(rm.mid, rm.rname, rm.ename) for rm in self.reaction_messages])
+        embed = discord.Embed(
+            title=embed_title,
+            description=desc
+        )
+        await ctx.channel.send(embed=embed)
+
 
 def setup(bot: Bot):
     bot.add_cog(RoleDistributor(bot))
