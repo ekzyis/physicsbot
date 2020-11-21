@@ -14,3 +14,7 @@ class Greetings(commands.Cog):
                 title="{}, willkommen auf {}!".format(str(member), str(member.guild))
             )
             await channel.send(greeting)
+
+
+def setup(bot: discord.ext.commands.Bot):
+    bot.add_cog(Greetings(bot))
