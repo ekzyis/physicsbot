@@ -5,6 +5,7 @@ Usage:
     physicsbot run [--config=<CONFIG>] [--token=<TOKEN>]
 """
 
+import discord
 from pathlib import Path
 from typing import Dict, Any
 
