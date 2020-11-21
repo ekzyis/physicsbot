@@ -4,4 +4,4 @@ __pycache__
 *.log
 .coverage
 .mypy_cache
-rm-*.yml
+role-dist.yml
