@@ -4,7 +4,7 @@ from typing import List
 import discord
 import yaml
 from discord.ext import commands
-from discord.ext.commands import Bot as DiscordBot, RoleConverter, MessageConverter
+from discord.ext.commands import Context, Bot as DiscordBot, RoleConverter, MessageConverter
 
 from converter.unicode import UnicodeEmojiConverter
 
@@ -44,12 +44,12 @@ class RoleDistributor(commands.Cog):
             return []
 
     @commands.group()
-    async def roledist(self, ctx: discord.Context) -> None:
+    async def roledist(self, ctx: Context) -> None:
         pass
 
     @roledist.command('attach')
     @commands.has_permissions(manage_roles=True)
-    async def attach(self, ctx: discord.Context, message: MessageConverter, role: RoleConverter,
+    async def attach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
         """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
         message: discord.Message  # type: ignore
@@ -61,7 +61,7 @@ class RoleDistributor(commands.Cog):
 
     @roledist.command('detach')
     @commands.has_permissions(manage_roles=True)
-    async def detach(self, ctx: discord.Context, message: MessageConverter, role: RoleConverter,
+    async def detach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
         message: discord.Message  # type: ignore
         role: discord.Role  # type: ignore
@@ -76,7 +76,7 @@ class RoleDistributor(commands.Cog):
 
     @roledist.command('status')
     @commands.has_permissions(manage_roles=True)
-    async def status(self, ctx: discord.Context) -> None:
+    async def status(self, ctx: Context) -> None:
         embed_title = "Status of Role Distributor"
         if len(self.reaction_messages) == 0:
             desc = "No listeners attached."
