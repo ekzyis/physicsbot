@@ -26,6 +26,7 @@ class RoleDistributor(commands.Cog):
         pass
 
     @roledist.command('attach')
+    @commands.has_permissions(manage_roles=True)
     async def attach(self, ctx, message: MessageConverter, role: RoleConverter, emoji_name: UnicodeEmojiConverter):
         """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
         message: discord.Message
@@ -36,6 +37,7 @@ class RoleDistributor(commands.Cog):
         await message.add_reaction(emoji_name)
 
     @roledist.command('detach')
+    @commands.has_permissions(manage_roles=True)
     async def detach(self, ctx, message: MessageConverter, role: RoleConverter, emoji_name: UnicodeEmojiConverter):
         message: discord.Message
         role: discord.Role
