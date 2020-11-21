@@ -87,7 +87,8 @@ class RoleDistributor(commands.Cog):
                 ["mid: {}, role: {}, emoji: {}".format(rm.mid, rm.rname, rm.ename) for rm in self.reaction_messages])
         embed = discord.Embed(
             title=embed_title,
-            description=desc
+            description=desc,
+            color=0xe1e100
         )
         await ctx.channel.send(embed=embed)
 
