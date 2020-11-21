@@ -18,7 +18,7 @@ class ReactionMessage:
 
 class RoleDistributor(commands.Cog):
     def __init__(self, bot):
-        self.bot = bot
+        self.bot: Bot = bot
         self.reaction_messages: [ReactionMessage] = []
 
     @commands.group()
