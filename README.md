@@ -8,12 +8,12 @@
 docker build -t physicsbot .
 ```
 
-2. Run docker image with logs mounted:
+2. Run docker image with reaction message data mounted:
 
 ```
 docker run \
   --detach \
-  -v ~/logs:/physicsbot/logs \
+  -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml \
   --name physicbot \
   physicsbot
 ```

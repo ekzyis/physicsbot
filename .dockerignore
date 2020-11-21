@@ -2,5 +2,6 @@
 !src/
 !test/
 !requirements.txt
-!*config.yml
+!*.config.yml
 !logs
+!rm-*.yml
