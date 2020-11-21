@@ -1,3 +1,5 @@
+import logging
+import sys
 from dataclasses import dataclass
 from typing import List
 
@@ -21,6 +23,11 @@ class ReactionMessage:
 class RoleDistributor(commands.Cog):
     def __init__(self, bot: DiscordBot):
         self.bot: DiscordBot = bot
+
+        self.logger: logging.Logger = logging.getLogger('role_distributor')
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+
         self.path = 'role-dist.yml'
         self.reaction_messages = self.load_from_file()
 
@@ -39,8 +46,11 @@ class RoleDistributor(commands.Cog):
     def load_from_file(self) -> List[ReactionMessage]:
         try:
             with open(self.path, 'r') as file:
-                return yaml.load(file, Loader=yaml.Loader)
+                data = yaml.load(file, Loader=yaml.Loader)
+                self.logger.info('Loaded {} reaction message(s) from {}.'.format(len(data), self.path))
+                return data
         except FileNotFoundError:
+            self.logger.warning('Could not load reaction messsages from {}. File not found.'.format(self.path))
             return []
 
     @commands.group()
