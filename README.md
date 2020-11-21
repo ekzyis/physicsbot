@@ -17,3 +17,6 @@ docker run \
   --name physicbot \
   physicsbot
 ```
+
+(Make sure that role-dist.yml does exist on the host machine! If not, just use `touch role-dist.yml`
+before using the docker command else docker will try to mount a directory onto a file.)
