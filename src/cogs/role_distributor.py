@@ -103,7 +103,7 @@ class RoleDistributor(BaseCog):
         if len(guild_reaction_messages) == 0:
             desc = "No listeners attached."
         else:
-            desc = "{} listener(s) attached:".format(len(self.reaction_messages))
+            desc = "{} listener(s) attached:".format(len(guild_reaction_messages))
             desc += "\n"
             desc += "\n".join(
                 ["{} <@&{}> {}".format(rm.mid, rm.rid, rm.ename)
