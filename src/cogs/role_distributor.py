@@ -15,6 +15,7 @@ from converter.unicode import UnicodeEmojiConverter
 @dataclass
 class ReactionMessage:
     """Data container class for Reaction Messages"""
+    gid: int  # id of guild the message/command was posted in
     mid: int  # message id of the reaction message
     rid: int  # id of role which should be assigned when reacted to this message with the emoji
     rname: str  # name of role
@@ -71,7 +72,8 @@ class RoleDistributor(BaseCog):
         message: discord.Message  # type: ignore
         role: discord.Role  # type: ignore
         emoji_name: str  # type: ignore
-        rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
+        guild_id = message.guild.id
+        rm = ReactionMessage(gid=guild_id, mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
         self.add(rm)
         await message.add_reaction(emoji_name)
 
@@ -83,8 +85,9 @@ class RoleDistributor(BaseCog):
         message: discord.Message  # type: ignore
         role: discord.Role  # type: ignore
         emoji_name: str  # type: ignore
+        guild_id = message.guild.id
         bot: DiscordBot = ctx.bot
-        rm = ReactionMessage(mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
+        rm = ReactionMessage(gid=guild_id, mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
         try:
             self.remove(rm)
             await message.remove_reaction(emoji_name, bot.user)
@@ -96,13 +99,17 @@ class RoleDistributor(BaseCog):
     @commands.has_permissions(manage_roles=True)
     async def status(self, ctx: Context) -> None:
         embed_title = "Status of Role Distributor"
-        if len(self.reaction_messages) == 0:
+        guild_reaction_messages = [rm for rm in self.reaction_messages if rm.gid == ctx.message.guild.id]
+        if len(guild_reaction_messages) == 0:
             desc = "No listeners attached."
         else:
             desc = "{} listener(s) attached:".format(len(self.reaction_messages))
             desc += "\n"
             desc += "\n".join(
-                ["{} <@&{}> {}".format(rm.mid, rm.rid, rm.ename) for rm in self.reaction_messages])
+                ["{} <@&{}> {}".format(rm.mid, rm.rid, rm.ename)
+                 for rm in guild_reaction_messages
+                 if rm.gid == ctx.message.guild.id]
+            )
         embed = discord.Embed(
             title=embed_title,
             description=desc,
@@ -117,7 +124,7 @@ class RoleDistributor(BaseCog):
             return
         mid = payload.message_id
         for rm in self.reaction_messages:
-            if rm.mid == mid and rm.ename == payload.emoji.name:
+            if rm.mid == mid and rm.ename == payload.emoji.name and rm.gid == payload.guild_id:
                 guild = self.bot.get_guild(payload.guild_id)
                 role = guild.get_role(rm.rid)
                 await member.add_roles(role)
@@ -131,7 +138,7 @@ class RoleDistributor(BaseCog):
         if member.bot:
             return
         for rm in self.reaction_messages:
-            if rm.mid == mid and rm.ename == payload.emoji.name:
+            if rm.mid == mid and rm.ename == payload.emoji.name and rm.gid == payload.guild_id:
                 role = guild.get_role(rm.rid)
                 await member.remove_roles(role)
                 break
