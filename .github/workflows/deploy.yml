@@ -20,7 +20,7 @@ jobs:
           script: |
             cd physicsbot
             git pull
-            docker build --build-arg=$(git rev-parse --short HEAD) -t physicsbot:master .
+            docker build --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) -t physicsbot:master .
             docker stop physicsbot
             docker rm physicsbot
             docker run \
