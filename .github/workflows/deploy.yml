@@ -21,6 +21,8 @@ jobs:
             cd physicsbot
             git pull
             docker build --build-arg=$(git rev-parse --short HEAD) -t physicsbot:master .
+            docker stop physicsbot
+            docker rm physicsbot
             docker run \
               --detach
               -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml \
