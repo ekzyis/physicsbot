@@ -31,6 +31,7 @@ jobs:
             cd physicsbot
             docker build --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) -t physicsbot:master .
       - name: run
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
