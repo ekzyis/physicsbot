@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: deploy
+      - name: pull
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -19,6 +19,22 @@ jobs:
           script: |
             cd physicsbot
             git pull
+      - name: build
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd physicsbot
             docker build --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) -t physicsbot:master .
+      - name: run
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
             (docker stop physicsbot || true) && (docker rm physicsbot || true)
             docker run --detach -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml --name physicsbot physicsbot:master
