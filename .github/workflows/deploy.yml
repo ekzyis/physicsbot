@@ -23,8 +23,4 @@ jobs:
             docker build --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) -t physicsbot:master .
             docker stop physicsbot
             docker rm physicsbot
-            docker run \
-              --detach
-              -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml \
-              --name physicsbot
-              physicsbot:master
+            docker run --detach -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml --name physicsbot physicsbot:master
