@@ -17,4 +17,12 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
-          script: whoami
+          script: |
+            cd physicsbot
+            git pull
+            docker build --build-arg=$(git rev-parse --short HEAD) -t physicsbot:master .
+            docker run \
+              --detach
+              -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml \
+              --name physicsbot
+              physicsbot:master
