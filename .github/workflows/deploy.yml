@@ -39,4 +39,4 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             (docker stop physicsbot || true) && (docker rm physicsbot || true)
-            docker run --detach -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml --name physicsbot physicsbot:master
+            docker run --detach -v $(pwd)/physicsbot/role-dist.yml:/physicsbot/role-dist.yml --name physicsbot physicsbot:master
