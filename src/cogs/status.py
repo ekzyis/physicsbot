@@ -5,6 +5,13 @@ from discord.ext import commands
 from discord.ext.commands import Bot as DiscordBot, Context
 
 
+def commit_hyperlink(commit: str) -> str:
+    if commit == '-':
+        return "-"
+    else:
+        return "[%s](%s)" % (commit, "https://github.com/ekzyis/physicsbot/commit/%s" % commit)
+
+
 class Status(commands.Cog):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
@@ -15,7 +22,7 @@ class Status(commands.Cog):
 
     @commands.command()
     async def status(self, ctx: Context) -> None:
-        desc = 'Commit: %s' % self._commit
+        desc = 'Commit: %s' % commit_hyperlink(self._commit)
         embed = discord.Embed(
             title='Status',
             description=desc,
