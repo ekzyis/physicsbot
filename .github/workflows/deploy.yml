@@ -3,7 +3,6 @@ name: Deploy
 on:
   push:
     branches:
-      - 56-continuous-deployment
       - master
 
 jobs:
