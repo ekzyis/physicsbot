@@ -58,7 +58,7 @@ class RoleDistributor(BaseCog):
                 return data
         except FileNotFoundError:
             self.logger.warning(
-                'Could not load reaction messsages from {}. File not found.'.format(self.path))
+                'Could not load reaction messages from {}. File not found.'.format(self.path))
             return []
 
     @commands.group()
