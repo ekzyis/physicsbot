@@ -13,6 +13,7 @@ RUN touch role-dist.yml
 
 # must be set during image build with --build-arg=$(git rev-parse --short HEAD)
 ARG GIT_COMMIT=unset
+ENV GIT_COMMIT=${GIT_COMMIT}
 
 ENTRYPOINT ["python", "/physicsbot/src/main.py"]
 # default arguments: run bot in development mode
