@@ -25,7 +25,8 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
 
 def main() -> None:
     args = docopt(__doc__)
-    config_path: str = args['--config'] or str(Path(__file__).parent / '../dev.config.yml')
+    config_path: str = args['--config'] or str(
+        Path(__file__).parent / '../dev.config.yml')
     with open(config_path, 'r') as file:
         config: Dict[str, Any] = yaml.safe_load(file)
     if args['run']:

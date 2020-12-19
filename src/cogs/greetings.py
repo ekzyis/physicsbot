@@ -12,7 +12,8 @@ class Greetings(commands.Cog):
         channel = member.guild.system_channel
         if channel is not None:
             greeting = discord.Embed(
-                title="{}, willkommen auf {}!".format(str(member), str(member.guild))
+                title="{}, willkommen auf {}!".format(
+                    str(member), str(member.guild))
             )
             await channel.send(greeting)
 

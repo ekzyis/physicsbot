@@ -20,4 +20,5 @@ class BotClient(Bot):
 
     async def on_ready(self) -> None:
         """Executed when bot is logged in and ready."""
-        self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
+        self.logger.info('Logged in as %s with id %s' %
+                         (self.user.name, self.user.id))
