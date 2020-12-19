@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - 56-continuous-deployment
 
 jobs:
   deploy:
