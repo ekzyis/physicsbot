@@ -8,5 +8,6 @@ class BaseCog(commands.Cog):
         usage = ctx.command.help if ctx.command.help else "-"
         embed = discord.Embed(color=0xff0000)
         embed.add_field(name="Error", value=str(error), inline=False)
-        embed.add_field(name="Usage", value=usage.replace('Usage: ', ''), inline=False)
+        embed.add_field(name="Usage", value=usage.replace(
+            'Usage: ', ''), inline=False)
         await ctx.channel.send(embed=embed)

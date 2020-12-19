@@ -1,0 +1,24 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd physicsbot
+            git pull
+            docker build --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) -t physicsbot:master .
+            (docker stop physicsbot || true) && (docker rm physicsbot || true)
+            docker run --detach -v $(pwd)/role-dist.yml:/physicsbot/role-dist.yml --name physicsbot physicsbot:master

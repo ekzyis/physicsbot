@@ -50,12 +50,15 @@ class RoleDistributor(BaseCog):
             with open(self.path, 'r') as file:
                 data = yaml.load(file, Loader=yaml.Loader)
                 if data is None:
-                    self.logger.info('Could not load reaction messages from {}. File is empty.'.format(self.path))
+                    self.logger.info(
+                        'Could not load reaction messages from {}. File is empty.'.format(self.path))
                     return []
-                self.logger.info('Loaded {} reaction message(s) from {}.'.format(len(data), self.path))
+                self.logger.info(
+                    'Loaded {} reaction message(s) from {}.'.format(len(data), self.path))
                 return data
         except FileNotFoundError:
-            self.logger.warning('Could not load reaction messsages from {}. File not found.'.format(self.path))
+            self.logger.warning(
+                'Could not load reaction messages from {}. File not found.'.format(self.path))
             return []
 
     @commands.group()
@@ -73,7 +76,8 @@ class RoleDistributor(BaseCog):
         role: discord.Role  # type: ignore
         emoji_name: str  # type: ignore
         guild_id = message.guild.id
-        rm = ReactionMessage(gid=guild_id, mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
+        rm = ReactionMessage(gid=guild_id, mid=message.id,
+                             rid=role.id, rname=role.name, ename=emoji_name)
         self.add(rm)
         await message.add_reaction(emoji_name)
 
@@ -87,7 +91,8 @@ class RoleDistributor(BaseCog):
         emoji_name: str  # type: ignore
         guild_id = message.guild.id
         bot: DiscordBot = ctx.bot
-        rm = ReactionMessage(gid=guild_id, mid=message.id, rid=role.id, rname=role.name, ename=emoji_name)
+        rm = ReactionMessage(gid=guild_id, mid=message.id,
+                             rid=role.id, rname=role.name, ename=emoji_name)
         try:
             self.remove(rm)
             await message.remove_reaction(emoji_name, bot.user)
@@ -99,11 +104,13 @@ class RoleDistributor(BaseCog):
     @commands.has_permissions(manage_roles=True)
     async def status(self, ctx: Context) -> None:
         embed_title = "Status of Role Distributor"
-        guild_reaction_messages = [rm for rm in self.reaction_messages if rm.gid == ctx.message.guild.id]
+        guild_reaction_messages = [
+            rm for rm in self.reaction_messages if rm.gid == ctx.message.guild.id]
         if len(guild_reaction_messages) == 0:
             desc = "No listeners attached."
         else:
-            desc = "{} listener(s) attached:".format(len(guild_reaction_messages))
+            desc = "{} listener(s) attached:".format(
+                len(guild_reaction_messages))
             desc += "\n"
             desc += "\n".join(
                 ["{} <@&{}> {}".format(rm.mid, rm.rid, rm.ename)

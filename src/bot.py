@@ -17,7 +17,9 @@ class BotClient(Bot):
 
         self.load_extension('cogs.role_distributor')
         self.load_extension('cogs.send')
+        self.load_extension('cogs.status')
 
     async def on_ready(self) -> None:
         """Executed when bot is logged in and ready."""
-        self.logger.info('Logged in as %s with id %s' % (self.user.name, self.user.id))
+        self.logger.info('Logged in as %s with id %s' %
+                         (self.user.name, self.user.id))

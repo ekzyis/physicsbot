@@ -11,6 +11,9 @@ RUN pip install -r requirements.txt
 # create the file to ensure it is NOT a directory (volume mounting create directories by default)
 RUN touch role-dist.yml
 
+# must be set during image build with --build-arg=$(git rev-parse --short HEAD)
+ARG GIT_COMMIT=unset
+
 ENTRYPOINT ["python", "/physicsbot/src/main.py"]
 # default arguments: run bot in development mode
 CMD ["run", "--config", "dev.config.yml"]
