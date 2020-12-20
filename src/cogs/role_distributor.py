@@ -1,3 +1,5 @@
+"""RoleDistributor Cog Module."""
+
 import logging
 import sys
 from dataclasses import dataclass
@@ -23,6 +25,12 @@ class ReactionMessage:
 
 
 class RoleDistributor(BaseCog):
+    """
+    RoleDistributor. Extension of base.cog.BaseCog.
+
+    Implements role distribution by attaching listeners to messages via command.
+    """
+
     def __init__(self, bot: DiscordBot):
         self.bot: DiscordBot = bot
 
@@ -33,45 +41,65 @@ class RoleDistributor(BaseCog):
         self.path = 'role-dist.yml'
         self.reaction_messages = self.load_from_file()
 
+    # pylint: disable=invalid-name
     def add(self, rm: ReactionMessage) -> None:
+        """
+        Add reaction message to list of current reaction messages.
+
+        Sync change with list in file by overwriting file with new list.
+        """
         self.reaction_messages.append(rm)
         self.save_to_file()
 
+    # pylint: disable=invalid-name
     def remove(self, rm: ReactionMessage) -> None:
+        """
+        Remove reaction message from list of current reaction messages.
+
+        Sync change with list in file by overwriting file with new list.
+        """
         self.reaction_messages.remove(rm)
         self.save_to_file()
 
     def save_to_file(self) -> None:
+        """Save reaction messages to file for persistence across bot restarts."""
         with open(self.path, 'w') as file:
             yaml.dump(self.reaction_messages, file)
 
     def load_from_file(self) -> List[ReactionMessage]:
+        """Load reaction messages from file."""
         try:
             with open(self.path, 'r') as file:
                 data = yaml.load(file, Loader=yaml.Loader)
                 if data is None:
                     self.logger.info(
-                        'Could not load reaction messages from {}. File is empty.'.format(self.path))
+                        # pylint: disable=line-too-long
+                        'Could not load reaction messages from %s. File is empty.', self.path)
                     return []
                 self.logger.info(
-                    'Loaded {} reaction message(s) from {}.'.format(len(data), self.path))
+                    'Loaded %s reaction message(s) from %s.', len(data), self.path)
                 return data
         except FileNotFoundError:
             self.logger.warning(
-                'Could not load reaction messages from {}. File not found.'.format(self.path))
+                'Could not load reaction messages from %s. File not found.', self.path)
             return []
 
     @commands.group()
     async def roledist(self, ctx: Context) -> None:
-        pass
+        """Implements command group with name `roledist`."""
 
     @roledist.command('attach',
                       help='Usage: !?!roledist attach [<CHANNELID>:]<MESSAGEID> <ROLE> <EMOJI> \n\
 (use shift while copying message ids to include channel id)')
     @commands.has_permissions(manage_roles=True)
-    async def attach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
+    async def attach(self, _: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
-        """Add a reaction message to the bot instance; enabling role assignment via reactions to the message."""
+        """
+        Attach a reaction listener to a message.
+
+        This enables role assignment via reactions to the message.
+        Only users with permission MANAGE_ROLES can use this command.
+        """
         message: discord.Message  # type: ignore
         role: discord.Role  # type: ignore
         emoji_name: str  # type: ignore
@@ -86,6 +114,12 @@ class RoleDistributor(BaseCog):
     @commands.has_permissions(manage_roles=True)
     async def detach(self, ctx: Context, message: MessageConverter, role: RoleConverter,
                      emoji_name: UnicodeEmojiConverter) -> None:
+        """
+        Remove a reaction listener from a message.
+
+        This disables role assignment via reaction to the message.
+        Only users with permission MANAGE_ROLES can use this command.
+        """
         message: discord.Message  # type: ignore
         role: discord.Role  # type: ignore
         emoji_name: str  # type: ignore
@@ -103,6 +137,7 @@ class RoleDistributor(BaseCog):
                       help='Usage: !?!roledist status')
     @commands.has_permissions(manage_roles=True)
     async def status(self, ctx: Context) -> None:
+        """Show all active reaction listeners for role distribution as a discord.Embed."""
         embed_title = "Status of Role Distributor"
         guild_reaction_messages = [
             rm for rm in self.reaction_messages if rm.gid == ctx.message.guild.id]
@@ -126,6 +161,8 @@ class RoleDistributor(BaseCog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
+      # pylint: disable=line-too-long
+        """Assign role if a member reacted to a reaction message with the corresponding reaction."""
         member: discord.Member = payload.member
         if member.bot:
             return
@@ -139,6 +176,8 @@ class RoleDistributor(BaseCog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload: discord.RawReactionActionEvent) -> None:
+        # pylint: disable=line-too-long
+        """Unassign role if a member reacted to a reaction message with the corresponding reaction."""
         mid: discord.Message = payload.message_id
         guild = self.bot.get_guild(payload.guild_id)
         member = await guild.fetch_member(payload.user_id)
@@ -152,4 +191,5 @@ class RoleDistributor(BaseCog):
 
 
 def setup(bot: DiscordBot) -> None:
+    """Add RoleDistributor extension to bot."""
     bot.add_cog(RoleDistributor(bot))

@@ -5,7 +5,6 @@ Usage:
     physicsbot run [--config=<CONFIG>] [--token=<TOKEN>]
 """
 
-import discord
 from pathlib import Path
 from typing import Dict, Any
 
@@ -17,6 +16,7 @@ from bot import BotClient
 
 
 def start_bot(token: str, config: Dict[str, Any]) -> None:
+    """Start the bot with the given token and config."""
     intents = discord.Intents.default()
     intents.members = True
     bot = BotClient(config=config, intents=intents)
@@ -24,6 +24,7 @@ def start_bot(token: str, config: Dict[str, Any]) -> None:
 
 
 def main() -> None:
+    """Parse command line arguments and bootstrap bot."""
     args = docopt(__doc__)
     config_path: str = args['--config'] or str(
         Path(__file__).parent / '../dev.config.yml')
