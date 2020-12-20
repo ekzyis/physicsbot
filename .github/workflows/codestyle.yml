@@ -1,0 +1,12 @@
+name: Codestyle
+
+on: [push]
+
+jobs:
+  check-codestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: autopep8
+        script: autopep8 -r --diff --exit-code src/
+      - name: pylint
+        script: pylint src/
