@@ -3,7 +3,7 @@ name: Codestyle
 on: [push]
 
 jobs:
-  check-codestyle:
+  pylint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,7 +14,18 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-      - name: Linting (pylint)
+      - name: Run pylint
         run: pylint src/
-      - name: Codestyle (autopep8)
+  autopep8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Run autopep8
         run: autopep8 -r --diff --exit-code src/
