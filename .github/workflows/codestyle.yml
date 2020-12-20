@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: autopep8
-        script: autopep8 -r --diff --exit-code src/
+        run: autopep8 -r --diff --exit-code src/
       - name: pylint
-        script: pylint src/
+        run: pylint src/
