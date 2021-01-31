@@ -16,7 +16,7 @@ class BotClient(Bot):
     BotClient. Extension of discord.ext.commands.Bot.
 
     This bot is designed to be highly modular.
-    All commands are implemented with Cogs. They are then loaded with `load_extennsion`.
+    All commands are implemented with Cogs. They are then loaded with `load_extension`.
     """
 
     def __init__(self, config: Dict[str, Any], **options: Any):
