@@ -17,7 +17,7 @@ mypy==0.770
 mypy-extensions==0.4.3
 pycodestyle==2.6.0
 pylint==2.6.0
-PyYAML==5.3.1
+PyYAML==5.4
 six==1.15.0
 testfixtures==6.14.1
 toml==0.10.2
